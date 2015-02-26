@@ -13,7 +13,7 @@ SingleApplication::SingleApplication(int argc, char *argv[])
 {
     QString serverName = QApplication::organizationName() + 
 QApplication::applicationName();
-    serverName.replace(QRegExp("\\s"), "");
+    serverName.replace(QRegExp("[^\\w\\-. ]"), "");
 
     // Attempt to connect to the LocalServer
     socket = new QLocalSocket();
