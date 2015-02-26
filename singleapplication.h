@@ -6,8 +6,7 @@
 #include <QLocalServer>
 
 /**
- * @brief The SingleApplication class handles multipe instances of the 
-same Application
+ * @brief The SingleApplication class handles multipe instances of the same Application
  * @see QApplication
  */
 class SingleApplication : public QApplication
@@ -30,4 +29,3 @@ private:
 };
 
 #endif // SINGLE_APPLICATION_H
-
