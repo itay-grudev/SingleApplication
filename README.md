@@ -1,7 +1,7 @@
 SingleApplication
 =================
 
-This is a replacement of the QSingleApplication for ```Qt 5```.
+This is a replacement of the QSingleApplication for ```Qt5```.
 
 Keeps the Primary Instance of your Application and kills each subsequent instance.
 
