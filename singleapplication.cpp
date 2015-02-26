@@ -1,61 +1,52 @@
 #include "singleapplication.h"
+#include <cstdlib>
 
 /**
- * @brief SingleApplication::SingleApplication
- *  Constructor. Checks and fires up LocalServer or closes the program
- *  if another instance already exists
+ * @brief Constructor. Checks and fires up LocalServer or closes the 
+program
+ * if another instance already exists
  * @param argc
  * @param argv
  */
-SingleApplication::SingleApplication(int argc, char *argv[]) :
-  QGuiApplication(argc, argv)
+SingleApplication::SingleApplication(int argc, char *argv[])
+    : QApplication(argc, argv)
 {
-  _shouldContinue = false; // By default this is not the main process
+    QString serverName = QApplication::organizationName() + 
+QApplication::applicationName();
+    serverName.replace(QRegExp("\\s"), "");
 
-  socket = new QLocalSocket();
-
-  // Attempt to connect to the LocalServer
-  socket->connectToServer(LOCAL_SERVER_NAME);
-  if(socket->waitForConnected(100)){
-    socket->write("CMD:showUp");
-    socket->flush();
-    QThread::msleep(100);
-    socket->close();
-  } else {
-    // The attempt was insuccessful, so we continue the program
-    _shouldContinue = true;
-    server = new LocalServer();
-    server->start();
-    QObject::connect(server, SIGNAL(showUp()), this, SLOT(slotShowUp()));
-  }
+    // Attempt to connect to the LocalServer
+    socket = new QLocalSocket();
+    socket->connectToServer(serverName);
+    if(socket->waitForConnected(1000)){
+        socket->close();
+        ::exit(EXIT_SUCCESS); // Terminate the program using STDLib's 
+exit function
+    } else {
+        // If the connection is insuccessful, this is the main process
+        // So we create a Local Server
+        server = new QLocalServer();
+        server->removeServer(serverName);
+        server->listen(serverName);
+        QObject::connect(server, SIGNAL(newConnection()), this, 
+SLOT(slotConnectionEstablished()));
+    }
 }
 
 /**
- * @brief SingleApplication::~SingleApplication
- *  Destructor
+ * @brief Destructor
  */
-Application::~SingleApplication()
+SingleApplication::~SingleApplication()
 {
-  if(_shouldContinue){
-    server->terminate();
-  }
+    server->close();
 }
 
 /**
- * @brief SingleApplication::shouldContinue
- *  Weather the program should be terminated
- * @return bool
+ * @brief Executed when the showUp command is sent to LocalServer
  */
-bool SingleApplication::shouldContinue()
+void SingleApplication::slotConnectionEstablished()
 {
-  return _shouldContinue;
+    server->nextPendingConnection();
+    emit showUp();
 }
 
-/**
- * @brief SingleApplication::slotShowUp
- *  Executed when the showUp command is sent to LocalServer
- */
-void SingleApplication::slotShowUp()
-{
-  emit showUp();
-}

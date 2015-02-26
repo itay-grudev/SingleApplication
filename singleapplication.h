@@ -1,33 +1,33 @@
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef SINGLE_APPLICATION_H
+#define SINGLE_APPLICATION_H
 
-#include "localserver.h"
-
-#include <QGuiApplication>
+#include <QApplication>
 #include <QLocalSocket>
+#include <QLocalServer>
 
 /**
- * @brief The Application class handles trivial application initialization procedures
+ * @brief The SingleApplication class handles multipe instances of the 
+same Application
+ * @see QApplication
  */
-class SingleApplication : public QGuiApplication
+class SingleApplication : public QApplication
 {
   Q_OBJECT
 public:
   explicit SingleApplication(int, char *[]);
   ~SingleApplication();
-  bool shouldContinue();
 
 signals:
   void showUp();
 
 private slots:
-  void slotShowUp();
-  
+  void slotConnectionEstablished();
+
 private:
-  QLocalSocket* socket;
-  LocalServer* server;
-  bool _shouldContinue;
+  QLocalSocket *socket;
+  QLocalServer *server;
 
 };
 
-#endif // APPLICATION_H
+#endif // SINGLE_APPLICATION_H
+
