@@ -11,7 +11,7 @@ The library uses your ```Organization Name``` and ```Application Name``` to set 
 I also used ```stdlib``` to terminate the program with it's ```exit()``` function.
 
 Here is an example usage of the library:
-```
+```cpp
 #include "singleapplication.h"
 
 int main(int argc, char *argv[])
