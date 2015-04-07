@@ -13,7 +13,7 @@ class SingleApplication : public QApplication
 {
   Q_OBJECT
 public:
-  explicit SingleApplication(int, char *[]);
+  explicit SingleApplication(int&, char *[]);
   ~SingleApplication();
 
 signals:

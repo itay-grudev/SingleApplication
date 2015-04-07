@@ -7,7 +7,7 @@
  * @param argc
  * @param argv
  */
-SingleApplication::SingleApplication(int argc, char *argv[])
+SingleApplication::SingleApplication(int &argc, char *argv[])
     : QApplication(argc, argv)
 {
     QString serverName = QApplication::organizationName() + QApplication::applicationName();
