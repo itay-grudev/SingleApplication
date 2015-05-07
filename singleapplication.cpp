@@ -42,6 +42,8 @@ SingleApplication::~SingleApplication()
  */
 void SingleApplication::slotConnectionEstablished()
 {
-    server->nextPendingConnection();
+    QLocalSocket *socket = server->nextPendingConnection();
+    socket->close();
+    delete socket;
     emit showUp();
 }
