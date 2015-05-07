@@ -17,7 +17,6 @@ SingleApplication::SingleApplication(int &argc, char *argv[])
     socket = new QLocalSocket();
     socket->connectToServer(serverName);
     if(socket->waitForConnected(1000)){
-        socket->close();
         ::exit(EXIT_SUCCESS); // Terminate the program using STDLib's exit function
     } else {
         // If the connection is insuccessful, this is the main process
