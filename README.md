@@ -32,6 +32,13 @@ The ```Show Up``` signal
 ------------------------
 The SingleApplication class implements a ```showUp()``` signal. You can bind to that signal to raise your application's window when a new instance had been started.
 
+Known bugs
+----------
+The ```SingleApplication``` class works really well for the scenario 
+when a 
+user starts your application twice, but the implementation it uses does not garantee it will work if two processes are started simultaniously (with a millisecond delay, which is only done programatically), in which case two instances might coexist on some platforms.
+_The issue is a work in proggress and should be fixed soon._
+
 License
 -------
 This library and it's supporting documentation are released under ```The MIT License (MIT)```.
