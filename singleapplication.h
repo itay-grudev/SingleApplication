@@ -2,8 +2,8 @@
 #define SINGLE_APPLICATION_H
 
 #include <QApplication>
-#include <QLocalSocket>
-#include <QLocalServer>
+
+class SingleApplicationPrivate;
 
 /**
  * @brief The SingleApplication class handles multipe instances of the same Application
@@ -23,9 +23,7 @@ private slots:
   void slotConnectionEstablished();
 
 private:
-  QLocalSocket *socket;
-  QLocalServer *server;
-
+  SingleApplicationPrivate *d_ptr;
 };
 
 #endif // SINGLE_APPLICATION_H

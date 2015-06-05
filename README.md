@@ -32,12 +32,19 @@ The ```Show Up``` signal
 ------------------------
 The SingleApplication class implements a ```showUp()``` signal. You can bind to that signal to raise your application's window when a new instance had been started.
 
-Known bugs
-----------
-The ```SingleApplication``` class works really well for the scenario 
-when a 
-user starts your application twice, but the implementation it uses does not garantee it will work if two processes are started simultaniously (with a millisecond delay, which is only done programatically), in which case two instances might coexist on some platforms.
-_The issue is a work in proggress and should be fixed soon._
+Implementation
+--------------
+The library is implemented with a QSharedMemory block which is thread safe and guarantees a race condition will not occur. It also uses a QLocalSocket to notify the main process that a new instance had been spawned and thus invoke the ```showUp()``` signal.
+
+To handle an issue with Unix systems, where the operating system owns the shared memory block and if the program crashes the memory remains untouched, the library binds to the following signals and closes the program with error code = ```128 + signum``` where signum is the number representation of the signal listed below.
+
+* ```SIGINT ``` - ```2```
+* ```SIGILL ``` - ```4```
+* ```SIGABRT``` - ```6```
+* ```SIGFPE ``` - ```8```
+* ```SIGSEGV``` - ```11```
+* ```SIGTERM``` - ```15```
+
 
 License
 -------
