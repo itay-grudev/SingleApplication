@@ -75,9 +75,9 @@ public:
  * @param argv
  */
 SingleApplication::SingleApplication(int &argc, char *argv[])
-    : QApplication(argc, argv), d_ptr(new SingleApplicationPrivate(this))
+    : QAPPLICATION_CLASS(argc, argv), d_ptr(new SingleApplicationPrivate(this))
 {
-    QString serverName = QApplication::organizationName() + QApplication::applicationName();
+    QString serverName = QAPPLICATION_CLASS::organizationName() + QAPPLICATION_CLASS::applicationName();
     serverName.replace(QRegExp("[^\\w\\-. ]"), "");
 
     // Garantee thread safe behaviour with a shared memory block

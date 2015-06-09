@@ -32,6 +32,24 @@ The ```Show Up``` signal
 ------------------------
 The SingleApplication class implements a ```showUp()``` signal. You can bind to that signal to raise your application's window when a new instance had been started.
 
+Note that since ```SingleApplication``` extends the ```QApplication``` class  you can do the following:
+```cpp
+QObject::connect(QApplication::instance(), SIGNAL(showUp()), window, SLOT(raise())); // window is your QWindow instance
+```
+
+Using ```QApplication::instance()``` is a neat way to get the ```SingleApplication``` instance at any place in your program.
+
+Extending from other application classes
+-----------------------
+
+```SingleApplication``` extends from the ```QApplication``` class by default , but you can easily change that to ```QGuiApplication``` or ```QCoreApplication``` from the ```singleapplication.h``` file, using the ```QAPPLICATION_CLASS``` macro.  
+
+__Example:__
+
+```cpp
+#define QAPPLICATION_CLASS QCoreApplication
+```
+
 Implementation
 --------------
 The library is implemented with a QSharedMemory block which is thread safe and guarantees a race condition will not occur. It also uses a QLocalSocket to notify the main process that a new instance had been spawned and thus invoke the ```showUp()``` signal.
