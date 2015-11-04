@@ -2,7 +2,9 @@
 #define SINGLE_APPLICATION_H
 
 // Change this to inherit from QGuiApplication or QCoreApplication
-#define QAPPLICATION_CLASS QApplication
+#ifndef QAPPLICATION_CLASS
+  #define QAPPLICATION_CLASS QCoreApplication
+#endif
 
 #define  QUOTE(C) #C
 #define  INCLUDE_FILE(C) QUOTE(C)

@@ -42,7 +42,7 @@ Using ```QApplication::instance()``` is a neat way to get the ```SingleApplicati
 Extending from other application classes
 -----------------------
 
-```SingleApplication``` extends from the ```QApplication``` class by default , but you can easily change that to ```QGuiApplication``` or ```QCoreApplication``` from the ```singleapplication.h``` file, using the ```QAPPLICATION_CLASS``` macro.  
+`SingleApplication` extends from the `QApplication` class by default , but you can easily change that to `QGuiApplication` or `QCoreApplication` with the `QAPPLICATION_CLASS` macro. Define it before the include statement of `singleapplication.h` or change the default value in the file.
 
 __Example:__
 
