@@ -54,7 +54,7 @@ Implementation
 --------------
 The library is implemented with a QSharedMemory block which is thread safe and guarantees a race condition will not occur. It also uses a QLocalSocket to notify the main process that a new instance had been spawned and thus invoke the `showUp()` signal.
 
-To handle an issue with `Unix` systems, where the operating system owns the shared memory block and if the program crashes the memory remains untouched, the library binds to the following signals and closes the program with error code = `128 + signum` where signum is the number representation of the signal listed below. Handling the signal is required in order to safely delete the `QSharedMemory` block.
+To handle an issue on `*nix` systems, where the operating system owns the shared memory block and if the program crashes the memory remains untouched, the library binds to the following signals and closes the program with error code = `128 + signum` where signum is the number representation of the signal listed below. Handling the signal is required in order to safely delete the `QSharedMemory` block.
 
 * `SIGINT ` - `2`
 * `SIGILL ` - `4`
