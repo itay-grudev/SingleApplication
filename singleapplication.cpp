@@ -1,9 +1,9 @@
 #include <cstdlib>
 
-#include <QSharedMemory>
-#include <QLocalSocket>
-#include <QLocalServer>
-#include <QMutex>
+#include <QtCore/QSharedMemory>
+#include <QtCore/QMutex>
+#include <QtNetwork/QLocalSocket>
+#include <QtNetwork/QLocalServer>
 
 #ifdef Q_OS_UNIX
     #include <signal.h>
