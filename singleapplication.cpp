@@ -21,11 +21,13 @@ public:
 
     void startServer(QString &serverName)
     {
+        Q_Q(SingleApplication);
+
         // Start a QLocalServer to listen for connections
         server = new QLocalServer();
         QLocalServer::removeServer(serverName);
         server->listen(serverName);
-        QObject::connect(server, SIGNAL(newConnection()), q_ptr, SLOT(slotConnectionEstablished()));
+        QObject::connect(server, SIGNAL(newConnection()), q, SLOT(slotConnectionEstablished()));
     }
 
 #ifdef Q_OS_UNIX
