@@ -1,14 +1,12 @@
 #ifndef SINGLE_APPLICATION_H
 #define SINGLE_APPLICATION_H
+#include <QtCore/QtGlobal>
 
-// Change this to inherit from QGuiApplication or QCoreApplication
 #ifndef QAPPLICATION_CLASS
-  #define QAPPLICATION_CLASS QCoreApplication
+  #define QAPPLICATION_CLASS QApplication
 #endif
 
-#define  QUOTE(C) #C
-#define  INCLUDE_FILE(C) QUOTE(C)
-#include INCLUDE_FILE(QAPPLICATION_CLASS)
+#include QT_STRINGIFY(QAPPLICATION_CLASS)
 
 class SingleApplicationPrivate;
 
@@ -18,19 +16,25 @@ class SingleApplicationPrivate;
  */
 class SingleApplication : public QAPPLICATION_CLASS
 {
-  Q_OBJECT
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(SingleApplication)
+
+    typedef QAPPLICATION_CLASS app_t;
+
 public:
-  explicit SingleApplication(int&, char *[]);
-  ~SingleApplication();
+    explicit SingleApplication(int&, char *[]);
+    ~SingleApplication();
 
-signals:
-  void showUp();
+Q_SIGNALS:
+    void showUp();
 
-private slots:
-  void slotConnectionEstablished();
+private Q_SLOTS:
+    void slotConnectionEstablished();
 
 private:
-  SingleApplicationPrivate *d_ptr;
+    SingleApplicationPrivate *d_ptr;
+
+
 };
 
 #endif // SINGLE_APPLICATION_H
