@@ -2,6 +2,10 @@
 #define SINGLE_APPLICATION_H
 #include <QtCore/QtGlobal>
 
+#ifndef QAPPLICATION_CLASS
+  #define QAPPLICATION_CLASS QApplication
+#endif
+
 #include QT_STRINGIFY(QAPPLICATION_CLASS)
 
 class SingleApplicationPrivate;

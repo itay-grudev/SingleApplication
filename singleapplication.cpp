@@ -115,7 +115,7 @@ SingleApplication::SingleApplication(int &argc, char *argv[])
         // terminated.
         if( d->socket->waitForConnected(100) )
         {
-            // Terminate the program using STDLib's exit function.
+            // Terminate the program using STDLib's exit function
             ::exit(EXIT_SUCCESS);
         } else {
             delete d->memory;

@@ -39,11 +39,12 @@ The SingleApplication class implements a `showUp()` signal. You can bind to that
 Note that since `SingleApplication` extends the `QApplication` class  you can do the following:
 ```cpp
 // Truly raise your window.
-QObject::connect(&app, &SingleApplication::showUp, [&]{
-        window.show();
-        window.raise();
-        window.activateWindow();
-    }); // 'window' is your QWindow instance
+QObject::connect(&app, &SingleApplication::showUp, [&]
+{
+    window.show();
+    window.raise();
+    window.activateWindow();
+}); // 'window' is your QWindow instance
 ```
 
 Using `QApplication::instance()` is a neat way to get the `SingleApplication` instance at any place in your program.
