@@ -43,12 +43,20 @@ public:
         }
         // Handle any further termination signals to ensure the
         // QSharedMemory block is deleted even if the process crashes
-        signal(SIGSEGV, SingleApplicationPrivate::terminate);
-        signal(SIGABRT, SingleApplicationPrivate::terminate);
-        signal(SIGFPE,  SingleApplicationPrivate::terminate);
-        signal(SIGILL,  SingleApplicationPrivate::terminate);
-        signal(SIGINT,  SingleApplicationPrivate::terminate);
-        signal(SIGTERM, SingleApplicationPrivate::terminate);
+        signal(SIGHUP, SingleApplicationPrivate::terminate);   // 1
+        signal(SIGINT,  SingleApplicationPrivate::terminate);  // 2
+        signal(SIGQUIT,  SingleApplicationPrivate::terminate); // 3
+        signal(SIGILL,  SingleApplicationPrivate::terminate);  // 4
+        signal(SIGABRT, SingleApplicationPrivate::terminate);  // 6
+        signal(SIGBUS,  SingleApplicationPrivate::terminate);  // 7
+        signal(SIGFPE,  SingleApplicationPrivate::terminate);  // 8
+        signal(SIGSEGV, SingleApplicationPrivate::terminate);  // 11
+        signal(SIGSYS, SingleApplicationPrivate::terminate);   // 12
+        signal(SIGPIPE, SingleApplicationPrivate::terminate);  // 13
+        signal(SIGALRM, SingleApplicationPrivate::terminate);  // 14
+        signal(SIGTERM, SingleApplicationPrivate::terminate);  // 15
+        signal(SIGXCPU, SingleApplicationPrivate::terminate);  // 24
+        signal(SIGXFSZ, SingleApplicationPrivate::terminate);  // 25
     }
 
     static void terminate(int signum)
