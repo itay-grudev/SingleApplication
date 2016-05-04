@@ -185,8 +185,13 @@ SingleApplication::SingleApplication(int &argc, char *argv[], uint8_t secondaryI
     QString serverName = app_t::organizationName() + app_t::applicationName();
     serverName.replace( QRegExp("[^\\w\\-. ]"), "" );
 
-    // Guarantee thread safe behaviour with a shared memory block
-    d->memory = new QSharedMemory(serverName);
+    // Guarantee thread safe behaviour with a shared memory block. Also by
+    // attaching to it and deleting it we make sure that the memory i deleted
+    // even if the process had crashed
+    d->memory = new QSharedMemory( serverName );
+    d->memory->attach();
+    delete d->memory;
+    d->memory = new QSharedMemory( serverName );
 
     // Create a shared memory block with a minimum size of 1 byte
 #ifdef Q_OS_UNIX
@@ -246,7 +251,7 @@ bool SingleApplication::isSecondary()
 }
 
 /**
- * @brief Executed when the showUp command is sent to LocalServer
+ * @brief Executed when a connection has been made to the LocalServer
  */
 void SingleApplication::slotConnectionEstablished()
 {
