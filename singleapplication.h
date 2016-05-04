@@ -1,5 +1,6 @@
 #ifndef SINGLE_APPLICATION_H
 #define SINGLE_APPLICATION_H
+
 #include <QtCore/QtGlobal>
 
 #ifndef QAPPLICATION_CLASS
@@ -22,7 +23,7 @@ class SingleApplication : public QAPPLICATION_CLASS
     typedef QAPPLICATION_CLASS app_t;
 
 public:
-    explicit SingleApplication(int &argc, char *argv[], uint8_t secondaryInstances = 0);
+    explicit SingleApplication( int &argc, char *argv[], uint8_t secondaryInstances = 0 );
     ~SingleApplication();
 
     bool isPrimary();
@@ -36,8 +37,6 @@ private Q_SLOTS:
 
 private:
     SingleApplicationPrivate *d_ptr;
-
-
 };
 
 #endif // SINGLE_APPLICATION_H

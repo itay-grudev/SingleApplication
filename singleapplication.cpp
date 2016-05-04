@@ -22,7 +22,7 @@ class SingleApplicationPrivate {
 public:
     Q_DECLARE_PUBLIC(SingleApplication)
 
-    SingleApplicationPrivate(SingleApplication *q_ptr) : q_ptr(q_ptr) {
+    SingleApplicationPrivate( SingleApplication *q_ptr ) : q_ptr( q_ptr ) {
         server = NULL;
     }
 
@@ -84,7 +84,7 @@ public:
         socket.connectToServer( memory->key() );
 
         // Notify the parent that a new instance had been started;
-        socket.waitForConnected(100);
+        socket.waitForConnected( 100 );
         socket.close();
     }
 
@@ -118,7 +118,7 @@ public:
         signal( SIGXFSZ, SingleApplicationPrivate::terminate );  // 25
     }
 
-    static void terminate(int signum)
+    static void terminate( int signum )
     {
         while( ! sharedMem.empty() ) {
             delete sharedMem.back();
@@ -147,7 +147,7 @@ public:
 
     QSharedMemory *memory;
     SingleApplication *q_ptr;
-    QLocalServer  *server;
+    QLocalServer *server;
 };
 
 #ifdef Q_OS_UNIX
@@ -161,8 +161,8 @@ public:
  * @param argc
  * @param argv
  */
-SingleApplication::SingleApplication(int &argc, char *argv[], uint8_t secondaryInstances)
-    : app_t(argc, argv), d_ptr(new SingleApplicationPrivate(this))
+SingleApplication::SingleApplication( int &argc, char *argv[], uint8_t secondaryInstances )
+    : app_t( argc, argv ), d_ptr( new SingleApplicationPrivate( this ) )
 {
     Q_D(SingleApplication);
 
