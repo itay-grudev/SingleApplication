@@ -121,14 +121,11 @@ SingleApplication::SingleApplication(int &argc, char *argv[])
         // might have crashed.
         // So only after a successful connection is the second instance
         // terminated.
-        if( d->socket->waitForConnected(100) )
-        {
-            // Terminate the program using STDLib's exit function
-            ::exit(EXIT_SUCCESS);
-        } else {
-            delete d->memory;
-            ::exit(EXIT_SUCCESS);
-        }
+        d->socket->waitForConnected(100);
+        delete d->memory;
+        
+        // Terminate the program using STDLib's exit function
+        ::exit(EXIT_SUCCESS);
     }
 }
 
