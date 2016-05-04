@@ -41,14 +41,14 @@ public:
 #endif
         // Successful creation means that no main process exists
         // So we start a QLocalServer to listen for connections
-        server = new QLocalServer();
         QLocalServer::removeServer( memory->key() );
+        server = new QLocalServer();
         server->listen( memory->key() );
         QObject::connect(
             server,
-            SIGNAL( newConnection() ),
+            &QLocalServer::newConnection,
             q,
-            SLOT( slotConnectionEstablished() )
+            &SingleApplication::slotConnectionEstablished
         );
 
         // Reset the number of connections
@@ -73,6 +73,11 @@ public:
         crashHandler();
 #endif
 
+        notifyPrimary();
+    }
+
+    void notifyPrimary()
+    {
         // Connect to the Local Server of the main process to notify it
         // that a new process had been started
         QLocalSocket socket;
@@ -225,7 +230,8 @@ SingleApplication::SingleApplication(int &argc, char *argv[], uint8_t secondaryI
         }
     }
 
-    delete d->memory;
+    d->notifyPrimary();
+    delete d;
     ::exit(EXIT_SUCCESS);
 }
 
