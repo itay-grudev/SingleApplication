@@ -22,8 +22,11 @@ class SingleApplication : public QAPPLICATION_CLASS
     typedef QAPPLICATION_CLASS app_t;
 
 public:
-    explicit SingleApplication(int&, char *[]);
+    explicit SingleApplication(int &argc, char *argv[], uint8_t secondaryInstances = 0);
     ~SingleApplication();
+
+    bool isPrimary();
+    bool isSecondary();
 
 Q_SIGNALS:
     void showUp();
