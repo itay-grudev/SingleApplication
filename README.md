@@ -11,8 +11,9 @@ Usage
 -----
 
 The `SingleApplication` class inherits from whatever `Q[Core|Gui]Application`
-class you specify. Further usage is similar to the use of the
-`Q[Core|Gui]Application` classes.
+class you specify via the `QAPPLICATION_CLASS` macro (`QCoreApplication` is the
+default). Further usage is similar to the use of the `Q[Core|Gui]Application`
+classes.
 
 The library uses your `Organization Name` and `Application Name` to set up a
 `QLocalServer` and a `QSharedMemory` block. The first instance of your
@@ -28,11 +29,11 @@ The library uses `stdlib` to terminate the program with the `exit()` function.
 
 Here is an example usage of the library:
 
-```cpp
-// In your Project.pro
-DEFINES += QAPPLICATION_CLASS=QGuiApplication # QApplication is the default
+In your main you need to set the the `applicationName` and `organizationName` of
+the `QCoreApplication` class like so:
 
-// main.cpp
+```cpp
+#include <QApplication>
 #include "singleapplication.h"
 
 int main( int argc, char* argv[] )
@@ -46,22 +47,47 @@ int main( int argc, char* argv[] )
 }
 ```
 
+To include the library files I would recommend that you add it as a git
+submodule to your project and include it's contents with a `.pri` file. Here is
+how:
+
+```bash
+git submodule add git@github.com:itay-grudev/SingleApplication.git singleapplication
+```
+
+Then create a `singleapplication.pri` file with the following contents in your
+project root folder:
+
+```qmake
+DEFINES += QAPPLICATION_CLASS=QApplication
+
+HEADERS += $$PWD/singleapplication/singleapplication.h
+SOURCES += $$PWD/singleapplication/singleapplication.cpp
+INCLUDEPATH += $$PWD/singleapplication/
+
+QT += core network
+```
+
+And include the `.pri` file in your `.pro` project file:
+
+```qmake
+include(singleapplication.pri)
+```
+
 The `Show Up` signal
 ------------------------
 
 The SingleApplication class implements a `showUp()` signal. You can bind to that
 signal to raise your application's window when a new instance had been started.
 
-Note that since `SingleApplication` extends the `QApplication` class you can do
-the following:
-
 ```cpp
 // window is a QWindow instance
 QObject::connect( &app, &SingleApplication::showUp, window, &QWindow::raise );
 ```
 
-Using `QApplication::instance()` is a neat way to get the `SingleApplication`
-instance anywhere in your program.
+Using `QCoreApplication::instance()` is a neat way to get the
+`SingleApplication` instance for binding to it's signals anywhere in your
+program.
 
 Secondary Instances
 -------------------
@@ -77,6 +103,15 @@ SingleApplication app( argc, argv, 2 );
 
 After which just call your program with the `--secondary` argument to launch a
 secondary instance.
+
+You can check whether your instance is a primary or secondary with the following
+methods:
+
+```cpp
+app.isPrimary();
+// or
+app.isSecondary();
+```
 
 __*Note:*__ If your Primary Instance is terminated upon launch of a new one it
 will replace it as Primary even if the `--secondary` argument has been set.
