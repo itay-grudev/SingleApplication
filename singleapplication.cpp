@@ -107,8 +107,8 @@ public:
         signal( SIGQUIT,  SingleApplicationPrivate::terminate ); // 3
         signal( SIGILL,  SingleApplicationPrivate::terminate );  // 4
         signal( SIGABRT, SingleApplicationPrivate::terminate );  // 6
-        signal( SIGBUS,  SingleApplicationPrivate::terminate );  // 7
         signal( SIGFPE,  SingleApplicationPrivate::terminate );  // 8
+        signal( SIGBUS,  SingleApplicationPrivate::terminate );  // 10
         signal( SIGSEGV, SingleApplicationPrivate::terminate );  // 11
         signal( SIGSYS, SingleApplicationPrivate::terminate );   // 12
         signal( SIGPIPE, SingleApplicationPrivate::terminate );  // 13
