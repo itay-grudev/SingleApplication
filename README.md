@@ -55,23 +55,10 @@ how:
 git submodule add git@github.com:itay-grudev/SingleApplication.git singleapplication
 ```
 
-Then create a `singleapplication.pri` file with the following contents in your
-project root folder:
+And include the `singleapplication.pri` file in your `.pro` project file:
 
 ```qmake
-DEFINES += QAPPLICATION_CLASS=QApplication
-
-HEADERS += $$PWD/singleapplication/singleapplication.h
-SOURCES += $$PWD/singleapplication/singleapplication.cpp
-INCLUDEPATH += $$PWD/singleapplication/
-
-QT += core network
-```
-
-And include the `.pri` file in your `.pro` project file:
-
-```qmake
-include(singleapplication.pri)
+include(singleapplication/singleapplication.pri)
 ```
 
 The `Show Up` signal
