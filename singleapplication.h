@@ -29,6 +29,9 @@ public:
     bool isPrimary();
     bool isSecondary();
 
+    static bool allowSecondary();
+    static void setAllowSecondary(bool allow);
+
 Q_SIGNALS:
     void showUp();
 
@@ -37,6 +40,7 @@ private Q_SLOTS:
 
 private:
     SingleApplicationPrivate *d_ptr;
+    static bool _allowSecondary;
 };
 
 #endif // SINGLE_APPLICATION_H

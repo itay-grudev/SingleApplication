@@ -13,6 +13,9 @@
 
 #include "singleapplication.h"
 
+
+bool SingleApplication::_allowSecondary = false;
+
 struct InstancesInfo {
     bool primary;
     uint8_t secondary;
@@ -170,7 +173,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], uint8_t secondary
 #ifdef Q_OS_UNIX
     bool forcePrimary = false;
 #endif
-    bool secondary = false;
+    bool secondary = allowSecondary();
     for( int i = 0; i < argc; ++i ) {
         if( strcmp( argv[i], "--secondary" ) == 0 ) {
             secondary = true;
@@ -191,7 +194,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], uint8_t secondary
     serverName.replace( QRegExp("[^\\w\\-. ]"), "" );
 
     // Guarantee thread safe behaviour with a shared memory block. Also by
-    // attaching to it and deleting it we make sure that the memory i deleted
+    // attaching to it and deleting it we make sure that the memory is deleted
     // even if the process had crashed
     d->memory = new QSharedMemory( serverName );
     d->memory->attach();
@@ -254,6 +257,16 @@ bool SingleApplication::isSecondary()
 {
     Q_D(SingleApplication);
     return d->server == NULL;
+}
+
+bool SingleApplication::allowSecondary()
+{
+    return _allowSecondary;
+}
+
+void SingleApplication::setAllowSecondary(bool allow)
+{
+    _allowSecondary = allow;
 }
 
 /**
