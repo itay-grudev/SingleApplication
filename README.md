@@ -91,6 +91,14 @@ SingleApplication app( argc, argv, 2 );
 After which just call your program with the `--secondary` argument to launch a
 secondary instance.
 
+Also you can allow any instance of program became secondary with setting
+static property of SingleApplication class.
+
+```cpp
+SingleApplication::setAllowSecondary(true);
+SingleApplication app( argc, argv, 2 );
+```
+
 You can check whether your instance is a primary or secondary with the following
 methods:
 
