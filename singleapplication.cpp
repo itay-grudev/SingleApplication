@@ -25,6 +25,10 @@
 #include <QtCore/QMutex>
 #include <QtCore/QSemaphore>
 #include <QtCore/QSharedMemory>
+#include <QtCore/QBuffer>
+#include <QtCore/QEventLoop>
+#include <QtCore/QJsonObject>
+#include <QtCore/QDataStream>
 #include <QtNetwork/QLocalSocket>
 #include <QtNetwork/QLocalServer>
 
@@ -34,6 +38,13 @@
 #endif
 
 #include "singleapplication.h"
+
+
+static const QString COMMAND = "command";
+static const QString COM_SHOW = "show";
+
+
+bool SingleApplication::_allowSecondary = false;
 
 struct InstancesInfo {
     bool primary;
@@ -100,14 +111,11 @@ public:
 
     void notifyPrimary()
     {
+        Q_Q(SingleApplication);
         // Connect to the Local Server of the main process to notify it
         // that a new process had been started
-        QLocalSocket socket;
-        socket.connectToServer( memory->key() );
-
-        // Notify the parent that a new instance had been started;
-        socket.waitForConnected( 100 );
-        socket.close();
+        QJsonObject obj{ {COMMAND, COM_SHOW} };
+        q->sendCommand(obj);
     }
 
 #ifdef Q_OS_UNIX
@@ -192,7 +200,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], uint8_t secondary
 #ifdef Q_OS_UNIX
     bool forcePrimary = false;
 #endif
-    bool secondary = false;
+    bool secondary = allowSecondary();
     for( int i = 0; i < argc; ++i ) {
         if( strcmp( argv[i], "--secondary" ) == 0 ) {
             secondary = true;
@@ -213,7 +221,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], uint8_t secondary
     serverName.replace( QRegExp("[^\\w\\-. ]"), "" );
 
     // Guarantee thread safe behaviour with a shared memory block. Also by
-    // attaching to it and deleting it we make sure that the memory i deleted
+    // attaching to it and deleting it we make sure that the memory is deleted
     // even if the process had crashed
     d->memory = new QSharedMemory( serverName );
     d->memory->attach();
@@ -278,6 +286,42 @@ bool SingleApplication::isSecondary()
     return d->server == NULL;
 }
 
+bool SingleApplication::allowSecondary()
+{
+    return _allowSecondary;
+}
+
+void SingleApplication::setAllowSecondary(bool allow)
+{
+    _allowSecondary = allow;
+}
+
+void SingleApplication::sendCommand(const QJsonObject &obj)
+{
+    Q_D(SingleApplication);
+
+    QBuffer buffer;
+    buffer.open(QBuffer::ReadWrite);
+    QDataStream out(&buffer);
+    out << obj.toVariantMap();
+
+    QLocalSocket* soc = new QLocalSocket;
+    connect(soc, &QLocalSocket::disconnected, soc, &QLocalSocket::deleteLater);
+    connect(soc, SIGNAL(error(QLocalSocket::LocalSocketError)), soc, SLOT(deleteLater()));
+
+    connect(soc, &QLocalSocket::connected, [soc, &buffer]() {
+        soc->write(buffer.data().constData(), buffer.size());
+        soc->flush();
+        soc->disconnectFromServer();
+    });
+
+    QEventLoop e;
+    connect(soc, &QLocalSocket::destroyed, &e, &QEventLoop::quit);
+
+    soc->connectToServer(d->memory->key(), QLocalSocket::WriteOnly);
+    e.exec();
+}
+
 /**
  * @brief Executed when a connection has been made to the LocalServer
  */
@@ -286,7 +330,38 @@ void SingleApplication::slotConnectionEstablished()
     Q_D(SingleApplication);
 
     QLocalSocket *socket = d->server->nextPendingConnection();
-    socket->close();
-    delete socket;
-    Q_EMIT showUp();
+    connect(socket, &QLocalSocket::readChannelFinished, this, &SingleApplication::dataReady);
+    connect(socket, &QLocalSocket::disconnected, socket, &QLocalSocket::deleteLater);
+}
+
+void SingleApplication::dataReady()
+{
+    QLocalSocket* socket = static_cast<QLocalSocket*>(sender());
+
+    QBuffer buffer;
+    QDataStream in(&buffer);
+
+    QByteArray ba = socket->readAll();
+    socket->deleteLater();
+
+    if(ba.size() == 0)
+        return;
+
+    buffer.setData(ba);
+    buffer.open(QBuffer::ReadOnly);
+
+    QVariantMap m;
+    in >> m;
+
+    QJsonObject obj = QJsonObject::fromVariantMap(m);
+
+    if(!obj.isEmpty() && obj.contains(COMMAND)) {
+        const QString com = obj.value(COMMAND).toString();
+        if(com == COM_SHOW) {
+            Q_EMIT showUp();
+            return;
+        }
+
+        Q_EMIT command(obj);
+    }
 }
