@@ -106,6 +106,15 @@ will replace it as Primary even if the `--secondary` argument has been set.
 *P.S. If you think this behavior could be improved create an issue and explain
 why.*
 
+Versioning
+----------
+
+The current library versions is `2.4`.
+Each major version introduces either very significant changes or is not
+backwards compatible with the previous version. Minor versions only add
+additional features, bug fixes or performance improvements and are backwards
+compatible with the previous release.
+
 Implementation
 --------------
 
