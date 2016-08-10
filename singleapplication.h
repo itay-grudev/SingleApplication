@@ -24,6 +24,7 @@
 #define SINGLE_APPLICATION_H
 
 #include <QtCore/QtGlobal>
+#include <QtNetwork/QLocalSocket>
 
 #ifndef QAPPLICATION_CLASS
   #define QAPPLICATION_CLASS QCoreApplication
@@ -34,31 +35,93 @@
 class SingleApplicationPrivate;
 
 /**
- * @brief The SingleApplication class handles multipe instances of the same Application
- * @see QApplication
+ * @brief The SingleApplication class handles multipe instances of the same
+ * Application
+ * @see QCoreApplication
  */
 class SingleApplication : public QAPPLICATION_CLASS
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(SingleApplication)
 
     typedef QAPPLICATION_CLASS app_t;
 
 public:
-    explicit SingleApplication( int &argc, char *argv[], uint8_t secondaryInstances = 0 );
+    /**
+     * @brief Mode of operation of SingleApplication.
+     * Whether the block should be user-wide or system-wide and whether the
+     * primary instance should be notified when a secondary instance had been
+     * started.
+     * @note Operating system can restrict the shared memory blocks to the same
+     * user, in which case the User/System modes will have no effect and the
+     * block will be user wide.
+     * @enum
+     */
+    enum Mode {
+        User                    = 1 << 0,
+        System                  = 1 << 1,
+        SecondaryNotification   = 1 << 2
+    };
+    Q_DECLARE_FLAGS(Options, Mode)
+
+    /**
+     * @brief Intitializes a SingleApplication instance with argc command line
+     * arguments in argv
+     * @arg {int &} argc - Number of arguments in argv
+     * @arg {const char *[]} argv - Supplied command line arguments
+     * @arg {bool} allowSecondary - Whether to start the instance as secondary
+     * if there is already a primary instance.
+     * @arg {Mode} mode - Whether for the SingleApplication block to be applied
+     * User wide or System wide.
+     * @arg {int} timeout - Timeout to wait in miliseconds.
+     * @note argc and argv may be changed as Qt removes arguments that it
+     * recognizes
+     * @note Mode::SecondaryNotification only works if set on both the primary
+     * instance and the secondary instance.
+     * @note The timeout is just a hint for the maximum time of blocking
+     * operations. It does not guarantee that the SingleApplication
+     * initialisation will be completed in given time, though is a good hint.
+     * Usually 4*timeout would be the worst case (fail) scenario.
+     * @see See the corresponding QAPPLICATION_CLASS constructor for reference
+     */
+    explicit SingleApplication( int &argc, char *argv[], bool allowSecondary = false, Options options = Mode::User, int timeout = 100 );
     ~SingleApplication();
 
+    /**
+     * @brief Returns if the instance is the primary instance
+     * @returns {bool}
+     */
     bool isPrimary();
+
+    /**
+     * @brief Returns if the instance is a secondary instance
+     * @returns {bool}
+     */
     bool isSecondary();
 
-Q_SIGNALS:
-    void showUp();
+    /**
+     * @brief Returns a unique identifier for the current instance
+     * @returns {int}
+     */
+    quint32 instanceId();
 
-private Q_SLOTS:
-    void slotConnectionEstablished();
+    /**
+     * @brief Sends a message to the primary instance. Returns true on success.
+     * @param {int} timeout - Timeout for connecting
+     * @returns {bool}
+     * @note sendMessage() will return false if invoked from the primary
+     * instance.
+     */
+    bool sendMessage( QByteArray message, int timeout = 100 );
+
+Q_SIGNALS:
+    void instanceStarted();
+    void receivedMessage( quint32 instanceId, QByteArray message );
 
 private:
     SingleApplicationPrivate *d_ptr;
+    Q_DECLARE_PRIVATE(SingleApplication)
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(SingleApplication::Options)
 
 #endif // SINGLE_APPLICATION_H

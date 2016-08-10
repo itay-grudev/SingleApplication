@@ -1,6 +1,8 @@
-DEFINES += QAPPLICATION_CLASS=QApplication
+QT += core network
+CONFIG += c++11
 
-HEADERS += $$PWD/singleapplication.h
+HEADERS += $$PWD/singleapplication.h \
+    $$PWD/singleapplication_p.h
 SOURCES += $$PWD/singleapplication.cpp
 
-QT += core network
+INCLUDEPATH += $$PWD
