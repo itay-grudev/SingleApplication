@@ -17,13 +17,13 @@ classes.
 
 The library sets up a `QLocalServer` and a `QSharedMemory` block. The first
 instance of your Application is your Primary Instance. It would check if the
-shared memory block exists and if not it will start a `QLocalServer` and then
-listen for connections. Each subsequent instance of your application would
-check if the shared memory block exists and if it does, it will connect to the
-QLocalServer to notify it that a new instance had been started, after which it
-would terminate with status code `0`. The Primary Instance, `SingleApplication`
-would emit the `instanceStarted()` signal upon detecting that a new instance
-had been started.
+shared memory block exists and if not it will start a `QLocalServer` and listen
+for connections. Each subsequent instance of your application would check if the
+shared memory block exists and if it does, it will connect to the QLocalServer
+to notify the primary instance that a new instance had been started, after which
+it would terminate with status code `0`. In the Primary Instance
+`SingleApplication` would emit the `instanceStarted()` signal upon detecting
+that a new instance had been started.
 
 The library uses `stdlib` to terminate the program with the `exit()` function.
 
@@ -63,11 +63,16 @@ The `Instance Started` signal
 
 The SingleApplication class implements a `instanceStarted()` signal. You can
 bind to that signal to raise your application's window when a new instance had
-been started.
+been started, for example.
 
 ```cpp
 // window is a QWindow instance
-QObject::connect( &app, &SingleApplication::instanceStarted, window, &QWindow::raise );
+QObject::connect(
+    &app,
+    &SingleApplication::instanceStarted,
+    &window,
+    &QWindow::raise
+);
 ```
 
 Using `SingleApplication::instance()` is a neat way to get the
@@ -113,6 +118,92 @@ app.isSecondary();
 __*Note:*__ If your Primary Instance is terminated a newly launched instance
 will replace the Primary one even if the Secondary flag has been set.
 
+API
+---
+
+### Members
+
+```cpp
+SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSecondary = false, Options options = Mode::User, int timeout = 100 )
+```
+
+Depending on whether `allowSecondary` is set, this constructor may terminate
+your app if there is already a primary instance running. Additional `Options`
+can be specified to set whether the SingleApplication block should work
+user-wide or system-wide. Additionally the `Mode::SecondaryNotification` may be
+used to notify the primary instance whenever a secondary instance had been
+started (disabled by default). `timeout` specifies the maximum time in
+milliseconds to wait for blocking operations.
+
+*__Note:__ `argc` and `argv` may be changed as Qt removes arguments that it
+recognizes.*
+
+*__Note:__ `Mode::SecondaryNotification` only works if set on both the primary
+and the secondary instance.*
+
+*__Note:__ Operating system can restrict the shared memory blocks to the same
+user, in which case the User/System modes will have no effect and the block will
+be user wide.*
+
+```cpp
+bool SingleApplication::sendMessage( QByteArray message, int timeout = 100 )
+```
+
+Sends `message` to the Primary Instance. Uses `timeout` as a the maximum timeout
+in milliseconds for blocking functions
+
+```cpp
+bool SingleApplication::isPrimary()
+```
+
+Returns if the instance is the primary instance.
+
+```cpp
+bool SingleApplication::isSecondary()
+```
+Returns if the instance is a secondary instance.
+
+```cpp
+quint32 SingleApplication::instanceId()
+```
+
+Returns a unique identifier for the current instance
+
+### Signals
+
+```cpp
+void SingleApplication::instanceStarted()
+```
+
+Triggered whenever a new instance had been started, except for secondary
+instances if the `Mode::SecondaryNotification` flag is not specified.
+
+```cpp
+void SingleApplication::receivedMessage( quint32 instanceId, QByteArray message )
+```
+
+Triggered whenever there is a message received from a secondary instance.
+
+### Flags
+
+```cpp
+enum SingleApplication::Mode
+```
+
+*   `Mode::User` - The SingleApplication block should apply user wide. This adds
+    user specific data to the key used for the shared memory and server name.
+    This is the default functionality.
+*   `Mode::System` – The SingleApplication block applies system-wide.
+*   `SecondaryNotification` – Whether to trigger `instanceStarted()` even
+    whenever secondary instances are started.
+
+*__Note:__ `Mode::SecondaryNotification` only works if set on both the primary
+and the secondary instance.*
+
+*__Note:__ Operating system can restrict the shared memory blocks to the same
+user, in which case the User/System modes will have no effect and the block will
+be user wide.*
+
 Versioning
 ----------
 
@@ -154,9 +245,11 @@ results in process termination.
 *   `SIGXCPU` - `24`, CPU time limit exceeded.
 *   `SIGXFSZ` - `25`, File size limit exceeded.
 
+Additionally the library can recover from being killed with uncatchable signals
+and will reset the memory block given that there are no other instances running.
 
 License
 -------
 This library and it's supporting documentation are released under
-`The MIT License (MIT)` with exception to some of the examples distributed under
-the terms of the BSD license.
+`The MIT License (MIT)` with the exception of some of the examples distributed
+under the BSD license.
