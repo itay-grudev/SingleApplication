@@ -157,4 +157,6 @@ results in process termination.
 
 License
 -------
-This library and it's supporting documentation are released under `The MIT License (MIT)`.
+This library and it's supporting documentation are released under
+`The MIT License (MIT)` with exception to some of the examples distributed under
+the terms of the BSD license.
