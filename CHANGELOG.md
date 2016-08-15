@@ -4,7 +4,7 @@ Changelog
 __v3.0a__
 --------
 
-*   Depricated secondary instances count.
+*   Depricated meximum secondary instances count setting.
 *   Added a sendMessage() method to send a message to the primary instance.
 *   Added a receivedMessage() signal, emmited when a message is received from a
     secondary instance.
