@@ -32,7 +32,7 @@ __v3.0a__
     return `0`.
 
 __v2.4__
-    --------
+--------
 
 *   Stability improvements
 *   Support for secondary instances.
