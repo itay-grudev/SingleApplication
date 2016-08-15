@@ -27,7 +27,8 @@ that a new instance had been started.
 
 The library uses `stdlib` to terminate the program with the `exit()` function.
 
-You can use the library as if you use any other `QCoreApplication` class:
+You can use the library as if you use any other `QCoreApplication` derived
+class:
 
 ```cpp
 #include <QApplication>
@@ -104,7 +105,8 @@ int main(int argc, char *argv[])
 ```
 
 ___Note:__ A secondary instance won't cause the emission of the
-`instanceStarted()` signal.
+`instanceStarted()` signal by default. See `SingleApplication::Mode` for more
+details.
 
 You can check whether your instance is a primary or secondary with the following
 methods:
