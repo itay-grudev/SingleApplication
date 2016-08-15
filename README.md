@@ -147,6 +147,8 @@ and the secondary instance.*
 user, in which case the User/System modes will have no effect and the block will
 be user wide.*
 
+---
+
 ```cpp
 bool SingleApplication::sendMessage( QByteArray message, int timeout = 100 )
 ```
@@ -154,16 +156,22 @@ bool SingleApplication::sendMessage( QByteArray message, int timeout = 100 )
 Sends `message` to the Primary Instance. Uses `timeout` as a the maximum timeout
 in milliseconds for blocking functions
 
+---
+
 ```cpp
 bool SingleApplication::isPrimary()
 ```
 
 Returns if the instance is the primary instance.
 
+---
+
 ```cpp
 bool SingleApplication::isSecondary()
 ```
 Returns if the instance is a secondary instance.
+
+---
 
 ```cpp
 quint32 SingleApplication::instanceId()
@@ -180,11 +188,15 @@ void SingleApplication::instanceStarted()
 Triggered whenever a new instance had been started, except for secondary
 instances if the `Mode::SecondaryNotification` flag is not specified.
 
+---
+
 ```cpp
 void SingleApplication::receivedMessage( quint32 instanceId, QByteArray message )
 ```
 
 Triggered whenever there is a message received from a secondary instance.
+
+---
 
 ### Flags
 
@@ -205,6 +217,8 @@ and the secondary instance.*
 *__Note:__ Operating system can restrict the shared memory blocks to the same
 user, in which case the User/System modes will have no effect and the block will
 be user wide.*
+
+---
 
 Versioning
 ----------
