@@ -68,12 +68,13 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
     // User level block requires a user specific data in the hash
     if( options & SingleApplication::Mode::User ) {
 #ifdef Q_OS_WIN
-        char username[UNLEN + 1];
+        wchar_t username [ UNLEN + 1 ];
         // Specifies size of the buffer on input
-        DWORD usernameLength = sizeof( username );
+        DWORD usernameLength = UNLEN + 1;
         if( GetUserName( username, &usernameLength ) ) {
-            // usernameLength includes the null terminating character
-            appData.addData( username, usernameLength - 1 );
+            char buffer[512];
+            size_t length = wcstombs( buffer, username, 512 );
+            appData.addData( buffer, length );
         } else {
             appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
         }
