@@ -22,7 +22,6 @@
 
 #include <cstdlib>
 
-#include <QtCore/QMutex>
 #include <QtCore/QProcess>
 #include <QtCore/QByteArray>
 #include <QtCore/QSemaphore>
