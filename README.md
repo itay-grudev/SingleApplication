@@ -104,9 +104,9 @@ int main(int argc, char *argv[])
 }
 ```
 
-___Note:__ A secondary instance won't cause the emission of the
+*__Note:__ A secondary instance won't cause the emission of the
 `instanceStarted()` signal by default. See `SingleApplication::Mode` for more
-details.
+details.*
 
 You can check whether your instance is a primary or secondary with the following
 methods:
@@ -117,8 +117,8 @@ app.isPrimary();
 app.isSecondary();
 ```
 
-__*Note:*__ If your Primary Instance is terminated a newly launched instance
-will replace the Primary one even if the Secondary flag has been set.
+*__Note:__ If your Primary Instance is terminated a newly launched instance
+will replace the Primary one even if the Secondary flag has been set.*
 
 API
 ---
