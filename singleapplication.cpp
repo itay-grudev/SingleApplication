@@ -115,6 +115,11 @@ void SingleApplicationPrivate::startPrimary( bool resetMemory )
     // So we start a QLocalServer to listen for connections
     QLocalServer::removeServer( blockServerName );
     server = new QLocalServer();
+#ifdef Q_OS_WIN
+    // To allow a non elevated process to connect to a local server
+    // created by an elevated process run by the same user
+    server->setSocketOptions(QLocalServer::UserAccessOption);
+#endif
     server->listen( blockServerName );
     QObject::connect(
         server,
