@@ -59,7 +59,9 @@ public:
     enum Mode {
         User                    = 1 << 0,
         System                  = 1 << 1,
-        SecondaryNotification   = 1 << 2
+        SecondaryNotification   = 1 << 2,
+        ExcludeAppVersion       = 1 << 3,
+		ExcludeAppPath          = 1 << 4
     };
     Q_DECLARE_FLAGS(Options, Mode)
 
