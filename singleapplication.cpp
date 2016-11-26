@@ -58,17 +58,17 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
 {
     QCryptographicHash appData( QCryptographicHash::Sha256 );
     appData.addData( "SingleApplication", 17 );
-    appData.addData(SingleApplication::app_t::applicationName().toUtf8());
-    appData.addData(SingleApplication::app_t::organizationName().toUtf8());
-    appData.addData(SingleApplication::app_t::organizationDomain().toUtf8());
+    appData.addData( SingleApplication::app_t::applicationName().toUtf8() );
+    appData.addData( SingleApplication::app_t::organizationName().toUtf8() );
+    appData.addData( SingleApplication::app_t::organizationDomain().toUtf8() );
 
-    if (!(options & SingleApplication::Mode::ExcludeAppVersion))
-        appData.addData(SingleApplication::app_t::applicationVersion().toUtf8());
-    if (!(options & SingleApplication::Mode::ExcludeAppPath))
+    if ( ! (options & SingleApplication::Mode::ExcludeAppVersion) )
+        appData.addData( SingleApplication::app_t::applicationVersion().toUtf8() );
+    if ( ! (options & SingleApplication::Mode::ExcludeAppPath) )
 #ifdef Q_OS_WIN
-        appData.addData(SingleApplication::app_t::applicationFilePath().toLower().toUtf8());
+        appData.addData( SingleApplication::app_t::applicationFilePath().toLower().toUtf8() );
 #else
-        appData.addData(SingleApplication::app_t::applicationFilePath().toUtf8());
+        appData.addData( SingleApplication::app_t::applicationFilePath().toUtf8() );
 #endif
 
     // User level block requires a user specific data in the hash
@@ -118,7 +118,7 @@ void SingleApplicationPrivate::startPrimary( bool resetMemory )
 #ifdef Q_OS_WIN
     // To allow a non elevated process to connect to a local server
     // created by an elevated process run by the same user
-    server->setSocketOptions(QLocalServer::UserAccessOption);
+    server->setSocketOptions( QLocalServer::UserAccessOption );
 #endif
     server->listen( blockServerName );
     QObject::connect(
