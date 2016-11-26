@@ -208,8 +208,12 @@ enum SingleApplication::Mode
     user specific data to the key used for the shared memory and server name.
     This is the default functionality.
 *   `Mode::System` – The SingleApplication block applies system-wide.
-*   `SecondaryNotification` – Whether to trigger `instanceStarted()` even
+*   `Mode::SecondaryNotification` – Whether to trigger `instanceStarted()` even
     whenever secondary instances are started.
+*   `Mode::ExcludeAppPath` – Excludes the application path from the server name
+    (and memory block) hash.
+*   `Mode::ExcludeAppVersion` – Excludes the application version from the server
+    name (and memory block) hash.
 
 *__Note:__ `Mode::SecondaryNotification` only works if set on both the primary
 and the secondary instance.*
@@ -223,12 +227,13 @@ be user wide.*
 Versioning
 ----------
 
-The current library versions is `3.0a`.
+The current library versions is `3.0.1a`.
 
 Each major version introduces either very significant changes or is not
 backwards compatible with the previous version. Minor versions only add
 additional features, bug fixes or performance improvements and are backwards
-compatible with the previous release. See `CHANGELOG.md` for more details.
+compatible with the previous release. See [`CHANGELOG.md`](CHANGELOG.md) for
+more details.
 
 Implementation
 --------------
