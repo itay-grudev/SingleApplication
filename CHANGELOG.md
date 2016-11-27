@@ -1,8 +1,16 @@
 Changelog
 =========
 
+__3.0.2a__
+----------
+
+*   Fixed bug on Windows when username containing wide characters causing the
+    library to crash.
+
+    _Le Liu_
+
 __3.0.1a__
---------
+----------
 
 *   Allows the application path and version to be excluded from the server name
     hash. The following flags were added for this purpose:

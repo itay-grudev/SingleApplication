@@ -227,7 +227,7 @@ be user wide.*
 Versioning
 ----------
 
-The current library versions is `3.0.1a`.
+The current library versions is `3.0.2a`.
 
 Each major version introduces either very significant changes or is not
 backwards compatible with the previous version. Minor versions only add
