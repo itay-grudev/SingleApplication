@@ -1,12 +1,25 @@
 Changelog
 =========
 
-__v3.0a__
+__3.0.1a__
 --------
 
-*   Depricated meximum secondary instances count setting.
+*   Allows the application path and version to be excluded from the server name
+    hash. The following flags were added for this purpose:
+      * `SingleApplication::Mode::ExcludeAppVersion`
+      * `SingleApplication::Mode::ExcludeAppPath`
+*   Allow a non elevated process to connect to a local server created by an
+    elevated process run by the same user on Windows
+*   Fixes a problem with upper case letters in paths on Windows
+
+    _Le Liu_
+
+__v3.0a__
+---------
+
+*   Depricated secondary instances count.
 *   Added a sendMessage() method to send a message to the primary instance.
-*   Added a receivedMessage() signal, emmited when a message is received from a
+*   Added a receivedMessage() signal, emitted when a message is received from a
     secondary instance.
 *   The SingleApplication constructor's third parameter is now a bool
     specifying if the current instance should be allowed to run as a secondary
@@ -19,15 +32,15 @@ __v3.0a__
     `QSharedMemory` block and the `QLocalServer`. Since at least
     `applicationFilePath` is always present there is no need to explicitly set
     any of these prior to initialising `SingleApplication`.
-        * QCoreApplication::applicationName
-        * QCoreApplication::applicationVersion
-        * QCoreApplication::applicationFilePath
-        * QCoreApplication::organizationName
-        * QCoreApplication::organizationDomain
-        * User name or home directory path if in User mode
+      * `QCoreApplication::applicationName`
+      * `QCoreApplication::applicationVersion`
+      * `QCoreApplication::applicationFilePath`
+      * `QCoreApplication::organizationName`
+      * `QCoreApplication::organizationDomain`
+      * User name or home directory path if in User mode
 *   The primary instance is no longer notified when a secondary instance had
-    been started by default. An setting for this feature exists.
-*   Added instanceNumber() which represents a unique identifier for each
+    been started by default. A setting for this feature exists.
+*   Added `instanceNumber()` which represents a unique identifier for each
     secondary instance started. When called from the primary instance will
     return `0`.
 
