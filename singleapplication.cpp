@@ -82,7 +82,7 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
         // Specifies size of the buffer on input
         DWORD usernameLength = UNLEN + 1;
         if( GetUserName( username, &usernameLength ) ) {
-            appData.addData( QString::fromWCharArray(str).toUtf8() );
+            appData.addData( QString::fromWCharArray(username).toUtf8() );
         } else {
             appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
         }
