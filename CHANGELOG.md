@@ -4,7 +4,7 @@ Changelog
 __3.0.2a__
 ----------
 
-*   Fixed bug on Windows when username containing wide characters causing the
+*   Fixed bug on Windows when username containing wide characters causes the
     library to crash.
 
     _Le Liu_
