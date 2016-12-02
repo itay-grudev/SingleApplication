@@ -31,15 +31,15 @@ __v3.0a__
     secondary instance.
 *   The SingleApplication constructor's third parameter is now a bool
     specifying if the current instance should be allowed to run as a secondary
-    instance of there is already a primary instance.
+    instance if there is already a primary instance.
 *   The SingleApplication constructor accept a fourth parameter specifying if
     the SingleApplication block should be User-wide or System-wide.
 *   SingleApplication no longer relies on `applicationName` and
     `organizationName` to be set. It instead concatenates all of the following
-    data and computes a `SHA256` hash which is uses as the key for the
+    data and computes a `SHA256` hash which is used as the key of the
     `QSharedMemory` block and the `QLocalServer`. Since at least
     `applicationFilePath` is always present there is no need to explicitly set
-    any of these prior to initialising `SingleApplication`.
+    any of the following prior to initialising `SingleApplication`.
       * `QCoreApplication::applicationName`
       * `QCoreApplication::applicationVersion`
       * `QCoreApplication::applicationFilePath`
@@ -47,7 +47,7 @@ __v3.0a__
       * `QCoreApplication::organizationDomain`
       * User name or home directory path if in User mode
 *   The primary instance is no longer notified when a secondary instance had
-    been started by default. A setting for this feature exists.
+    been started by default. A `Mode` flag for this feature exists.
 *   Added `instanceNumber()` which represents a unique identifier for each
     secondary instance started. When called from the primary instance will
     return `0`.
