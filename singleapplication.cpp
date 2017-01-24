@@ -261,25 +261,25 @@ void SingleApplicationPrivate::slotConnectionEstablished()
 {
     Q_Q(SingleApplication);
 
-    QLocalSocket *socket = server->nextPendingConnection();
+    QLocalSocket *nextConnSocket = server->nextPendingConnection();
 
     // Verify that the new connection follows the SingleApplication protocol
-    char connectionType;
+    char connectionType='\0';
     quint32 instanceId;
     QByteArray initMsg, tmp;
     bool invalidConnection = false;
-    if( socket->waitForReadyRead( 100 ) ) {
-        tmp = socket->read( blockServerName.length() );
+    if( nextConnSocket->waitForReadyRead( 100 ) ) {
+        tmp = nextConnSocket->read( blockServerName.length() );
         // Verify that the socket data start with blockServerName
         if( tmp == blockServerName.toLatin1() ) {
             initMsg = tmp;
-            tmp = socket->read(1);
+            tmp = nextConnSocket->read(1);
             // Verify that the next charecter is N/S/R (connecion type)
             // Stands for New Instance/Secondary Instance/Reconnect
             if( tmp == "N" || tmp == "S" || tmp == "R" ) {
                 connectionType = tmp.at(0);
                 initMsg += tmp;
-                tmp = socket->read( sizeof(quint32) );
+                tmp = nextConnSocket->read( sizeof(quint32) );
                 const char * data = tmp.constData();
                 instanceId = (quint32)*data;
                 initMsg += tmp;
@@ -288,7 +288,7 @@ void SingleApplicationPrivate::slotConnectionEstablished()
                     qChecksum( initMsg.constData(), initMsg.length() ),
                     256
                 );
-                tmp = socket->read( checksum.length() );
+                tmp = nextConnSocket->read( checksum.length() );
                 if( checksum != tmp ) {
                     invalidConnection = true;
                 }
@@ -303,26 +303,26 @@ void SingleApplicationPrivate::slotConnectionEstablished()
     }
 
     if( invalidConnection ) {
-        socket->close();
-        delete socket;
+        nextConnSocket->close();
+        delete nextConnSocket;
         return;
     }
 
     QObject::connect(
-        socket,
+        nextConnSocket,
         &QLocalSocket::aboutToClose,
         this,
-        [socket, instanceId, this]() {
-            Q_EMIT this->slotClientConnectionClosed( socket, instanceId );
+        [nextConnSocket, instanceId, this]() {
+            Q_EMIT this->slotClientConnectionClosed( nextConnSocket, instanceId );
         }
     );
 
     QObject::connect(
-        socket,
+        nextConnSocket,
         &QLocalSocket::readyRead,
         this,
-        [socket, instanceId, this]() {
-            Q_EMIT this->slotDataAvailable( socket, instanceId );
+        [nextConnSocket, instanceId, this]() {
+            Q_EMIT this->slotDataAvailable( nextConnSocket, instanceId );
         }
     );
 
@@ -334,22 +334,22 @@ void SingleApplicationPrivate::slotConnectionEstablished()
         Q_EMIT q->instanceStarted();
     }
 
-    if( socket->bytesAvailable() > 0 ) {
-        Q_EMIT this->slotDataAvailable( socket, instanceId );
+    if( nextConnSocket->bytesAvailable() > 0 ) {
+        Q_EMIT this->slotDataAvailable( nextConnSocket, instanceId );
     }
 }
 
-void SingleApplicationPrivate::slotDataAvailable( QLocalSocket *socket, quint32 instanceId )
+void SingleApplicationPrivate::slotDataAvailable( QLocalSocket *fromSocket, quint32 instanceId )
 {
     Q_Q(SingleApplication);
-    Q_EMIT q->receivedMessage( instanceId, socket->readAll() );
+    Q_EMIT q->receivedMessage( instanceId, fromSocket->readAll() );
 }
 
-void SingleApplicationPrivate::slotClientConnectionClosed( QLocalSocket *socket, quint32 instanceId )
+void SingleApplicationPrivate::slotClientConnectionClosed( QLocalSocket *connSocket, quint32 instanceId )
 {
-    if( socket->bytesAvailable() > 0 )
-        Q_EMIT slotDataAvailable( socket, instanceId  );
-    socket->deleteLater();
+    if( connSocket->bytesAvailable() > 0 )
+        Q_EMIT slotDataAvailable( connSocket, instanceId  );
+    connSocket->deleteLater();
 }
 
 /**
