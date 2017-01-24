@@ -1,6 +1,17 @@
 Changelog
 =========
 
+__3.0.3a__
+----------
+
+*   Removed Microsoft Windows specific code for getting username due to
+    multiple problems and compiler differences on Windows platforms. On
+    Windows the shaered memory block in User mode now includes the user's
+    home path (which contains the user's username).
+
+*   Explicitly getting absolute path of the user's home directory as on Unix
+    a relative path (`~`) may be returned.
+
 __3.0.2a__
 ----------
 

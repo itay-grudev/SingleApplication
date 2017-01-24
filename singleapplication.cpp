@@ -22,6 +22,7 @@
 
 #include <cstdlib>
 
+#include <QtCore/QDir>
 #include <QtCore/QProcess>
 #include <QtCore/QByteArray>
 #include <QtCore/QSemaphore>
@@ -34,11 +35,6 @@
 #ifdef Q_OS_UNIX
     #include <signal.h>
     #include <unistd.h>
-#endif
-
-#ifdef Q_OS_WIN
-    #include <windows.h>
-    #include <lmcons.h>
 #endif
 
 #include "singleapplication.h"
@@ -77,25 +73,20 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
     // User level block requires a user specific data in the hash
     if( options & SingleApplication::Mode::User ) {
 #ifdef Q_OS_WIN
-        Q_UNUSED(timeout);
-        wchar_t username [ UNLEN + 1 ];
-        // Specifies size of the buffer on input
-        DWORD usernameLength = UNLEN + 1;
-        if( GetUserName( username, &usernameLength ) ) {
-            appData.addData( QString::fromWCharArray(username).toUtf8() );
-        } else {
-            appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
-        }
+        appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
 #endif
 #ifdef Q_OS_UNIX
-        QString username;
         QProcess process;
         process.start( "whoami" );
         if( process.waitForFinished( timeout ) &&
             process.exitCode() == QProcess::NormalExit) {
             appData.addData( process.readLine() );
         } else {
-            appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
+            appData.addData(
+                QDir(
+                    QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).first()
+                ).absolutePath().toUtf8()
+            );
         }
 #endif
     }
