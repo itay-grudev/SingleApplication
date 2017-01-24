@@ -264,21 +264,23 @@ void SingleApplicationPrivate::slotConnectionEstablished()
     QLocalSocket *socket = server->nextPendingConnection();
 
     // Verify that the new connection follows the SingleApplication protocol
-    char connectionType;
+    char connectionType = '\0'; // Invalid connection
     quint32 instanceId;
     QByteArray initMsg, tmp;
-    bool invalidConnection = false;
     if( socket->waitForReadyRead( 100 ) ) {
         tmp = socket->read( blockServerName.length() );
         // Verify that the socket data start with blockServerName
         if( tmp == blockServerName.toLatin1() ) {
             initMsg = tmp;
-            tmp = socket->read(1);
             // Verify that the next charecter is N/S/R (connecion type)
             // Stands for New Instance/Secondary Instance/Reconnect
-            if( tmp == "N" || tmp == "S" || tmp == "R" ) {
-                connectionType = tmp.at(0);
-                initMsg += tmp;
+            connectionType = socket->read( 1 )[0];
+            switch( connectionType ) {
+            case 'N':
+            case 'S':
+            case 'R':
+            {
+                initMsg += connectionType;
                 tmp = socket->read( sizeof(quint32) );
                 const char * data = tmp.constData();
                 instanceId = (quint32)*data;
@@ -289,20 +291,16 @@ void SingleApplicationPrivate::slotConnectionEstablished()
                     256
                 );
                 tmp = socket->read( checksum.length() );
-                if( checksum != tmp ) {
-                    invalidConnection = true;
-                }
-            } else {
-                invalidConnection = true;
+                if( checksum == tmp )
+                    break; // Otherwise set to invalid connection (next line)
             }
-        } else {
-            invalidConnection = true;
+            default:
+                connectionType = '\0'; // Invalid connection
+            }
         }
-    } else {
-        invalidConnection = true;
     }
 
-    if( invalidConnection ) {
+    if( connectionType == '\0' ) {
         socket->close();
         delete socket;
         return;
