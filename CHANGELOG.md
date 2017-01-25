@@ -1,6 +1,13 @@
 Changelog
 =========
 
+__3.0.4a__
+----------
+
+*   Fixed shadow and uninitialised variable warnings.
+
+    _Paul Walmsley_
+
 __3.0.3a__
 ----------
 
