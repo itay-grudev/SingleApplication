@@ -55,7 +55,6 @@ public:
     void startPrimary( bool resetMemory );
     void startSecondary();
     void connectToPrimary( int msecs, char connectionType );
-    void cleanUp();
 
 #ifdef Q_OS_UNIX
     void crashHandler();

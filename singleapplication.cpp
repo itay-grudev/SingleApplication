@@ -47,7 +47,19 @@ SingleApplicationPrivate::SingleApplicationPrivate( SingleApplication *q_ptr ) :
 
 SingleApplicationPrivate::~SingleApplicationPrivate()
 {
-    cleanUp();
+    if( socket != nullptr ) {
+        socket->close();
+        delete socket;
+    }
+    memory->lock();
+    InstancesInfo* inst = (InstancesInfo*)memory->data();
+    if( server != nullptr ) {
+        server->close();
+        delete server;
+        inst->primary = false;
+    }
+    memory->unlock();
+    delete memory;
 }
 
 void SingleApplicationPrivate::genBlockServerName( int timeout )
@@ -229,22 +241,6 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
     QList<SingleApplicationPrivate*> SingleApplicationPrivate::sharedMem;
     QMutex SingleApplicationPrivate::sharedMemMutex;
 #endif
-
-void SingleApplicationPrivate::cleanUp() {
-    if( socket != nullptr ) {
-        socket->close();
-        delete socket;
-    }
-    memory->lock();
-    InstancesInfo* inst = (InstancesInfo*)memory->data();
-    if( server != nullptr ) {
-        server->close();
-        delete server;
-        inst->primary = false;
-    }
-    memory->unlock();
-    delete memory;
-}
 
 /**
  * @brief Executed when a connection has been made to the LocalServer
