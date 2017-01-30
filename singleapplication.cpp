@@ -239,6 +239,7 @@ void SingleApplicationPrivate::cleanUp() {
     InstancesInfo* inst = (InstancesInfo*)memory->data();
     if( server != nullptr ) {
         server->close();
+        delete server;
         inst->primary = false;
     }
     memory->unlock();
