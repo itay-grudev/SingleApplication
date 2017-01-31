@@ -6,3 +6,7 @@ HEADERS += $$PWD/singleapplication.h \
 SOURCES += $$PWD/singleapplication.cpp
 
 INCLUDEPATH += $$PWD
+
+win32 {
+    LIBS += Advapi32.lib
+}
