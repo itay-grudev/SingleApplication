@@ -1,6 +1,13 @@
 Changelog
 =========
 
+__3.0.5a__
+----------
+
+*   Fixed a memory leak in the SingleApplicationPrivate destructor.
+
+    _Sergei Moiseev_
+
 __3.0.4a__
 ----------
 
