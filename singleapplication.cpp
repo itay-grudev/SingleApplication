@@ -96,7 +96,6 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
         DWORD usernameLength = UNLEN + 1;
         if( GetUserName( username, &usernameLength ) ) {
             appData.addData( QString::fromWCharArray(username).toUtf8() );
-            qDebug() << "Username: " << QString::fromWCharArray(username).toUtf8();
         } else {
             appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
         }
