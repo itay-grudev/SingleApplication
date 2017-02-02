@@ -8,5 +8,6 @@ SOURCES += $$PWD/singleapplication.cpp
 INCLUDEPATH += $$PWD
 
 win32 {
-    LIBS += -lAdvapi32
+    msvc:LIBS += Advapi32.lib
+    gcc:LIBS += -lAdvapi32
 }
