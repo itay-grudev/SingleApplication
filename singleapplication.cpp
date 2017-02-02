@@ -37,6 +37,11 @@
     #include <unistd.h>
 #endif
 
+#ifdef Q_OS_WIN
+    #include <windows.h>
+    #include <lmcons.h>
+#endif
+
 #include "singleapplication.h"
 #include "singleapplication_p.h"
 
@@ -85,7 +90,15 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
     // User level block requires a user specific data in the hash
     if( options & SingleApplication::Mode::User ) {
 #ifdef Q_OS_WIN
-        appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
+        Q_UNUSED(timeout);
+        wchar_t username [ UNLEN + 1 ];
+        // Specifies size of the buffer on input
+        DWORD usernameLength = UNLEN + 1;
+        if( GetUserName( username, &usernameLength ) ) {
+            appData.addData( QString::fromWCharArray(username).toUtf8() );
+        } else {
+            appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
+        }
 #endif
 #ifdef Q_OS_UNIX
         QProcess process;
