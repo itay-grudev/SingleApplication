@@ -93,7 +93,7 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
 #ifdef Q_OS_WIN
         Q_UNUSED(timeout);
         wchar_t username [ UNLEN + 1 ];
-        static HINSTANCE advapiHnd = ::LoadLibrary(L"advapi32");
+        static HINSTANCE advapiHnd = ::LoadLibrary( L"advapi32" );
         static PtrGetUserNameW ptrGetUserNameW = 0;
         if( advapiHnd ) {
             ptrGetUserNameW = (PtrGetUserNameW)GetProcAddress( advapiHnd, "GetUserNameW" );
