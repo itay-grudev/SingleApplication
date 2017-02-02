@@ -1,6 +1,13 @@
 Changelog
 =========
 
+__3.0.6a__
+----------
+
+*   Reverted GetUserName API usage on Windows. Fixed bug with missing library.
+*   Fixed bug in the Calculator example, preventing it's window to be raised
+    on Windows.
+
 __3.0.5a__
 ----------
 
