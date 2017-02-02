@@ -60,12 +60,10 @@ int main(int argc, char *argv[])
 
     Calculator calc;
 
-    QObject::connect(
-        &app,
-        &SingleApplication::instanceStarted,
-        &calc,
-        &Calculator::raise
-    );
+    QObject::connect( &app, &SingleApplication::instanceStarted, [ &calc ]() {
+        calc.raise();
+        calc.activateWindow();
+    });
 
     calc.show();
 
