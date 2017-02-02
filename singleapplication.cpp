@@ -92,7 +92,6 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
     if( options & SingleApplication::Mode::User ) {
 #ifdef Q_OS_WIN
         Q_UNUSED(timeout);
-        // Specifies size of the buffer on input
         wchar_t username [ UNLEN + 1 ];
         static HINSTANCE advapiHnd = ::LoadLibrary( L"advapi32" );
         static PtrGetUserNameW ptrGetUserNameW = 0;
