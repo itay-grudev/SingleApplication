@@ -40,6 +40,7 @@
 #ifdef Q_OS_WIN
     #include <windows.h>
     #include <lmcons.h>
+    typedef BOOL (WINAPI *PtrGetUserNameW)(LPTSTR, LPDWORD);
 #endif
 
 #include "singleapplication.h"
@@ -97,11 +98,21 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
 #ifdef Q_OS_WIN
         Q_UNUSED(timeout);
         wchar_t username [ UNLEN + 1 ];
-        // Specifies size of the buffer on input
-        DWORD usernameLength = UNLEN + 1;
-        if( GetUserName( username, &usernameLength ) ) {
-            appData.addData( QString::fromWCharArray(username).toUtf8() );
-        } else {
+        static HINSTANCE advapiHnd = ::LoadLibrary( L"advapi32" );
+        static PtrGetUserNameW ptrGetUserNameW = 0;
+        if( advapiHnd ) {
+            ptrGetUserNameW = (PtrGetUserNameW)GetProcAddress( advapiHnd, "GetUserNameW" );
+            if( ptrGetUserNameW ) {
+                // Specifies size of the buffer on input
+                DWORD usernameLength = UNLEN + 1;
+                if( ptrGetUserNameW( username, &usernameLength ) ) {
+                    appData.addData( QString::fromWCharArray(username).toUtf8() );
+                }
+            }
+        }
+
+        // GetUserName failed
+        if( wcslen(username) == 0 ) {
             appData.addData( QStandardPaths::standardLocations( QStandardPaths::HomeLocation ).join("").toUtf8() );
         }
 #endif
