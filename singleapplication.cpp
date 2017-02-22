@@ -45,6 +45,11 @@
 #include "singleapplication.h"
 #include "singleapplication_p.h"
 
+static const char NewInstance = 'N';
+static const char SecondaryInstance = 'S';
+static const char Reconnect =  'R';
+static const char InvalidConnection = '\0';
+
 SingleApplicationPrivate::SingleApplicationPrivate( SingleApplication *q_ptr ) : q_ptr( q_ptr ) {
     server = nullptr;
     socket = nullptr;
@@ -265,7 +270,7 @@ void SingleApplicationPrivate::slotConnectionEstablished()
     QLocalSocket *nextConnSocket = server->nextPendingConnection();
 
     // Verify that the new connection follows the SingleApplication protocol
-    char connectionType = '\0'; // Invalid connection
+    char connectionType = InvalidConnection;
     quint32 instanceId;
     QByteArray initMsg, tmp;
     if( nextConnSocket->waitForReadyRead( 100 ) ) {
@@ -273,13 +278,12 @@ void SingleApplicationPrivate::slotConnectionEstablished()
         // Verify that the socket data start with blockServerName
         if( tmp == blockServerName.toLatin1() ) {
             initMsg = tmp;
-            // Verify that the next character is N/S/R (connection type)
-            // Stands for New Instance/Secondary Instance/Reconnect
             connectionType = nextConnSocket->read( 1 )[0];
+
             switch( connectionType ) {
-            case 'N':
-            case 'S':
-            case 'R':
+            case NewInstance:
+            case SecondaryInstance:
+            case Reconnect:
             {
                 initMsg += connectionType;
                 tmp = nextConnSocket->read( sizeof(quint32) );
@@ -296,12 +300,12 @@ void SingleApplicationPrivate::slotConnectionEstablished()
                     break; // Otherwise set to invalid connection (next line)
             }
             default:
-                connectionType = '\0'; // Invalid connection
+                connectionType = InvalidConnection;
             }
         }
     }
 
-    if( connectionType == '\0' ) {
+    if( connectionType == InvalidConnection ) {
         nextConnSocket->close();
         delete nextConnSocket;
         return;
@@ -325,8 +329,8 @@ void SingleApplicationPrivate::slotConnectionEstablished()
         }
     );
 
-    if( connectionType == 'N' || (
-            connectionType == 'S' &&
+    if( connectionType == NewInstance || (
+            connectionType == SecondaryInstance &&
             options & SingleApplication::Mode::SecondaryNotification
         )
     ) {
@@ -402,7 +406,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
                 d->instanceNumber = inst->secondary;
                 d->startSecondary();
                 if( d->options & Mode::SecondaryNotification ) {
-                    d->connectToPrimary( timeout, 'S' );
+                    d->connectToPrimary( timeout, SecondaryInstance );
                 }
                 d->memory->unlock();
                 return;
@@ -412,7 +416,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         }
     }
 
-    d->connectToPrimary( timeout, 'N' );
+    d->connectToPrimary( timeout, NewInstance );
     delete d;
     ::exit( EXIT_SUCCESS );
 }
@@ -452,7 +456,7 @@ bool SingleApplication::sendMessage( QByteArray message, int timeout )
     if( isPrimary() ) return false;
 
     // Make sure the socket is connected
-    d->connectToPrimary( timeout, 'R' );
+    d->connectToPrimary( timeout,  Reconnect );
 
     d->socket->write( message );
     bool dataWritten = d->socket->flush();
