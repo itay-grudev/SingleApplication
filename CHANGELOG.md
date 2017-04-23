@@ -1,12 +1,22 @@
 Changelog
 =========
 
+__3.0.7a__
+----------
+
+*   Fixed compilation error with Mingw32 in MXE thanks to Vitaly Tonkacheyev.
+*   Removed QMutex used for thread safe behaviour. The implementation now uses
+    QCoreApplication::instance() to get an instance to SingleApplication for
+    memory deallocation.
+
 __3.0.6a__
 ----------
 
 *   Reverted GetUserName API usage on Windows. Fixed bug with missing library.
 *   Fixed bug in the Calculator example, preventing it's window to be raised
     on Windows.
+
+    Special thanks to Charles Gunawan.
 
 __3.0.5a__
 ----------
