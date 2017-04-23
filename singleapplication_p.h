@@ -32,7 +32,6 @@
 #ifndef SINGLEAPPLICATION_P_H
 #define SINGLEAPPLICATION_P_H
 
-#include <QtCore/QMutex>
 #include <QtCore/QSharedMemory>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
@@ -59,8 +58,6 @@ public:
 #ifdef Q_OS_UNIX
     void crashHandler();
     static void terminate( int signum );
-    static QList<SingleApplicationPrivate*> sharedMem;
-    static QMutex sharedMemMutex;
 #endif
 
     QSharedMemory *memory;

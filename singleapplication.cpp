@@ -220,15 +220,6 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
 #ifdef Q_OS_UNIX
     void SingleApplicationPrivate::crashHandler()
     {
-        // This guarantees the program will work even with multiple
-        // instances of SingleApplication in different threads.
-        // Which in my opinion is idiotic, but lets handle that too.
-        {
-            sharedMemMutex.lock();
-            sharedMem.append( this );
-            sharedMemMutex.unlock();
-        }
-
         // Handle any further termination signals to ensure the
         // QSharedMemory block is deleted even if the process crashes
         signal( SIGHUP,  SingleApplicationPrivate::terminate ); // 1
@@ -249,15 +240,9 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
 
     void SingleApplicationPrivate::terminate( int signum )
     {
-        while( ! sharedMem.empty() ) {
-            delete sharedMem.back();
-            sharedMem.pop_back();
-        }
+        delete ((SingleApplication*)QApplication::instance())->d_ptr;
         ::exit( 128 + signum );
     }
-
-    QList<SingleApplicationPrivate*> SingleApplicationPrivate::sharedMem;
-    QMutex SingleApplicationPrivate::sharedMemMutex;
 #endif
 
 /**
