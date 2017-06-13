@@ -54,14 +54,21 @@ public:
      * @note Operating system can restrict the shared memory blocks to the same
      * user, in which case the User/System modes will have no effect and the
      * block will be user wide.
+     * @note BringPrimaryToForeground currently only work on Windows systems and
+     * only when the QAPPLICATION_CLASS is defined as QApplication. To set the
+     * window to the foreground, the application must be a windows application with
+     * a clearly defined main windows, i.e. derived from QMainWindow. Because
+     * the primary window needs to eb informed that it must go to the foreground,
+     * the SecondaryNotification flag must also be set to use this
      * @enum
      */
     enum Mode {
-        User                    = 1 << 0,
-        System                  = 1 << 1,
-        SecondaryNotification   = 1 << 2,
-        ExcludeAppVersion       = 1 << 3,
-        ExcludeAppPath          = 1 << 4
+        User                        = 1 << 0,
+        System                      = 1 << 1,
+        SecondaryNotification       = 1 << 2,
+        ExcludeAppVersion           = 1 << 3,
+        ExcludeAppPath              = 1 << 4,
+        BringPrimaryToForeground    = 1 << 5
     };
     Q_DECLARE_FLAGS(Options, Mode)
 
