@@ -40,9 +40,7 @@
 struct InstancesInfo {
     bool primary;
     quint32 secondary;
-#ifdef Q_OS_WIN
-    qint64 primaryPid;  // The process PID is used to enable moving the main window tot eh foreground on Windows systems
-#endif
+    qint64 primaryPid;
 };
 
 class SingleApplicationPrivate : public QObject {
@@ -57,6 +55,7 @@ public:
     void startPrimary( bool resetMemory );
     void startSecondary();
     void connectToPrimary( int msecs, char connectionType );
+    qint64 getPrimaryPid();
 
 #ifdef Q_OS_UNIX
     void crashHandler();

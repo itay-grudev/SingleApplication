@@ -45,11 +45,6 @@
 #include "singleapplication.h"
 #include "singleapplication_p.h"
 
-#ifdef QAPPLICATION_H
-    // This include is required to test if a window (widget) is the main window, so it can be positioned in the
-    // foreground, but this is only possible when the application is derived from QApplication
-    #include <QMainWindow>
-#endif
 
 static const char NewInstance = 'N';
 static const char SecondaryInstance = 'S';
@@ -73,6 +68,7 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
         server->close();
         delete server;
         inst->primary = false;
+        inst->primaryPid = 0;
     }
     memory->unlock();
     delete memory;
@@ -134,6 +130,8 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
 
 void SingleApplicationPrivate::startPrimary( bool resetMemory )
 {
+    Q_Q(SingleApplication);
+
 #ifdef Q_OS_UNIX
     // Handle any further termination signals to ensure the
     // QSharedMemory block is deleted even if the process crashes
@@ -164,17 +162,11 @@ void SingleApplicationPrivate::startPrimary( bool resetMemory )
     memory->lock();
     InstancesInfo* inst = (InstancesInfo*)memory->data();
 
-    if( resetMemory ){
-        inst->primary = true;
+    if( resetMemory ) {
         inst->secondary = 0;
-#ifdef Q_OS_WIN
-        Q_Q(SingleApplication);
-
-        inst->primaryPid = q->applicationPid();
-#endif
-    } else {
-        inst->primary = true;
     }
+    inst->primary = true;
+    inst->primaryPid = q->applicationPid();
 
     memory->unlock();
 
@@ -226,6 +218,18 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
         socket->flush();
         socket->waitForBytesWritten( msecs );
     }
+}
+
+qint64 SingleApplicationPrivate::getPrimaryPid()
+{
+    qint64 pPid = 0;
+
+    memory->lock();
+    InstancesInfo* inst = (InstancesInfo*)memory->data();
+    pPid = inst->primaryPid;
+    memory->unlock();
+
+    return pPid;
 }
 
 #ifdef Q_OS_UNIX
@@ -336,24 +340,6 @@ void SingleApplicationPrivate::slotConnectionEstablished()
     if( nextConnSocket->bytesAvailable() > 0 ) {
         Q_EMIT this->slotDataAvailable( nextConnSocket, instanceId );
     }
-
-    if( connectionType == SecondaryInstance &&
-        options & SingleApplication::Mode::BringPrimaryToForeground
-    ) {
-#ifdef QAPPLICATION_H
-        // Bringing the application window to the foreground is currently only supported for
-        // QApplication derived applications with a QMainWindow (derived) object. This way
-        // we can set the main windows gets to the foreground
-        foreach( QWidget * widget, q->topLevelWidgets() )
-        {
-            if ( QMainWindow * mainWindow = qobject_cast<QMainWindow *>( widget ) )
-            {
-                q->setActiveWindow( mainWindow );
-                break;
-            }
-        }
-#endif
-    }
 }
 
 void SingleApplicationPrivate::slotDataAvailable( QLocalSocket *dataSocket, quint32 instanceId )
@@ -422,19 +408,6 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
                 if( d->options & Mode::SecondaryNotification ) {
                     d->connectToPrimary( timeout, SecondaryInstance );
                 }
-
-#ifdef Q_OS_WIN
-                if( d->options & Mode::BringPrimaryToForeground )
-                {
-                    // The newly created process is currently the foreground process. This is one of the
-                    // requirements to be able to calle the next function successfully, see
-                    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms632668(v=vs.85).aspx
-                    // By calling this function the primary process will be allowed by the system to
-                    // set its window to the foreground
-                    AllowSetForegroundWindow( DWORD( inst->primaryPid ) );
-                }
-#endif
-
                 d->memory->unlock();
                 return;
             }
@@ -473,6 +446,12 @@ quint32 SingleApplication::instanceId()
 {
     Q_D(SingleApplication);
     return d->instanceNumber;
+}
+
+qint64 SingleApplication::getPrimaryPid()
+{
+    Q_D(SingleApplication);
+    return d->getPrimaryPid();
 }
 
 bool SingleApplication::sendMessage( QByteArray message, int timeout )
