@@ -2,8 +2,10 @@ Changelog
 =========
 
 __3.0.8__
+---------
 
 *   Bug fix - changed QApplication::instance() to QCoreApplication::instance()
+
     _Evgeniy Bazhenov_
 
 __3.0.7a__
