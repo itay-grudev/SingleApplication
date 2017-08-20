@@ -240,7 +240,7 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
 
     void SingleApplicationPrivate::terminate( int signum )
     {
-        delete ((SingleApplication*)QApplication::instance())->d_ptr;
+        delete ((SingleApplication*)QCoreApplication::instance())->d_ptr;
         ::exit( 128 + signum );
     }
 #endif
