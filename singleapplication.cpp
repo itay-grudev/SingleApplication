@@ -45,6 +45,7 @@
 #include "singleapplication.h"
 #include "singleapplication_p.h"
 
+
 static const char NewInstance = 'N';
 static const char SecondaryInstance = 'S';
 static const char Reconnect =  'R';
@@ -61,14 +62,17 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
         socket->close();
         delete socket;
     }
+
     memory->lock();
     InstancesInfo* inst = (InstancesInfo*)memory->data();
     if( server != nullptr ) {
         server->close();
         delete server;
         inst->primary = false;
+        inst->primaryPid = -1;
     }
     memory->unlock();
+
     delete memory;
 }
 
@@ -128,6 +132,8 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
 
 void SingleApplicationPrivate::startPrimary( bool resetMemory )
 {
+    Q_Q(SingleApplication);
+
 #ifdef Q_OS_UNIX
     // Handle any further termination signals to ensure the
     // QSharedMemory block is deleted even if the process crashes
@@ -158,12 +164,12 @@ void SingleApplicationPrivate::startPrimary( bool resetMemory )
     memory->lock();
     InstancesInfo* inst = (InstancesInfo*)memory->data();
 
-    if( resetMemory ){
-        inst->primary = true;
+    if( resetMemory ) {
         inst->secondary = 0;
-    } else {
-        inst->primary = true;
     }
+
+    inst->primary = true;
+    inst->primaryPid = q->applicationPid();
 
     memory->unlock();
 
@@ -215,6 +221,18 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
         socket->flush();
         socket->waitForBytesWritten( msecs );
     }
+}
+
+qint64 SingleApplicationPrivate::primaryPid()
+{
+    qint64 pid;
+
+    memory->lock();
+    InstancesInfo* inst = (InstancesInfo*)memory->data();
+    pid = inst->primaryPid;
+    memory->unlock();
+
+    return pid;
 }
 
 #ifdef Q_OS_UNIX
@@ -431,6 +449,12 @@ quint32 SingleApplication::instanceId()
 {
     Q_D(SingleApplication);
     return d->instanceNumber;
+}
+
+qint64 SingleApplication::primaryPid()
+{
+    Q_D(SingleApplication);
+    return d->primaryPid();
 }
 
 bool SingleApplication::sendMessage( QByteArray message, int timeout )
