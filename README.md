@@ -80,41 +80,10 @@ Using `SingleApplication::instance()` is a neat way to get the
 `SingleApplication` instance for binding to it's signals anywhere in your
 program.
 
-__Note:__ On Windows systems the ability to set the application to the front of
-the desktop is restricted, see
-[AllowSetForegroundWindow](https://msdn.microsoft.com/en-us/library/windows/desktop/ms632668.aspx)
-for more details.
-Two rules say that the process that can allow setting the foreground window is
-the foreground process or was started by the foreground process. So to correctly
-use this, the secondary application instance must call this SDK function with
-the process ID of the primary application instance. This allows the primary
-application to set its window to the foreground.
+__Note:__ On Windows the ability to bring the application windows to the
+foreground is restricted. See [Windows specific implementations](Windows.md)
+for a workaround and an example implementation.
 
-*To make this work the `SingleApplication` must be constructed with `allowSecondary`
-parameter set to `true` and the `options` parameter must contain
-`Mode::SecondaryNotification`, See `SingleApplication::Mode` for more details.*
-
-```cpp
-If ( app.isSecondary() ) {
-    // This API requires LIBS += User32.lib to be added to the project
-    AllowSetForegroundWindow( DWORD( app.getPrimaryPid() ) );
-}
-
-If ( app.isPrimary() ) {
-    QObject::connect(
-        &app,
-        &SingleApplication::instanceStarted,
-        this,
-        &MyApp::instanceAppStarted
-    );
-}
-```
-
-```cpp
-void MyApp::instanceAppStarted() {
-    setActiveWindow( [window/widget to set to the foreground] );
-}
-```
 
 Secondary Instances
 -------------------
@@ -213,7 +182,15 @@ Returns if the instance is a secondary instance.
 quint32 SingleApplication::instanceId()
 ```
 
-Returns a unique identifier for the current instance
+Returns a unique identifier for the current instance.
+
+---
+
+```cpp
+qint64 SingleApplication::primaryPid()
+```
+
+Returns the process ID (PID) of the primary instance.
 
 ### Signals
 

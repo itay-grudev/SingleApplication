@@ -62,15 +62,17 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
         socket->close();
         delete socket;
     }
+
     memory->lock();
     InstancesInfo* inst = (InstancesInfo*)memory->data();
     if( server != nullptr ) {
         server->close();
         delete server;
         inst->primary = false;
-        inst->primaryPid = 0;
+        inst->primaryPid = -1;
     }
     memory->unlock();
+
     delete memory;
 }
 
@@ -165,6 +167,7 @@ void SingleApplicationPrivate::startPrimary( bool resetMemory )
     if( resetMemory ) {
         inst->secondary = 0;
     }
+
     inst->primary = true;
     inst->primaryPid = q->applicationPid();
 
@@ -220,16 +223,16 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
     }
 }
 
-qint64 SingleApplicationPrivate::getPrimaryPid()
+qint64 SingleApplicationPrivate::primaryPid()
 {
-    qint64 pPid = 0;
+    qint64 pid;
 
     memory->lock();
     InstancesInfo* inst = (InstancesInfo*)memory->data();
-    pPid = inst->primaryPid;
+    pid = inst->primaryPid;
     memory->unlock();
 
-    return pPid;
+    return pid;
 }
 
 #ifdef Q_OS_UNIX
@@ -448,10 +451,10 @@ quint32 SingleApplication::instanceId()
     return d->instanceNumber;
 }
 
-qint64 SingleApplication::getPrimaryPid()
+qint64 SingleApplication::primaryPid()
 {
     Q_D(SingleApplication);
-    return d->getPrimaryPid();
+    return d->primaryPid();
 }
 
 bool SingleApplication::sendMessage( QByteArray message, int timeout )

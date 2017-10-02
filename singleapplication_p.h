@@ -55,7 +55,7 @@ public:
     void startPrimary( bool resetMemory );
     void startSecondary();
     void connectToPrimary( int msecs, char connectionType );
-    qint64 getPrimaryPid();
+    qint64 primaryPid();
 
 #ifdef Q_OS_UNIX
     void crashHandler();
