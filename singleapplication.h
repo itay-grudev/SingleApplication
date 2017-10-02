@@ -107,6 +107,12 @@ public:
     quint32 instanceId();
 
     /**
+     * @brief Returns the process ID (PID) of the primary instance
+     * @returns {int}
+     */
+    qint64 getPrimaryPid();
+
+    /**
      * @brief Sends a message to the primary instance. Returns true on success.
      * @param {int} timeout - Timeout for connecting
      * @returns {bool}
