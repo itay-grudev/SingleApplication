@@ -46,6 +46,12 @@ struct InstancesInfo {
 class SingleApplicationPrivate : public QObject {
 Q_OBJECT
 public:
+    enum SingleAppConnectionType : quint8 {
+      InvalidConnection = 0,
+      NewInstance,
+      SecondaryInstance,
+      Reconnect
+    };
     Q_DECLARE_PUBLIC(SingleApplication)
 
     SingleApplicationPrivate( SingleApplication *q_ptr );
@@ -54,7 +60,7 @@ public:
     void genBlockServerName( int msecs );
     void startPrimary( bool resetMemory );
     void startSecondary();
-    void connectToPrimary( int msecs, char connectionType );
+    void connectToPrimary(int msecs, SingleAppConnectionType connectionType );
     qint64 primaryPid();
 
 #ifdef Q_OS_UNIX
