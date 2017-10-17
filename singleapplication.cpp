@@ -181,7 +181,7 @@ void SingleApplicationPrivate::startSecondary()
 #endif
 }
 
-void SingleApplicationPrivate::connectToPrimary( int msecs, SingleAppConnectionType connectionType )
+void SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType connectionType )
 {
     // Connect to the Local Server of the Primary Instance if not already
     // connected.
@@ -272,7 +272,7 @@ void SingleApplicationPrivate::slotConnectionEstablished()
     QLocalSocket *nextConnSocket = server->nextPendingConnection();
 
     quint32 instanceId = 0;
-    SingleAppConnectionType connectionType = InvalidConnection;
+    ConnectionType connectionType = InvalidConnection;
     if( nextConnSocket->waitForReadyRead( 100 ) ) {
         // read all data from message in same order/format as written
         QByteArray msgBytes = nextConnSocket->read(nextConnSocket->bytesAvailable() - static_cast<qint64>(sizeof(quint16)));
@@ -286,7 +286,7 @@ void SingleApplicationPrivate::slotConnectionEstablished()
         // connectioon type
         quint8 connType = InvalidConnection;
         readStream >> connType;
-        connectionType = static_cast<SingleAppConnectionType>(connType);
+        connectionType = static_cast<ConnectionType>(connType);
         // instance id
         readStream >> instanceId;
         // checksum
