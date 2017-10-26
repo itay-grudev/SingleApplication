@@ -21,8 +21,10 @@
 // THE SOFTWARE.
 
 #include <cstdlib>
+#include <cstddef>
 
 #include <QtCore/QDir>
+#include <QtCore/QTime>
 #include <QtCore/QProcess>
 #include <QtCore/QByteArray>
 #include <QtCore/QSemaphore>
@@ -51,7 +53,9 @@ static const char SecondaryInstance = 'S';
 static const char Reconnect =  'R';
 static const char InvalidConnection = '\0';
 
-SingleApplicationPrivate::SingleApplicationPrivate( SingleApplication *q_ptr ) : q_ptr( q_ptr ) {
+SingleApplicationPrivate::SingleApplicationPrivate( SingleApplication *q_ptr )
+    : q_ptr( q_ptr )
+{
     server = nullptr;
     socket = nullptr;
 }
@@ -70,13 +74,14 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
         delete server;
         inst->primary = false;
         inst->primaryPid = -1;
+        inst->checksum = blockChecksum();
     }
     memory->unlock();
 
     delete memory;
 }
 
-void SingleApplicationPrivate::genBlockServerName( int timeout )
+void SingleApplicationPrivate::genBlockServerName()
 {
     QCryptographicHash appData( QCryptographicHash::Sha256 );
     appData.addData( "SingleApplication", 17 );
@@ -112,7 +117,7 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
 #ifdef Q_OS_UNIX
         QProcess process;
         process.start( "whoami" );
-        if( process.waitForFinished( timeout ) &&
+        if( process.waitForFinished( 100 ) &&
             process.exitCode() == QProcess::NormalExit) {
             appData.addData( process.readLine() );
         } else {
@@ -130,7 +135,16 @@ void SingleApplicationPrivate::genBlockServerName( int timeout )
     blockServerName = appData.result().toBase64().replace("/", "_");
 }
 
-void SingleApplicationPrivate::startPrimary( bool resetMemory )
+void SingleApplicationPrivate::initializeMemoryBlock()
+{
+    InstancesInfo* inst = (InstancesInfo*)memory->data();
+    inst->primary = false;
+    inst->secondary = 0;
+    inst->primaryPid = -1;
+    inst->checksum = blockChecksum();
+}
+
+void SingleApplicationPrivate::startPrimary()
 {
     Q_Q(SingleApplication);
 
@@ -161,17 +175,10 @@ void SingleApplicationPrivate::startPrimary( bool resetMemory )
     );
 
     // Reset the number of connections
-    memory->lock();
     InstancesInfo* inst = (InstancesInfo*)memory->data();
-
-    if( resetMemory ) {
-        inst->secondary = 0;
-    }
-
     inst->primary = true;
     inst->primaryPid = q->applicationPid();
-
-    memory->unlock();
+    inst->checksum = blockChecksum();
 
     instanceNumber = 0;
 }
@@ -221,6 +228,14 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, char connectionType 
         socket->flush();
         socket->waitForBytesWritten( msecs );
     }
+}
+
+quint16 SingleApplicationPrivate::blockChecksum()
+{
+    return qChecksum(
+       (const char *)memory->data(),
+       offsetof( InstancesInfo, checksum )
+   );
 }
 
 qint64 SingleApplicationPrivate::primaryPid()
@@ -375,52 +390,83 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 
     // Generating an application ID used for identifying the shared memory
     // block and QLocalServer
-    d->genBlockServerName( timeout );
+    d->genBlockServerName();
 
-    // Guarantee thread safe behaviour with a shared memory block. Also by
-    // explicitly attaching it and then deleting it we make sure that the
-    // memory is deleted even if the process had crashed on Unix.
 #ifdef Q_OS_UNIX
+    // By explicitly attaching it and then deleting it we make sure that the
+    // memory is deleted even after the process has crashed on Unix.
     d->memory = new QSharedMemory( d->blockServerName );
     d->memory->attach();
     delete d->memory;
 #endif
+    // Guarantee thread safe behaviour with a shared memory block.
     d->memory = new QSharedMemory( d->blockServerName );
 
     // Create a shared memory block
     if( d->memory->create( sizeof( InstancesInfo ) ) ) {
-        d->startPrimary( true );
-        return;
+        // Initialize the shared memory block
+        d->memory->lock();
+        d->initializeMemoryBlock();
+        d->memory->unlock();
     } else {
         // Attempt to attach to the memory segment
-        if( d->memory->attach() ) {
-            d->memory->lock();
-            InstancesInfo* inst = (InstancesInfo*)d->memory->data();
-
-            if( ! inst->primary ) {
-                d->startPrimary( false );
-                d->memory->unlock();
-                return;
-            }
-
-            // Check if another instance can be started
-            if( allowSecondary ) {
-                inst->secondary += 1;
-                d->instanceNumber = inst->secondary;
-                d->startSecondary();
-                if( d->options & Mode::SecondaryNotification ) {
-                    d->connectToPrimary( timeout, SecondaryInstance );
-                }
-                d->memory->unlock();
-                return;
-            }
-
-            d->memory->unlock();
+        if( ! d->memory->attach() ) {
+#ifdef QT_DEBUG
+            qCritical() << "SingleApplication: Unable to attach to shared memory block.";
+            qCritical() << d->memory->errorString();
+#endif
+            delete d;
+            ::exit( EXIT_FAILURE );
         }
     }
 
+    InstancesInfo* inst = (InstancesInfo*)d->memory->data();
+
+    QTime time;
+    time.start();
+
+    // Make sure the shared memory block is initialised and in consistent state
+    while( true ) {
+        d->memory->lock();
+
+        if( d->blockChecksum() == inst->checksum ) break;
+
+        if( time.elapsed() > 5000 ) {
+#ifdef QT_DEBUG
+            qWarning() << "SingleApplication: Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
+#endif
+            d->initializeMemoryBlock();
+        }
+
+        d->memory->unlock();
+        sleep( 10 );
+    }
+
+    if( inst->primary == false) {
+        d->startPrimary();
+        d->memory->unlock();
+        return;
+    }
+
+    // Check if another instance can be started
+    if( allowSecondary ) {
+        inst->secondary += 1;
+        inst->checksum = d->blockChecksum();
+        d->instanceNumber = inst->secondary;
+        d->startSecondary();
+        if( d->options & Mode::SecondaryNotification ) {
+            d->connectToPrimary( timeout, SecondaryInstance );
+        }
+        d->memory->unlock();
+        return;
+    }
+
+    d->memory->unlock();
+
     d->connectToPrimary( timeout, NewInstance );
+
     delete d;
+
     ::exit( EXIT_SUCCESS );
 }
 
