@@ -269,6 +269,38 @@ qint64 SingleApplicationPrivate::primaryPid()
     }
 #endif
 
+#ifdef Q_OS_WIN
+    bool SingleApplicationPrivate::isRunAsAdmin()
+    {
+        BOOL isRunAsAdmin = FALSE;
+        BOOL sidAllocationSuccess = FALSE;
+        PSID pAdministratorsGroup = NULL;
+
+        // Allocate and initialize a SID of the administrators group.
+        SID_IDENTIFIER_AUTHORITY NtAuthority = SECURITY_NT_AUTHORITY;
+        sidAllocationSuccess = AllocateAndInitializeSid(
+            &NtAuthority,
+            2,
+            SECURITY_BUILTIN_DOMAIN_RID,
+            DOMAIN_ALIAS_RID_ADMINS,
+            0, 0, 0, 0, 0, 0,
+            &pAdministratorsGroup
+        );
+
+        if( sidAllocationSuccess ) {
+            // Determine whether the SID of administrators group is enabled in
+            // the primary access token of the process.
+            if( !CheckTokenMembership( NULL, pAdministratorsGroup, &isRunAsAdmin ) ) {
+                isRunAsAdmin = FALSE;
+            }
+
+            FreeSid( pAdministratorsGroup );
+        }
+
+        return isRunAsAdmin;
+    }
+#endif
+
 /**
  * @brief Executed when a connection has been made to the LocalServer
  */
@@ -396,7 +428,20 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     d->memory->attach();
     delete d->memory;
 #endif
+
+#ifdef Q_OS_WIN
+    if( (options & Mode::System) && d->isRunAsAdmin() ){
+        QSharedMemory *memory = new QSharedMemory();
+        memory->setNativeKey( "Global\\" + d->blockServerName );
+        d->memory = memory;
+    }
+    else
+        d->memory = new QSharedMemory( d->blockServerName );
+#else
+
     d->memory = new QSharedMemory( d->blockServerName );
+
+#endif
 
     // Create a shared memory block
     if( d->memory->create( sizeof( InstancesInfo ) ) ) {

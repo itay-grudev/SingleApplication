@@ -68,6 +68,10 @@ public:
     static void terminate( int signum );
 #endif
 
+#ifdef Q_OS_WIN
+    bool isRunAsAdmin();
+#endif
+
     QSharedMemory *memory;
     SingleApplication *q_ptr;
     QLocalSocket *socket;
