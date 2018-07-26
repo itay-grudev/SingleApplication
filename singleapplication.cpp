@@ -216,6 +216,13 @@ void SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType conne
         quint16 checksum = qChecksum(initMsg.constData(), static_cast<quint32>(initMsg.length()));
         writeStream << checksum;
 
+        // The header indicates the message length that follows
+        QByteArray header;
+        QDataStream headerStream(&header, QIODevice::WriteOnly);
+        headerStream.setVersion(QDataStream::Qt_5_6);
+        headerStream << (quint64) initMsg.length();
+
+        socket->write( header );
         socket->write( initMsg );
         socket->flush();
         socket->waitForBytesWritten( msecs );
@@ -274,31 +281,41 @@ void SingleApplicationPrivate::slotConnectionEstablished()
     quint32 instanceId = 0;
     ConnectionType connectionType = InvalidConnection;
     if( nextConnSocket->waitForReadyRead( 100 ) ) {
-        // read all data from message in same order/format as written
-        QByteArray msgBytes = nextConnSocket->read(nextConnSocket->bytesAvailable() - static_cast<qint64>(sizeof(quint16)));
-        QByteArray checksumBytes = nextConnSocket->read(sizeof(quint16));
-        QDataStream readStream(msgBytes);
-        readStream.setVersion(QDataStream::Qt_5_6);
+        // read the fields in same order and format as written
+        QDataStream headerStream(nextConnSocket);
+        headerStream.setVersion(QDataStream::Qt_5_6);
 
-        // server name
-        QByteArray latin1Name;
-        readStream >> latin1Name;
-        // connectioon type
-        quint8 connType = InvalidConnection;
-        readStream >> connType;
-        connectionType = static_cast<ConnectionType>(connType);
-        // instance id
-        readStream >> instanceId;
-        // checksum
-        quint16 msgChecksum = 0;
-        QDataStream checksumStream(checksumBytes);
-        checksumStream.setVersion(QDataStream::Qt_5_6);
-        checksumStream >> msgChecksum;
+        // Read the header to know the message length
+        quint64 msgLen = 0;
+        headerStream >> msgLen;
 
-        const quint16 actualChecksum = qChecksum(msgBytes.constData(), static_cast<quint32>(msgBytes.length()));
+        if (msgLen >= sizeof(quint16)) {
+           // Read the message body
+           QByteArray msgBytes = nextConnSocket->read(msgLen);
+           QDataStream readStream(msgBytes);
+           readStream.setVersion(QDataStream::Qt_5_6);
 
-        if (readStream.status() != QDataStream::Ok || QLatin1String(latin1Name) != blockServerName || msgChecksum != actualChecksum) {
-          connectionType = InvalidConnection;
+           // server name
+           QByteArray latin1Name;
+           readStream >> latin1Name;
+
+           // connection type
+           quint8 connType = InvalidConnection;
+           readStream >> connType;
+           connectionType = static_cast<ConnectionType>(connType);
+
+           // instance id
+           readStream >> instanceId;
+
+           // checksum
+           quint16 msgChecksum = 0;
+           readStream >> msgChecksum;
+
+           const quint16 actualChecksum = qChecksum(msgBytes.constData(), static_cast<quint32>(msgBytes.length() - sizeof(quint16)));
+
+           if (readStream.status() != QDataStream::Ok || QLatin1String(latin1Name) != blockServerName || msgChecksum != actualChecksum) {
+             connectionType = InvalidConnection;
+           }
         }
     }
 

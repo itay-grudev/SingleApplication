@@ -50,7 +50,7 @@
 
 #include <QApplication>
 
-#include <SingleApplication.h>
+#include <singleapplication.h>
 
 #include "calculator.h"
 
