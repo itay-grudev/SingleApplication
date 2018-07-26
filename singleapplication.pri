@@ -9,7 +9,7 @@ INCLUDEPATH += $$PWD
 
 win32 {
     msvc:LIBS += Advapi32.lib
-    gcc:LIBS += -lAdvapi32
+    gcc:LIBS += -ladvapi32
 }
 
 DISTFILES += \
