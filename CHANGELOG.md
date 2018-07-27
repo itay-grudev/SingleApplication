@@ -1,6 +1,11 @@
 Changelog
 =========
 
+__3.0.12a__
+----------
+
+* Removed signal handling.
+
 __3.0.11a__
 ----------
 

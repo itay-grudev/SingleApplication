@@ -66,11 +66,6 @@ public:
     quint16 blockChecksum();
     qint64 primaryPid();
 
-#ifdef Q_OS_UNIX
-    void crashHandler();
-    [[noreturn]] static void terminate( int signum );
-#endif
-
     SingleApplication *q_ptr;
     QSharedMemory *memory;
     QLocalSocket *socket;

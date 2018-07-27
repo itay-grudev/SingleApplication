@@ -252,36 +252,14 @@ Implementation
 The library is implemented with a QSharedMemory block which is thread safe and
 guarantees a race condition will not occur. It also uses a QLocalSocket to
 notify the main process that a new instance had been spawned and thus invoke the
-`instanceStarted()` signal.
+`instanceStarted()` signal and for messaging the primary instance.
 
-To handle an issue on `*nix` systems, where the operating system owns the shared
-memory block and if the program crashes the memory remains untouched, the
-library binds to the following signals and closes the program with
-`error code = 128 + signum` where signum is the number representation of the
-signal listed below. Handling the signal is required in order to safely delete
-the `QSharedMemory` block. Each of these signals are potentially lethal and will
-results in process termination.
-
-*   `SIGHUP` - `1`, Hangup.
-*   `SIGINT` - `2`, Terminal interrupt signal
-*   `SIGQUIT` - `3`, Terminal quit signal.
-*   `SIGILL` - `4`, Illegal instruction.
-*   `SIGABRT` - `6`, Process abort signal.
-*   `SIGBUS` - `7`, Access to an undefined portion of a memory object.
-*   `SIGFPE` - `8`, Erroneous arithmetic operation (such as division by zero).
-*   `SIGSEGV` - `11`, Invalid memory reference.
-*   `SIGSYS` - `12`, Bad system call.
-*   `SIGPIPE` - `13`, Write on a pipe with no one to read it.
-*   `SIGALRM` - `14`, Alarm clock.
-*   `SIGTERM` - `15`, Termination signal.
-*   `SIGXCPU` - `24`, CPU time limit exceeded.
-*   `SIGXFSZ` - `25`, File size limit exceeded.
-
-Additionally the library can recover from being killed with uncatchable signals
-and will reset the memory block given that there are no other instances running.
+Additionally the library can recover from being forcefully killed on *nix
+systems and will reset the memory block given that there are no other
+instances running.
 
 License
 -------
 This library and it's supporting documentation are released under
-`The MIT License (MIT)` with the exception of some of the examples distributed
-under the BSD license.
+`The MIT License (MIT)` with the exception of the Qt calculator examples which
+is distributed under the BSD license.

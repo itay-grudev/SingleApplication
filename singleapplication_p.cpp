@@ -45,11 +45,6 @@
 #include "singleapplication.h"
 #include "singleapplication_p.h"
 
-#ifdef Q_OS_UNIX
-    #include <signal.h>
-    #include <unistd.h>
-#endif
-
 #ifdef Q_OS_WIN
     #include <windows.h>
     #include <lmcons.h>
@@ -150,11 +145,6 @@ void SingleApplicationPrivate::startPrimary()
 {
     Q_Q(SingleApplication);
 
-#ifdef Q_OS_UNIX
-    // Handle any further termination signals to ensure the
-    // QSharedMemory block is deleted even if the process crashes
-    crashHandler();
-#endif
     // Successful creation means that no main process exists
     // So we start a QLocalServer to listen for connections
     QLocalServer::removeServer( blockServerName );
@@ -188,11 +178,6 @@ void SingleApplicationPrivate::startPrimary()
 
 void SingleApplicationPrivate::startSecondary()
 {
-#ifdef Q_OS_UNIX
-    // Handle any further termination signals to ensure the
-    // QSharedMemory block is deleted even if the process crashes
-    crashHandler();
-#endif
 }
 
 void SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType connectionType )
@@ -262,34 +247,6 @@ qint64 SingleApplicationPrivate::primaryPid()
 
     return pid;
 }
-
-#ifdef Q_OS_UNIX
-    void SingleApplicationPrivate::crashHandler()
-    {
-        // Handle any further termination signals to ensure the
-        // QSharedMemory block is deleted even if the process crashes
-        signal( SIGHUP,  SingleApplicationPrivate::terminate ); // 1
-        signal( SIGINT,  SingleApplicationPrivate::terminate ); // 2
-        signal( SIGQUIT, SingleApplicationPrivate::terminate ); // 3
-        signal( SIGILL,  SingleApplicationPrivate::terminate ); // 4
-        signal( SIGABRT, SingleApplicationPrivate::terminate ); // 6
-        signal( SIGFPE,  SingleApplicationPrivate::terminate ); // 8
-        signal( SIGBUS,  SingleApplicationPrivate::terminate ); // 10
-        signal( SIGSEGV, SingleApplicationPrivate::terminate ); // 11
-        signal( SIGSYS,  SingleApplicationPrivate::terminate ); // 12
-        signal( SIGPIPE, SingleApplicationPrivate::terminate ); // 13
-        signal( SIGALRM, SingleApplicationPrivate::terminate ); // 14
-        signal( SIGTERM, SingleApplicationPrivate::terminate ); // 15
-        signal( SIGXCPU, SingleApplicationPrivate::terminate ); // 24
-        signal( SIGXFSZ, SingleApplicationPrivate::terminate ); // 25
-    }
-
-    [[noreturn]] void SingleApplicationPrivate::terminate( int signum )
-    {
-        delete (static_cast <SingleApplication*>( QCoreApplication::instance() ))->d_ptr;
-        ::exit( 128 + signum );
-    }
-#endif
 
 /**
  * @brief Executed when a connection has been made to the LocalServer
