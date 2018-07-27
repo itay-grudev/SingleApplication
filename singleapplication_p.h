@@ -41,6 +41,7 @@ struct InstancesInfo {
     bool primary;
     quint32 secondary;
     qint64 primaryPid;
+    quint16 checksum;
 };
 
 class SingleApplicationPrivate : public QObject {
@@ -57,19 +58,21 @@ public:
     SingleApplicationPrivate( SingleApplication *q_ptr );
      ~SingleApplicationPrivate();
 
-    void genBlockServerName( int msecs );
-    void startPrimary( bool resetMemory );
+    void genBlockServerName();
+    void initializeMemoryBlock();
+    void startPrimary();
     void startSecondary();
     void connectToPrimary(int msecs, ConnectionType connectionType );
+    quint16 blockChecksum();
     qint64 primaryPid();
 
 #ifdef Q_OS_UNIX
     void crashHandler();
-    static void terminate( int signum );
+    [[noreturn]] static void terminate( int signum );
 #endif
 
-    QSharedMemory *memory;
     SingleApplication *q_ptr;
+    QSharedMemory *memory;
     QLocalSocket *socket;
     QLocalServer *server;
     quint32 instanceNumber;
