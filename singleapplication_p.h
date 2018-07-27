@@ -44,6 +44,14 @@ struct InstancesInfo {
     quint16 checksum;
 };
 
+struct ConnectionInfo {
+    explicit ConnectionInfo() :
+        msgLen(0), instanceId(0), stage(0) {}
+    qint64 msgLen;
+    quint32 instanceId;
+    quint8 stage;
+};
+
 class SingleApplicationPrivate : public QObject {
 Q_OBJECT
 public:
@@ -52,6 +60,11 @@ public:
         NewInstance = 1,
         SecondaryInstance = 2,
         Reconnect = 3
+    };
+    enum ConnectionStage : quint8 {
+        StageHeader = 0,
+        StageBody = 1,
+        StageConnected = 2,
     };
     Q_DECLARE_PUBLIC(SingleApplication)
 
@@ -65,6 +78,8 @@ public:
     void connectToPrimary(int msecs, ConnectionType connectionType );
     quint16 blockChecksum();
     qint64 primaryPid();
+    void readInitMessageHeader(QLocalSocket *socket);
+    void readInitMessageBody(QLocalSocket *socket);
 
     SingleApplication *q_ptr;
     QSharedMemory *memory;
@@ -73,6 +88,7 @@ public:
     quint32 instanceNumber;
     QString blockServerName;
     SingleApplication::Options options;
+    QMap<QLocalSocket*, ConnectionInfo> connectionMap;
 
 public Q_SLOTS:
     void slotConnectionEstablished();
