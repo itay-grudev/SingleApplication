@@ -1,6 +1,31 @@
 Changelog
 =========
 
+__3.0.11a__
+----------
+
+* Fixed bug where the message sent by the second process was not received
+  correctly when the message is sent immediately following a connection.
+
+   _Francis Giraldeau_
+
+* Refactored code and implemented shared memory block consistency checks
+  via `qChecksum()` (CRC-16).
+* Explicit `qWarning` and `qCritical` when the library is unable to initialise
+  correctly.
+
+__3.0.10__
+----------
+
+* Removed C style casts and eliminated all clang warnings. Fixed `instanceId`
+  reading from only one byte in the message deserialization. Cleaned up
+  serialization code using `QDataStream`. Changed connection type to use
+  `quint8 enum` rather than `char`.
+* Renamed `SingleAppConnectionType` to `ConnectionType`. Added initialization
+  values to all `ConnectionType` enum cases.
+
+    _Jedidiah Buck McCready_
+
 __3.0.9__
 ---------
 
