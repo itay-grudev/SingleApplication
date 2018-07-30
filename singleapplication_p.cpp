@@ -353,8 +353,8 @@ void SingleApplicationPrivate::readInitMessageBody( QLocalSocket *sock )
     const quint16 actualChecksum = qChecksum( msgBytes.constData(), static_cast<quint32>( msgBytes.length() - sizeof( quint16 ) ) );
 
     bool isValid = readStream.status() == QDataStream::Ok &&
-                   QLatin1String(latin1Name) != blockServerName &&
-                   msgChecksum != actualChecksum;
+                   QLatin1String(latin1Name) == blockServerName &&
+                   msgChecksum == actualChecksum;
 
     if( !isValid ) {
         sock->close();
