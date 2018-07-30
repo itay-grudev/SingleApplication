@@ -280,7 +280,7 @@ void SingleApplicationPrivate::slotConnectionEstablished()
                 readInitMessageBody(nextConnSocket);
                 break;
             case StageConnected:
-                Q_EMIT this->slotDataAvailable( socket, info.instanceId );
+                Q_EMIT this->slotDataAvailable( nextConnSocket, info.instanceId );
                 break;
             default:
                 break;
