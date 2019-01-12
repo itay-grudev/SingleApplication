@@ -80,7 +80,7 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
 void SingleApplicationPrivate::genBlockServerName()
 {
     QCryptographicHash appData( QCryptographicHash::Sha256 );
-    appData.addData( QT_STRINGIFY(SINGLEAPPLICATION_CLASS), sizeof(QT_STRINGIFY(SINGLEAPPLICATION_CLASS)) );
+    appData.addData( "SingleApplication", 17 );
     appData.addData( SINGLEAPPLICATION_CLASS::app_t::applicationName().toUtf8() );
     appData.addData( SINGLEAPPLICATION_CLASS::app_t::organizationName().toUtf8() );
     appData.addData( SINGLEAPPLICATION_CLASS::app_t::organizationDomain().toUtf8() );
