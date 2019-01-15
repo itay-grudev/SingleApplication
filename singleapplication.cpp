@@ -37,7 +37,7 @@
  * @param {bool} allowSecondaryInstances
  */
 SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSecondary, Options options, int timeout )
-    : app_t( argc, argv ), d_ptr( new SingleApplicationPrivate( this ) )
+    : app_t( argc, argv ), dd_ptr( new SingleApplicationPrivate( this ) )
 {
     Q_D(SingleApplication);
 
