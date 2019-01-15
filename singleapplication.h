@@ -126,8 +126,8 @@ Q_SIGNALS:
     void receivedMessage( quint32 instanceId, QByteArray message );
 
 private:
-    SingleApplicationPrivate *d_ptr;
-    Q_DECLARE_PRIVATE(SingleApplication)
+    SingleApplicationPrivate *dd_ptr;
+    Q_DECLARE_PRIVATE_D(dd_ptr, SingleApplication)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SingleApplication::Options)
