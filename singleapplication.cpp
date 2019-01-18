@@ -26,7 +26,6 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QSharedMemory>
 
-#include "singleapplication.h"
 #include "singleapplication_p.h"
 
 /**
@@ -36,7 +35,7 @@
  * @param argv
  * @param {bool} allowSecondaryInstances
  */
-SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSecondary, Options options, int timeout )
+SINGLEAPPLICATION_CLASS::SINGLEAPPLICATION_CLASS( int &argc, char *argv[], bool allowSecondary, Options options, int timeout )
     : app_t( argc, argv ), d_ptr( new SingleApplicationPrivate( this ) )
 {
     Q_D(SingleApplication);
@@ -67,7 +66,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     } else {
         // Attempt to attach to the memory segment
         if( ! d->memory->attach() ) {
-            qCritical() << "SingleApplication: Unable to attach to shared memory block.";
+            qCritical() << QString(QT_STRINGIFY(SINGLEAPPLICATION_CLASS)) + ":" << "Unable to attach to shared memory block.";
             qCritical() << d->memory->errorString();
             delete d;
             ::exit( EXIT_FAILURE );
@@ -85,7 +84,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         if( d->blockChecksum() == inst->checksum ) break;
 
         if( time.elapsed() > 5000 ) {
-            qWarning() << "SingleApplication: Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
+            qWarning() << QString(QT_STRINGIFY(SINGLEAPPLICATION_CLASS)) + ":" << "Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
             d->initializeMemoryBlock();
         }
 
@@ -127,37 +126,37 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 /**
  * @brief Destructor
  */
-SingleApplication::~SingleApplication()
+SINGLEAPPLICATION_CLASS::~SINGLEAPPLICATION_CLASS()
 {
     Q_D(SingleApplication);
     delete d;
 }
 
-bool SingleApplication::isPrimary()
+bool SINGLEAPPLICATION_CLASS::isPrimary()
 {
     Q_D(SingleApplication);
     return d->server != nullptr;
 }
 
-bool SingleApplication::isSecondary()
+bool SINGLEAPPLICATION_CLASS::isSecondary()
 {
     Q_D(SingleApplication);
     return d->server == nullptr;
 }
 
-quint32 SingleApplication::instanceId()
+quint32 SINGLEAPPLICATION_CLASS::instanceId()
 {
     Q_D(SingleApplication);
     return d->instanceNumber;
 }
 
-qint64 SingleApplication::primaryPid()
+qint64 SINGLEAPPLICATION_CLASS::primaryPid()
 {
     Q_D(SingleApplication);
     return d->primaryPid();
 }
 
-bool SingleApplication::sendMessage( QByteArray message, int timeout )
+bool SINGLEAPPLICATION_CLASS::sendMessage( QByteArray message, int timeout )
 {
     Q_D(SingleApplication);
 
