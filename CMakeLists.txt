@@ -1,11 +1,7 @@
-# CMake for SingleApplication
-# https://github.com/itay-grudev/SingleApplication
-# Maintainer: Jonas Kvinge <jonas@jkvinge.net>
-
-include(Version.cmake)
-
 cmake_minimum_required(VERSION 2.8.11)
 set(CMAKE_CXX_STANDARD 11)
+
+include(Version.cmake)
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
