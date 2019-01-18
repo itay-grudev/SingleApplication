@@ -4,7 +4,7 @@ libdir=@LIB_INSTALL_DIR@
 includedir=@INCLUDE_INSTALL_DIR@
 
 Name: @SINGLEAPPLICATION_NAME@
-Description: Detect and communicate with running instances of an application
+Description: Library to detect and communicate with running instances of an application
 Version: @SINGLEAPPLICATION_VERSION_PACKAGE@
 Libs: -L${libdir} -l@SINGLEAPPLICATION_NAME@
 Cflags: -I${includedir}
