@@ -1,6 +1,11 @@
 Changelog
 =========
 
+__3.0.14__
+----------
+
+* Fixed uninitialised variables in the `SingleApplicationPrivate` constructor.
+
 __3.0.13a__
 ----------
 
