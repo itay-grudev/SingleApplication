@@ -50,14 +50,26 @@ how:
 git submodule add git@github.com:itay-grudev/SingleApplication.git singleapplication
 ```
 
-Then include the `singleapplication.pri` file in your `.pro` project file. Also
-don't forget to specify which `QCoreApplication` class your app is using if it
-is not `QCoreApplication`.
+**Qmake:**
+
+Then include the `singleapplication.pri` file in your `.pro` project file.
 
 ```qmake
 include(singleapplication/singleapplication.pri)
 DEFINES += QAPPLICATION_CLASS=QApplication
 ```
+
+**CMake:**
+
+Then include the subdirectory in your `CMakeLists.txt` project file.
+
+```cmake
+set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
+add_subdirectory(src/third-party/singleapplication)
+```
+
+Also don't forget to specify which `QCoreApplication` class your app is using if it
+is not `QCoreApplication` as in examples above.
 
 The `Instance Started` signal
 ------------------------
