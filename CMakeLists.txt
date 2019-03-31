@@ -7,11 +7,11 @@ set_property(CACHE QAPPLICATION_CLASS PROPERTY STRINGS QApplication QGuiApplicat
 
 find_package(Qt5Network)
 if(QAPPLICATION_CLASS STREQUAL QApplication)
-    find_package(Qt5Widgets)
+    find_package(Qt5 COMPONENTS Widgets REQUIRED)
 elseif(QAPPLICATION_CLASS STREQUAL QGuiApplication)
-    find_package(Qt5Gui)
+    find_package(Qt5 COMPONENTS Gui REQUIRED)
 else()
-    find_package(Qt5Core)
+    find_package(Qt5 COMPONENTS Core REQUIRED)
 endif()
 add_compile_definitions(QAPPLICATION_CLASS=${QAPPLICATION_CLASS})
 
