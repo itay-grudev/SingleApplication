@@ -37,9 +37,19 @@
  * @param {bool} allowSecondaryInstances
  */
 SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSecondary, Options options, int timeout )
-    : app_t( argc, argv ), d_ptr( new SingleApplicationPrivate( this ) )
+#ifdef BASE_QOBJECT
+    : QObject()
+#else
+    : app_t( argc, argv )
+#endif
+    , d_ptr( new SingleApplicationPrivate( this ) )
 {
     Q_D(SingleApplication);
+
+#ifdef BASE_QOBJECT
+    Q_UNUSED(argc);
+    Q_UNUSED(argv);
+#endif
 
     // Store the current mode of the program
     d->options = options;

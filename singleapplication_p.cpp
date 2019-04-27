@@ -144,8 +144,6 @@ void SingleApplicationPrivate::initializeMemoryBlock()
 
 void SingleApplicationPrivate::startPrimary()
 {
-    Q_Q(SingleApplication);
-
     // Successful creation means that no main process exists
     // So we start a QLocalServer to listen for connections
     QLocalServer::removeServer( blockServerName );
@@ -171,7 +169,7 @@ void SingleApplicationPrivate::startPrimary()
     InstancesInfo* inst = static_cast <InstancesInfo*>( memory->data() );
 
     inst->primary = true;
-    inst->primaryPid = q->applicationPid();
+    inst->primaryPid = SingleApplication::app_t::instance()->applicationPid();
     inst->checksum = blockChecksum();
 
     instanceNumber = 0;

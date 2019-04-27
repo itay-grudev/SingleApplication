@@ -27,7 +27,11 @@
 #include <QtNetwork/QLocalSocket>
 
 #ifndef QAPPLICATION_CLASS
+  #define BASE_QOBJECT
+  #define BASE_CLASS QObject
   #define QAPPLICATION_CLASS QCoreApplication
+#else
+  #define BASE_CLASS QAPPLICATION_CLASS
 #endif
 
 #include QT_STRINGIFY(QAPPLICATION_CLASS)
@@ -39,7 +43,7 @@ class SingleApplicationPrivate;
  * Application
  * @see QCoreApplication
  */
-class SingleApplication : public QAPPLICATION_CLASS
+class SingleApplication : public BASE_CLASS
 {
     Q_OBJECT
 
