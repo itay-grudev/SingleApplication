@@ -87,6 +87,9 @@ void SingleApplicationPrivate::genBlockServerName()
     appData.addData( SingleApplication::app_t::applicationName().toUtf8() );
     appData.addData( SingleApplication::app_t::organizationName().toUtf8() );
     appData.addData( SingleApplication::app_t::organizationDomain().toUtf8() );
+    if (!custom.isEmpty()) {
+        appData.addData(custom.toUtf8());
+    }
 
     if( ! (options & SingleApplication::Mode::ExcludeAppVersion) ) {
         appData.addData( SingleApplication::app_t::applicationVersion().toUtf8() );

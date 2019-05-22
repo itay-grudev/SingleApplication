@@ -75,6 +75,8 @@ public:
      * @arg {Mode} mode - Whether for the SingleApplication block to be applied
      * User wide or System wide.
      * @arg {int} timeout - Timeout to wait in miliseconds.
+     * @arg {QString} custom - Custom data allowing different SingleApplications
+     *                         instances running side by side.
      * @note argc and argv may be changed as Qt removes arguments that it
      * recognizes
      * @note Mode::SecondaryNotification only works if set on both the primary
@@ -85,7 +87,7 @@ public:
      * Usually 4*timeout would be the worst case (fail) scenario.
      * @see See the corresponding QAPPLICATION_CLASS constructor for reference
      */
-    explicit SingleApplication( int &argc, char *argv[], bool allowSecondary = false, Options options = Mode::User, int timeout = 1000 );
+    explicit SingleApplication( int &argc, char *argv[], bool allowSecondary = false, Options options = Mode::User, int timeout = 1000, const QString &custom = "" );
     ~SingleApplication();
 
     /**

@@ -89,6 +89,7 @@ public:
     QString blockServerName;
     SingleApplication::Options options;
     QMap<QLocalSocket*, ConnectionInfo> connectionMap;
+    QString custom;
 
 public Q_SLOTS:
     void slotConnectionEstablished();
