@@ -126,7 +126,7 @@ __3.0.1a__
 __v3.0a__
 ---------
 
-*   Depricated secondary instances count.
+*   Deprecated secondary instances count.
 *   Added a sendMessage() method to send a message to the primary instance.
 *   Added a receivedMessage() signal, emitted when a message is received from a
     secondary instance.
