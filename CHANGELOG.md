@@ -1,6 +1,9 @@
 Changelog
 =========
 
+* Bug Fix: sendMessage() might return false even though data was actually written.
+   _Jonas Kvinge_
+
 __3.0.14__
 ----------
 
