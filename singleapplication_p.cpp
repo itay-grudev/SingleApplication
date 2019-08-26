@@ -33,7 +33,6 @@
 #include <cstddef>
 
 #include <QtCore/QDir>
-#include <QtCore/QProcess>
 #include <QtCore/QByteArray>
 #include <QtCore/QDataStream>
 #include <QtCore/QCryptographicHash>
