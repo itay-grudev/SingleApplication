@@ -1,10 +1,18 @@
 Changelog
 =========
 
+__3.0.16__
+----------
+
+* Use geteuid and getpwuid to get username on Unix, fallback to environment variable.
+
+   _Jonas Kvinge_
+
 __3.0.15__
 ----------
 
 * Bug Fix: sendMessage() might return false even though data was actually written.
+
    _Jonas Kvinge_
 
 __3.0.14__
