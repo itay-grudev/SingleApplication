@@ -1,6 +1,17 @@
 Changelog
 =========
 
+__3.0.17__
+----------
+
+* Fixed compilation warning/error caused by `geteuid()` on unix based systems.
+
+   _Iakov Kirilenko_
+
+* Added CMake support
+
+   _Hennadii Chernyshchyk_
+
 __3.0.16__
 ----------
 
