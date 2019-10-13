@@ -41,10 +41,10 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 {
     Q_D(SingleApplication);
 
-#ifdef Q_OS_ANDROID
-    // On Android since the library is not supported fallback to standard
-    // QApplication behaviour by simply returning.
-    qWarning() << "SingleApplication is not supported on Android systems.";
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    // On Android and iOS since the library is not supported fallback to
+    // standard QApplication behaviour by simply returning at this point.
+    qWarning() << "SingleApplication is not supported on Android and iOS systems.";
     return;
 #endif
 
