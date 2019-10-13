@@ -1,6 +1,12 @@
 Changelog
 =========
 
+__3.0.18__
+----------
+
+* Fallback to standard QApplication class on iOS and Android systems where
+  the library is not supported.
+
 __3.0.17__
 ----------
 
