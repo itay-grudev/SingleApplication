@@ -1,0 +1,58 @@
+language: cpp
+
+matrix:
+  include:
+    - os: linux
+      sudo: required
+      dist: xenial
+      compiler: gcc
+
+      env:
+         - MATRIX_EVAL="CC=gcc-8 && CXX=g++-8"
+
+      addons:
+        artifacts:
+          paths:
+            - ./build/packages
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - sourceline: ppa:beineri/opt-qt595-xenial
+          packages:
+            - g++-8
+            - mesa-common-dev
+            - qt59base
+            - ninja-build
+
+    - os: osx
+      compiler: clang
+      osx_image: xcode10.1
+      env:
+      addons:
+        artifacts:
+          paths:
+            - ./build/packages
+        homebrew:
+          packages:
+            - cmake
+            - ninja
+            - qt
+          update: true
+
+env:
+    global:
+        - COMMON_CMAKE_OPTS_EVAL='COMMON_CMAKE_OPTS="-G Ninja -DCMAKE_BUILD_TYPE=Release"'
+
+before_install:
+ - '[ "$TRAVIS_OS_NAME" != linux ] || eval "${MATRIX_EVAL}"'
+
+before_script:
+ - '[ "$TRAVIS_OS_NAME" != linux ] || source /opt/qt59/bin/qt59-env.sh'
+ - mkdir build
+ - cd build
+ - eval "${COMMON_CMAKE_OPTS_EVAL}"
+ - '[ "$TRAVIS_OS_NAME" != osx ] || cmake ${COMMON_CMAKE_OPTS} -DCMAKE_PREFIX_PATH=$(brew --prefix qt5) ..'
+ - '[ "$TRAVIS_OS_NAME" != linux ] || cmake ${COMMON_CMAKE_OPTS} ..'
+
+script:
+ - cmake --build .
