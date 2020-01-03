@@ -6,17 +6,41 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    
+
     steps:
     - uses: actions/checkout@v2
-  
+
     - name: Install Qt
       uses: jurplel/install-qt-action@v2.2.1
       with:
         version: 5.12.6
-        
+
     - name: cmake
       run: cmake .
-      
+
     - name: make
       run: make
+
+    - name: Build example - basic (cmake)
+      run: cmake .
+      working-directory: examples/basic/
+
+    - name: Build example - basic (make)
+      run: make
+      working-directory: examples/basic/
+
+    - name: Build example - calculator (cmake)
+      run: cmake .
+      working-directory: examples/calculator/
+
+    - name: Build example - calculator (make)
+      run: make
+      working-directory: examples/calculator/
+
+    - name: Build example - sending_arguments (cmake)
+      run: cmake .
+      working-directory: examples/sending_arguments/
+
+    - name: Build example - sending_arguments (make)
+      run: make
+      working-directory: examples/sending_arguments/
