@@ -21,19 +21,19 @@ jobs:
         version: ${{ matrix.qt_version }}
 
     - name: cmake
+      run: cmake .
+
+    - name: cmake build
       run: cmake --build .
 
-    - name: make
-      run: make
-
     - name: Build example - basic (cmake)
-      run: cmake --build . && make
+      run: cmake . && make
       working-directory: examples/basic/
 
     - name: Build example - calculator (cmake)
-      run: cmake --build . && make
+      run: cmake . && make
       working-directory: examples/calculator/
 
     - name: Build example - sending_arguments (cmake)
-      run: cmake --build . && make
+      run: cmake . && make
       working-directory: examples/sending_arguments/
