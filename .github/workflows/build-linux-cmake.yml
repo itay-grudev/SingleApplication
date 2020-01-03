@@ -7,7 +7,7 @@ jobs:
 
     strategy:
       matrix:
-        qt_version: [5.11, 5.12, 5.13, 5.14]
+        qt_version: [5.11.3, 5.12.6, 5.14.0]
 
     runs-on: ubuntu-latest
 
