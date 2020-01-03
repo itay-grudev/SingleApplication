@@ -27,13 +27,13 @@ jobs:
       run: cmake --build .
 
     - name: Build example - basic (cmake)
-      run: cmake . && make
+      run: cmake . && cmake --build .
       working-directory: examples/basic/
 
     - name: Build example - calculator (cmake)
-      run: cmake . && make
+      run: cmake . && cmake --build .
       working-directory: examples/calculator/
 
     - name: Build example - sending_arguments (cmake)
-      run: cmake . && make
+      run: cmake . && cmake --build .
       working-directory: examples/sending_arguments/
