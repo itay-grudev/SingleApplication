@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: CI: Build Test
 
 on: [push, pull_request]
 
@@ -8,7 +8,7 @@ jobs:
     strategy:
       matrix:
         qt_version: [5.11.3, 5.12.6, 5.14.0]
-        platform: [ubuntu-latest, macos-latest]
+        platform: [ubuntu-latest, windows-latest, macos-latest]
 
     runs-on: ${{ matrix.platform }}
 
