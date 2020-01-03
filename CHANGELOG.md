@@ -6,6 +6,10 @@ __3.0.18__
 
 * Fallback to standard QApplication class on iOS and Android systems where
   the library is not supported.
+  
+* Added Build CI tests to verify the library builds successfully on Linux, Windows and MacOS  across multiple Qt versions.
+
+  _Anton Filimonov_
 
 __3.0.17__
 ----------
