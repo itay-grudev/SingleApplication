@@ -7,3 +7,8 @@
 /examples/calculator/calculator
 /examples/sending_arguments/sending_arguments
 CMakeLists.txt.user
+CMakeCache.txt
+CMakeCache/*
+CMakeFiles/*
+Makefile
+cmake_install.cmake
