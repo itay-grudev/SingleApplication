@@ -275,3 +275,4 @@ License
 This library and it's supporting documentation are released under
 `The MIT License (MIT)` with the exception of the Qt calculator examples which
 is distributed under the BSD license.
+
