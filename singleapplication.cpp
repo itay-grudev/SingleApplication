@@ -20,11 +20,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <QtCore/QTime>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QThread>
-#include <QtCore/QDateTime>
 #include <QtCore/QByteArray>
 #include <QtCore/QSharedMemory>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QtCore/QRandomGenerator>
+#else
+#include <QtCore/QDateTime>
+#endif
 
 #include "singleapplication.h"
 #include "singleapplication_p.h"
@@ -82,7 +86,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     }
 
     InstancesInfo* inst = static_cast<InstancesInfo*>( d->memory->data() );
-    QTime time;
+    QElapsedTimer time;
     time.start();
 
     // Make sure the shared memory block is initialised and in consistent state
@@ -99,8 +103,12 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         d->memory->unlock();
 
         // Random sleep here limits the probability of a collision between two racing apps
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+        QThread::sleep( QRandomGenerator::global()->bounded( 8u, 18u ) );
+#else
         qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
         QThread::sleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ) );
+#endif
     }
 
     if( inst->primary == false) {
