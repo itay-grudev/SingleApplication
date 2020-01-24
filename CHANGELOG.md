@@ -1,6 +1,15 @@
 Changelog
 =========
 
+__3.0.19__
+----------
+
+* Fixed code warning for depricated functions in Qt 5.10 related to `QTime` and `qrand()`. 
+
+   _Hennadii Chernyshchyk_  
+   _Anton Filimonov_  
+   _Jonas Kvinge_
+   
 __3.0.18__
 ----------
 
