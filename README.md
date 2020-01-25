@@ -1,6 +1,8 @@
 SingleApplication
 =================
 
+![CI](https://github.com/itay-grudev/SingleApplication/workflows/CI:%20Build%20Test/badge.svg)
+
 This is a replacement of the QtSingleApplication for `Qt5`.
 
 Keeps the Primary Instance of your Application and kills each subsequent
