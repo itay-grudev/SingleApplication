@@ -42,6 +42,7 @@ struct InstancesInfo {
     quint32 secondary;
     qint64 primaryPid;
     quint16 checksum;
+    quint32 numberOfInstances;
 };
 
 struct ConnectionInfo {

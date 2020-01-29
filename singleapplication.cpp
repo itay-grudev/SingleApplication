@@ -187,3 +187,10 @@ bool SingleApplication::sendMessage( QByteArray message, int timeout )
     d->socket->flush();
     return dataWritten;
 }
+
+quint32 SingleApplication::numberOfInstances()
+{
+    Q_D(SingleApplication);
+    InstancesInfo* inst = static_cast<InstancesInfo*>( d->memory->data() );
+    return inst->numberOfInstances;
+}

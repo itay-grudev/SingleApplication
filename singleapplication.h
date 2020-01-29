@@ -121,6 +121,12 @@ public:
      */
     bool sendMessage( QByteArray message, int timeout = 100 );
 
+    /**
+     * @brief Returns the number of running instances
+     * @returns {quint32}
+     */
+    quint32 numberOfInstances();
+
 Q_SIGNALS:
     void instanceStarted();
     void receivedMessage( quint32 instanceId, QByteArray message );

@@ -206,6 +206,14 @@ qint64 SingleApplication::primaryPid()
 
 Returns the process ID (PID) of the primary instance.
 
+---
+
+```cpp
+quint32 numberOfInstances()
+```
+
+Returns the number of running instances.
+
 ### Signals
 
 ```cpp

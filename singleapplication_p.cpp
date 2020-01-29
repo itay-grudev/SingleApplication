@@ -71,6 +71,7 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
 
     memory->lock();
     InstancesInfo* inst = static_cast<InstancesInfo*>(memory->data());
+    inst->numberOfInstances -= 1;
     if( server != nullptr ) {
         server->close();
         delete server;
@@ -141,6 +142,7 @@ void SingleApplicationPrivate::initializeMemoryBlock()
     inst->secondary = 0;
     inst->primaryPid = -1;
     inst->checksum = blockChecksum();
+    inst->numberOfInstances = 0;
 }
 
 void SingleApplicationPrivate::startPrimary()
@@ -174,12 +176,15 @@ void SingleApplicationPrivate::startPrimary()
     inst->primary = true;
     inst->primaryPid = q->applicationPid();
     inst->checksum = blockChecksum();
+    inst->numberOfInstances += 1;
 
     instanceNumber = 0;
 }
 
 void SingleApplicationPrivate::startSecondary()
 {
+    InstancesInfo* inst = static_cast<InstancesInfo*>( memory->data() );
+    inst->numberOfInstances += 1;
 }
 
 void SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType connectionType )
