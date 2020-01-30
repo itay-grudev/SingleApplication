@@ -191,6 +191,9 @@ bool SingleApplication::sendMessage( QByteArray message, int timeout )
 quint32 SingleApplication::numberOfInstances()
 {
     Q_D(SingleApplication);
+    d->memory->lock();
     InstancesInfo* inst = static_cast<InstancesInfo*>( d->memory->data() );
-    return inst->numberOfInstances;
+    quint32 ret = inst->numberOfInstances;
+    d->memory->unlock();
+    return ret;
 }
