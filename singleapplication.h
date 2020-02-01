@@ -101,6 +101,12 @@ public:
     bool isSecondary();
 
     /**
+     * @brief Check if the instance is the only running instance.
+     * @returns {bool}
+     */
+    bool isSingleInstance();
+
+    /**
      * @brief Returns a unique identifier for the current instance
      * @returns {qint32}
      */

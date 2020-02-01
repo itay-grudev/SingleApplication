@@ -160,6 +160,31 @@ bool SingleApplication::isSecondary()
     return d->server == nullptr;
 }
 
+bool SingleApplication::isSingleInstance()
+{
+    Q_D(SingleApplication);
+
+    InstancesInfo backup = *static_cast<InstancesInfo*>( d->memory->data() );
+
+    d->memory->detach();
+
+    if ( d->memory->create( sizeof( InstancesInfo ) ) ) {
+        d->memory->lock();
+        *static_cast<InstancesInfo*>( d->memory->data() ) = backup;
+        d->memory->unlock();
+        return true;
+    }
+
+    if( ! d->memory->attach() ) {
+        qCritical() << "SingleApplication: Unable to attach to shared memory block.";
+        qCritical() << d->memory->errorString();
+        delete d;
+        ::exit( EXIT_FAILURE );
+    }
+
+    return false;
+}
+
 quint32 SingleApplication::instanceId()
 {
     Q_D(SingleApplication);

@@ -193,6 +193,13 @@ Returns if the instance is a secondary instance.
 ---
 
 ```cpp
+bool SingleApplication::isSingleInstance()
+```
+Returns if the instance is the only running instance.
+
+---
+
+```cpp
 quint32 SingleApplication::instanceId()
 ```
 
