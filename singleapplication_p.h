@@ -35,6 +35,7 @@
 #include <QtCore/QSharedMemory>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
+#include <QMutex>
 #include "singleapplication.h"
 
 struct InstancesInfo {
