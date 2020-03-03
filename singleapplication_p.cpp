@@ -76,11 +76,33 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
         delete server;
         inst->primary = false;
         inst->primaryPid = -1;
+        inst->primaryUser[0] =  '\0';
         inst->checksum = blockChecksum();
     }
     memory->unlock();
 
     delete memory;
+}
+
+QByteArray SingleApplicationPrivate::getUsername(){
+#ifdef Q_OS_WIN
+      wchar_t username[UNLEN + 1];
+      // Specifies size of the buffer on input
+      DWORD usernameLength = UNLEN + 1;
+      if( GetUserNameW( username, &usernameLength ) )
+          return QString::fromWCharArray( username ).toUtf8();
+      return qgetenv( "USERNAME" );
+#endif
+#ifdef Q_OS_UNIX
+      QByteArray username;
+      uid_t uid = geteuid();
+      struct passwd *pw = getpwuid( uid );
+      if( pw )
+          username = pw->pw_name;
+      if( username.isEmpty() )
+          username = qgetenv( "USER" );
+      return username;
+#endif
 }
 
 void SingleApplicationPrivate::genBlockServerName()
@@ -105,28 +127,7 @@ void SingleApplicationPrivate::genBlockServerName()
 
     // User level block requires a user specific data in the hash
     if( options & SingleApplication::Mode::User ) {
-#ifdef Q_OS_WIN
-        wchar_t username [ UNLEN + 1 ];
-        // Specifies size of the buffer on input
-        DWORD usernameLength = UNLEN + 1;
-        if( GetUserNameW( username, &usernameLength ) ) {
-            appData.addData( QString::fromWCharArray(username).toUtf8() );
-        } else {
-            appData.addData( qgetenv("USERNAME") );
-        }
-#endif
-#ifdef Q_OS_UNIX
-        QByteArray username;
-        uid_t uid = geteuid();
-        struct passwd *pw = getpwuid(uid);
-        if( pw ) {
-            username = pw->pw_name;
-        }
-        if( username.isEmpty() ) {
-            username = qgetenv("USER");
-        }
-        appData.addData(username);
-#endif
+        appData.addData( getUsername() );
     }
 
     // Replace the backslash in RFC 2045 Base64 [a-zA-Z0-9+/=] to comply with
@@ -140,6 +141,7 @@ void SingleApplicationPrivate::initializeMemoryBlock()
     inst->primary = false;
     inst->secondary = 0;
     inst->primaryPid = -1;
+    inst->primaryUser[0] =  '\0';
     inst->checksum = blockChecksum();
 }
 
@@ -173,6 +175,8 @@ void SingleApplicationPrivate::startPrimary()
 
     inst->primary = true;
     inst->primaryPid = q->applicationPid();
+    strncpy( inst->primaryUser, getUsername().data(), 127 );
+    inst->primaryUser[127] = '\0';
     inst->checksum = blockChecksum();
 
     instanceNumber = 0;
@@ -255,6 +259,18 @@ qint64 SingleApplicationPrivate::primaryPid()
     memory->unlock();
 
     return pid;
+}
+
+QString SingleApplicationPrivate::primaryUser()
+{
+    QByteArray username;
+
+    memory->lock();
+    InstancesInfo* inst = static_cast<InstancesInfo*>( memory->data() );
+    username = inst->primaryUser;
+    memory->unlock();
+
+    return QString::fromUtf8( username );
 }
 
 /**

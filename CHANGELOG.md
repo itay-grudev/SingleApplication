@@ -1,6 +1,11 @@
 Changelog
 =========
 
+__3.1.0a__
+----------
+
+* Added primaryUser() method that returns the user the primary instance is running as.
+
 __3.0.19__
 ----------
 

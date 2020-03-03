@@ -206,6 +206,14 @@ qint64 SingleApplication::primaryPid()
 
 Returns the process ID (PID) of the primary instance.
 
+---
+
+```cpp
+QString SingleApplication::primaryUser()
+```
+
+Returns the username the primary instance is running as.
+
 ### Signals
 
 ```cpp

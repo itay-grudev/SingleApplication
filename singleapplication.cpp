@@ -172,6 +172,12 @@ qint64 SingleApplication::primaryPid()
     return d->primaryPid();
 }
 
+QString SingleApplication::primaryUser()
+{
+    Q_D(SingleApplication);
+    return d->primaryUser();
+}
+
 bool SingleApplication::sendMessage( QByteArray message, int timeout )
 {
     Q_D(SingleApplication);
