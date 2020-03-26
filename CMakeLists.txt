@@ -24,7 +24,8 @@ elseif(QAPPLICATION_CLASS STREQUAL QGuiApplication)
 else()
     find_package(Qt5 COMPONENTS Core REQUIRED)
 endif()
-add_compile_definitions(QAPPLICATION_CLASS=${QAPPLICATION_CLASS})
+target_compile_definitions(${PROJECT_NAME} PRIVATE QAPPLICATION_CLASS=${QAPPLICATION_CLASS})
+
 
 # Link dependencies
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Network)
