@@ -214,6 +214,14 @@ QString SingleApplication::primaryUser()
 
 Returns the username the primary instance is running as.
 
+---
+
+```cpp
+QString SingleApplication::currentUser()
+```
+
+Returns the username the current instance is running as.
+
 ### Signals
 
 ```cpp
