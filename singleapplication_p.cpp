@@ -92,7 +92,11 @@ QString SingleApplicationPrivate::getUsername()
       DWORD usernameLength = UNLEN + 1;
       if( GetUserNameW( username, &usernameLength ) )
           return QString::fromWCharArray( username );
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+      return QString::fromLocal8Bit( qgetenv( "USERNAME" ) );
+#else
       return qEnvironmentVariable( "USERNAME" );
+#endif
 #endif
 #ifdef Q_OS_UNIX
       QString username;
@@ -100,8 +104,13 @@ QString SingleApplicationPrivate::getUsername()
       struct passwd *pw = getpwuid( uid );
       if( pw )
           username = QString::fromLocal8Bit( pw->pw_name );
-      if( username.isEmpty() )
+      if ( username.isEmpty() ) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+          username = QString::fromLocal8Bit( qgetenv( "USER" ) );
+#else
           username = qEnvironmentVariable( "USER" );
+#endif
+      }
       return username;
 #endif
 }
