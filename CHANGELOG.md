@@ -1,6 +1,11 @@
 Changelog
 =========
 
+__3.1.1a__
+----------
+
+* Added currentUser() method that returns the user the current instance is running as.
+
 __3.1.0a__
 ----------
 

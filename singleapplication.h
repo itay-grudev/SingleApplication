@@ -119,6 +119,12 @@ public:
     QString primaryUser();
 
     /**
+     * @brief Returns the username of the current user
+     * @returns {QString}
+     */
+    QString currentUser();
+
+    /**
      * @brief Sends a message to the primary instance. Returns true on success.
      * @param {int} timeout - Timeout for connecting
      * @returns {bool}

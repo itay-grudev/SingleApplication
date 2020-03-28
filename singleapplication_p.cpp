@@ -84,23 +84,33 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
     delete memory;
 }
 
-QByteArray SingleApplicationPrivate::getUsername(){
+QString SingleApplicationPrivate::getUsername()
+{
 #ifdef Q_OS_WIN
       wchar_t username[UNLEN + 1];
       // Specifies size of the buffer on input
       DWORD usernameLength = UNLEN + 1;
       if( GetUserNameW( username, &usernameLength ) )
-          return QString::fromWCharArray( username ).toUtf8();
-      return qgetenv( "USERNAME" );
+          return QString::fromWCharArray( username );
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+      return QString::fromLocal8Bit( qgetenv( "USERNAME" ) );
+#else
+      return qEnvironmentVariable( "USERNAME" );
+#endif
 #endif
 #ifdef Q_OS_UNIX
-      QByteArray username;
+      QString username;
       uid_t uid = geteuid();
       struct passwd *pw = getpwuid( uid );
       if( pw )
-          username = pw->pw_name;
-      if( username.isEmpty() )
-          username = qgetenv( "USER" );
+          username = QString::fromLocal8Bit( pw->pw_name );
+      if ( username.isEmpty() ) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
+          username = QString::fromLocal8Bit( qgetenv( "USER" ) );
+#else
+          username = qEnvironmentVariable( "USER" );
+#endif
+      }
       return username;
 #endif
 }
@@ -127,7 +137,7 @@ void SingleApplicationPrivate::genBlockServerName()
 
     // User level block requires a user specific data in the hash
     if( options & SingleApplication::Mode::User ) {
-        appData.addData( getUsername() );
+        appData.addData( getUsername().toUtf8() );
     }
 
     // Replace the backslash in RFC 2045 Base64 [a-zA-Z0-9+/=] to comply with
@@ -175,7 +185,7 @@ void SingleApplicationPrivate::startPrimary()
 
     inst->primary = true;
     inst->primaryPid = q->applicationPid();
-    strncpy( inst->primaryUser, getUsername().data(), 127 );
+    strncpy( inst->primaryUser, getUsername().toUtf8().data(), 127 );
     inst->primaryUser[127] = '\0';
     inst->checksum = blockChecksum();
 

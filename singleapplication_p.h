@@ -70,9 +70,9 @@ public:
     Q_DECLARE_PUBLIC(SingleApplication)
 
     SingleApplicationPrivate( SingleApplication *q_ptr );
-     ~SingleApplicationPrivate();
+    ~SingleApplicationPrivate();
 
-    QByteArray getUsername();
+    QString getUsername();
     void genBlockServerName();
     void initializeMemoryBlock();
     void startPrimary();

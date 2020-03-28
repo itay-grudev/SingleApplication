@@ -178,6 +178,12 @@ QString SingleApplication::primaryUser()
     return d->primaryUser();
 }
 
+QString SingleApplication::currentUser()
+{
+    Q_D(SingleApplication);
+    return d->getUsername();
+}
+
 bool SingleApplication::sendMessage( QByteArray message, int timeout )
 {
     Q_D(SingleApplication);
