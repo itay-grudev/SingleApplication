@@ -69,19 +69,21 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
         delete socket;
     }
 
-    memory->lock();
-    InstancesInfo* inst = static_cast<InstancesInfo*>(memory->data());
-    if( server != nullptr ) {
-        server->close();
-        delete server;
-        inst->primary = false;
-        inst->primaryPid = -1;
-        inst->primaryUser[0] =  '\0';
-        inst->checksum = blockChecksum();
-    }
-    memory->unlock();
+    if( memory != nullptr ) {
+        memory->lock();
+        InstancesInfo* inst = static_cast<InstancesInfo*>(memory->data());
+        if( server != nullptr ) {
+            server->close();
+            delete server;
+            inst->primary = false;
+            inst->primaryPid = -1;
+            inst->primaryUser[0] =  '\0';
+            inst->checksum = blockChecksum();
+        }
+        memory->unlock();
 
-    delete memory;
+        delete memory;
+    }
 }
 
 QString SingleApplicationPrivate::getUsername()
