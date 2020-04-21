@@ -1,6 +1,13 @@
 Changelog
 =========
 
+__3.1.2__
+---------
+
+* Fix a crash when exiting an application on Android and iOS
+
+    _Emeric Grange_
+
 __3.1.1a__
 ----------
 
