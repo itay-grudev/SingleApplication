@@ -1,7 +1,6 @@
 SingleApplication
 =================
-
-![CI](https://github.com/itay-grudev/SingleApplication/workflows/CI:%20Build%20Test/badge.svg)
+[![CI](https://github.com/itay-grudev/SingleApplication/workflows/CI:%20Build%20Test/badge.svg)](https://github.com/itay-grudev/SingleApplication/actions)
 
 This is a replacement of the QtSingleApplication for `Qt5`.
 
