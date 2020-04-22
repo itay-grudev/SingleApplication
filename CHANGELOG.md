@@ -15,7 +15,7 @@ __3.1.1a__
 
 * Added currentUser() method that returns the user the current instance is running as.
 
-_Leander Schulten_
+    _Leander Schulten_
 
 __3.1.0a__
 ----------
