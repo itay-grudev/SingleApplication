@@ -46,11 +46,9 @@ struct InstancesInfo {
 };
 
 struct ConnectionInfo {
-    explicit ConnectionInfo() :
-        msgLen(0), instanceId(0), stage(0) {}
-    qint64 msgLen;
-    quint32 instanceId;
-    quint8 stage;
+    qint64 msgLen = 0;
+    quint32 instanceId = 0;
+    quint8 stage = 0;
 };
 
 class SingleApplicationPrivate : public QObject {
@@ -70,7 +68,7 @@ public:
     Q_DECLARE_PUBLIC(SingleApplication)
 
     SingleApplicationPrivate( SingleApplication *q_ptr );
-    ~SingleApplicationPrivate();
+    ~SingleApplicationPrivate() override;
 
     QString getUsername();
     void genBlockServerName();

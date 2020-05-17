@@ -71,7 +71,7 @@ SingleApplicationPrivate::~SingleApplicationPrivate()
 
     if( memory != nullptr ) {
         memory->lock();
-        InstancesInfo* inst = static_cast<InstancesInfo*>(memory->data());
+        auto *inst = static_cast<InstancesInfo*>(memory->data());
         if( server != nullptr ) {
             server->close();
             delete server;
@@ -149,7 +149,7 @@ void SingleApplicationPrivate::genBlockServerName()
 
 void SingleApplicationPrivate::initializeMemoryBlock()
 {
-    InstancesInfo* inst = static_cast<InstancesInfo*>( memory->data() );
+    auto *inst = static_cast<InstancesInfo*>( memory->data() );
     inst->primary = false;
     inst->secondary = 0;
     inst->primaryPid = -1;
@@ -183,7 +183,7 @@ void SingleApplicationPrivate::startPrimary()
     );
 
     // Reset the number of connections
-    InstancesInfo* inst = static_cast <InstancesInfo*>( memory->data() );
+    auto *inst = static_cast <InstancesInfo*>( memory->data() );
 
     inst->primary = true;
     inst->primaryPid = q->applicationPid();
@@ -266,7 +266,7 @@ qint64 SingleApplicationPrivate::primaryPid()
     qint64 pid;
 
     memory->lock();
-    InstancesInfo* inst = static_cast<InstancesInfo*>( memory->data() );
+    auto *inst = static_cast<InstancesInfo*>( memory->data() );
     pid = inst->primaryPid;
     memory->unlock();
 
@@ -278,7 +278,7 @@ QString SingleApplicationPrivate::primaryUser()
     QByteArray username;
 
     memory->lock();
-    InstancesInfo* inst = static_cast<InstancesInfo*>( memory->data() );
+    auto *inst = static_cast<InstancesInfo*>( memory->data() );
     username = inst->primaryUser;
     memory->unlock();
 
