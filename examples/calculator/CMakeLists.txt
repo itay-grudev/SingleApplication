@@ -17,4 +17,4 @@ add_executable(${PROJECT_NAME}
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 add_subdirectory(../.. SingleApplication)
-target_link_libraries(${PROJECT_NAME} SingleApplication)
+target_link_libraries(${PROJECT_NAME} SingleApplication::SingleApplication)
