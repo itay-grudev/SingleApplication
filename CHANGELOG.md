@@ -3,6 +3,13 @@ Changelog
 
 If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
 
+__3.1.3.1__
+---------
+* CMake build system improvements
+* Fixed Clang Tidy warnings
+
+    _Hennadii Chernyshchyk_
+
 __3.1.3__
 ---------
 * Improved `CMakeLists.txt`
