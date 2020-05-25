@@ -8,6 +8,7 @@ add_library(${PROJECT_NAME} STATIC
     singleapplication.cpp
     singleapplication_p.cpp
 )
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 # Find dependencies
 find_package(Qt5 COMPONENTS Network REQUIRED)
