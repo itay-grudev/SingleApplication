@@ -85,7 +85,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         }
     }
 
-    InstancesInfo* inst = static_cast<InstancesInfo*>( d->memory->data() );
+    auto *inst = static_cast<InstancesInfo*>( d->memory->data() );
     QElapsedTimer time;
     time.start();
 
@@ -184,7 +184,7 @@ QString SingleApplication::currentUser()
     return d->getUsername();
 }
 
-bool SingleApplication::sendMessage( QByteArray message, int timeout )
+bool SingleApplication::sendMessage( const QByteArray &message, int timeout )
 {
     Q_D(SingleApplication);
 
