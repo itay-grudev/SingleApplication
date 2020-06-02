@@ -7,8 +7,8 @@ jobs:
 
     strategy:
       matrix:
-        qt_version: [5.12.6, 5.13.2, 5.14.0, 5.15.0]
-        platform: [ubuntu-latest, win64_msvc2019_64, macos-latest]
+        qt_version: [5.12.6, 5.13.2, 5.14.0]
+        platform: [ubuntu-latest, windows-latest, macos-latest]
 
     runs-on: ${{ matrix.platform }}
 
@@ -19,8 +19,6 @@ jobs:
       uses: jurplel/install-qt-action@v2
       with:
         version: ${{ matrix.qt_version }}
-        aqtversion: '==0.9'
-        py7zrversion: '==0.7'
 
     - name: cmake
       run: cmake .
