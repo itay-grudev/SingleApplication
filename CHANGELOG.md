@@ -3,6 +3,14 @@ Changelog
 
 If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
 
+
+__3.1.4__
+---------
+* Officially supporting and build-testing against Qt 5.15
+* Fixed an MSVC C4996 warning that suggests using `strncpy_s`.
+
+    _Hennadii Chernyshchyk_
+
 __3.1.3.1__
 ---------
 * CMake build system improvements
