@@ -139,6 +139,15 @@ app.isSecondary();
 *__Note:__ If your Primary Instance is terminated a newly launched instance
 will replace the Primary one even if the Secondary flag has been set.*
 
+Examples
+--------
+
+There are three examples provided in this repository:
+
+* Basic example that prevents a secondary instance from starting [`examples/basic`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/basic)
+* An example of a graphical application raising it's parent window [`examples/calculator`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/calculator)
+* A console application sending the primary instance it's command line parameters [`examples/sending_arguments`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/sending_arguments)
+
 API
 ---
 
