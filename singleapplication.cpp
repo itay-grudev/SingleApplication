@@ -76,7 +76,6 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         // Initialize the shared memory block
         d->memory->lock();
         d->initializeMemoryBlock();
-        d->memory->unlock();
     } else {
         // Attempt to attach to the memory segment
         if( ! d->memory->attach() ){
@@ -85,6 +84,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
             delete d;
             ::exit( EXIT_FAILURE );
         }
+        d->memory->lock();
     }
 
     auto *inst = static_cast<InstancesInfo*>( d->memory->data() );
@@ -93,24 +93,27 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 
     // Make sure the shared memory block is initialised and in consistent state
     while( true ){
-        d->memory->lock();
+      // If the shared memory block's checksum is valid continue
+      if( d->blockChecksum() == inst->checksum ) break;
 
-        if( d->blockChecksum() == inst->checksum ) break;
+      // If more than 5s have elapsed, assume the primary instance crashed and
+      // assume it's position
+      if( time.elapsed() > 5000 ){
+          qWarning() << "SingleApplication: Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
+          d->initializeMemoryBlock();
+      }
 
-        if( time.elapsed() > 5000 ){
-            qWarning() << "SingleApplication: Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
-            d->initializeMemoryBlock();
-        }
-
-        d->memory->unlock();
-
-        // Random sleep here limits the probability of a collision between two racing apps
+      // Otherwise wait for a random period and try again. The random sleep here
+      // limits the probability of a collision between two racing apps and
+      // allows the app to initialise faster
+      d->memory->unlock();
 #if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
-        QThread::sleep( QRandomGenerator::global()->bounded( 8u, 18u ));
+      QThread::sleep( QRandomGenerator::global()->bounded( 8u, 18u ));
 #else
-        qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
-        QThread::sleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ));
+      qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
+      QThread::sleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ));
 #endif
+      d->memory->lock();
     }
 
     if( inst->primary == false ){
