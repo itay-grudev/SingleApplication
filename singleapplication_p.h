@@ -41,8 +41,8 @@ struct InstancesInfo {
     bool primary;
     quint32 secondary;
     qint64 primaryPid;
-    quint16 checksum;
     char primaryUser[128];
+    quint16 checksum; // Must be the last field
 };
 
 struct ConnectionInfo {
