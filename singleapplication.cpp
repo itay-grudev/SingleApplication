@@ -79,7 +79,6 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
           abortSafely();
         }
         d->initializeMemoryBlock();
-        qDebug() << "SingleApplication: Created and initialized new memory block.";
     } else {
         if( d->memory->error() == QSharedMemory::AlreadyExists ){
           // Attempt to attach to the memory segment
@@ -91,7 +90,6 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
             qCritical() << "SingleApplication: Unable to lock memory block after attach.";
             abortSafely();
           }
-          qDebug() << "SingleApplication: Attached to new memory block.";
         } else {
           qCritical() << "SingleApplication: Unable create block.";
           abortSafely();
@@ -104,12 +102,8 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 
     // Make sure the shared memory block is initialised and in consistent state
     while( true ){
-      qDebug() << "SingleApplication: Verifying block checksum.";
-
       // If the shared memory block's checksum is valid continue
       if( d->blockChecksum() == inst->checksum ) break;
-
-      qDebug() << "SingleApplication: Invalid block checksum. Waiting.";
 
       // If more than 5s have elapsed, assume the primary instance crashed and
       // assume it's position

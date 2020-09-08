@@ -169,9 +169,6 @@ void SingleApplicationPrivate::startPrimary()
     qstrncpy( inst->primaryUser, getUsername().toUtf8().data(), sizeof(inst->primaryUser) );
     inst->checksum = blockChecksum();
     instanceNumber = 0;
-
-    qDebug() << "SingleApplication: Started as a primary instance.";
-
     // Successful creation means that no main process exists
     // So we start a QLocalServer to listen for connections
     QLocalServer::removeServer( blockServerName );
@@ -201,8 +198,6 @@ void SingleApplicationPrivate::startSecondary()
   inst->secondary += 1;
   inst->checksum = blockChecksum();
   instanceNumber = inst->secondary;
-
-  qDebug() << "SingleApplication: Started as a secondary instance.";
 }
 
 void SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType connectionType )
