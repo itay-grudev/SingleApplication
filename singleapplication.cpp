@@ -38,12 +38,14 @@
  * if another instance already exists
  * @param argc
  * @param argv
- * @param {bool} allowSecondaryInstances
+ * @param allowSecondary Whether to enable secondary instance support
+ * @param options Optional flags to toggle specific behaviour
+ * @param timeout Maximum time blocking functions are allowed during app load
  */
 SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSecondary, Options options, int timeout )
     : app_t( argc, argv ), d_ptr( new SingleApplicationPrivate( this ) )
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
 
 #if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
     // On Android and iOS since the library is not supported fallback to
@@ -70,14 +72,14 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     d->memory = new QSharedMemory( d->blockServerName );
 
     // Create a shared memory block
-    if( d->memory->create( sizeof( InstancesInfo ) ) ) {
+    if( d->memory->create( sizeof( InstancesInfo ) )){
         // Initialize the shared memory block
         d->memory->lock();
         d->initializeMemoryBlock();
         d->memory->unlock();
     } else {
         // Attempt to attach to the memory segment
-        if( ! d->memory->attach() ) {
+        if( ! d->memory->attach() ){
             qCritical() << "SingleApplication: Unable to attach to shared memory block.";
             qCritical() << d->memory->errorString();
             delete d;
@@ -90,12 +92,12 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     time.start();
 
     // Make sure the shared memory block is initialised and in consistent state
-    while( true ) {
+    while( true ){
         d->memory->lock();
 
         if( d->blockChecksum() == inst->checksum ) break;
 
-        if( time.elapsed() > 5000 ) {
+        if( time.elapsed() > 5000 ){
             qWarning() << "SingleApplication: Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
             d->initializeMemoryBlock();
         }
@@ -103,27 +105,27 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         d->memory->unlock();
 
         // Random sleep here limits the probability of a collision between two racing apps
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-        QThread::sleep( QRandomGenerator::global()->bounded( 8u, 18u ) );
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
+        QThread::sleep( QRandomGenerator::global()->bounded( 8u, 18u ));
 #else
         qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
-        QThread::sleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ) );
+        QThread::sleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ));
 #endif
     }
 
-    if( inst->primary == false) {
+    if( inst->primary == false ){
         d->startPrimary();
         d->memory->unlock();
         return;
     }
 
     // Check if another instance can be started
-    if( allowSecondary ) {
+    if( allowSecondary ){
         inst->secondary += 1;
         inst->checksum = d->blockChecksum();
         d->instanceNumber = inst->secondary;
         d->startSecondary();
-        if( d->options & Mode::SecondaryNotification ) {
+        if( d->options & Mode::SecondaryNotification ){
             d->connectToPrimary( timeout, SingleApplicationPrivate::SecondaryInstance );
         }
         d->memory->unlock();
@@ -139,54 +141,85 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     ::exit( EXIT_SUCCESS );
 }
 
-/**
- * @brief Destructor
- */
 SingleApplication::~SingleApplication()
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
     delete d;
 }
 
+/**
+ * Checks if the current application instance is primary.
+ * @return Returns true if the instance is primary, false otherwise.
+ */
 bool SingleApplication::isPrimary()
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
     return d->server != nullptr;
 }
 
+/**
+ * Checks if the current application instance is secondary.
+ * @return Returns true if the instance is secondary, false otherwise.
+ */
 bool SingleApplication::isSecondary()
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
     return d->server == nullptr;
 }
 
+/**
+ * Allows you to identify an instance by returning unique consecutive instance
+ * ids. It is reset when the first (primary) instance of your app starts and
+ * only incremented afterwards.
+ * @return Returns a unique instance id.
+ */
 quint32 SingleApplication::instanceId()
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
     return d->instanceNumber;
 }
 
+/**
+ * Returns the OS PID (Process Identifier) of the process running the primary
+ * instance. Especially useful when SingleApplication is coupled with OS.
+ * specific APIs.
+ * @return Returns the primary instance PID.
+ */
 qint64 SingleApplication::primaryPid()
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
     return d->primaryPid();
 }
 
+/**
+ * Returns the username the primary instance is running as.
+ * @return Returns the username the primary instance is running as.
+ */
 QString SingleApplication::primaryUser()
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
     return d->primaryUser();
 }
 
+/**
+ * Returns the username the current instance is running as.
+ * @return Returns the username the current instance is running as.
+ */
 QString SingleApplication::currentUser()
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
     return d->getUsername();
 }
 
+/**
+ * Sends message to the Primary Instance.
+ * @param message The message to send.
+ * @param timeout the maximum timeout in milliseconds for blocking functions.
+ * @return true if the message was sent successfuly, false otherwise.
+ */
 bool SingleApplication::sendMessage( const QByteArray &message, int timeout )
 {
-    Q_D(SingleApplication);
+    Q_D( SingleApplication );
 
     // Nobody to connect to
     if( isPrimary() ) return false;
