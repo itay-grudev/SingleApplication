@@ -431,7 +431,6 @@ void SingleApplicationPrivate::readInitMessageBody( QLocalSocket *sock )
         ( connectionType == SecondaryInstance &&
           options & SingleApplication::Mode::SecondaryNotification ) )
     {
-        qDebug() << "SingleApplication: instanceStarted()";
         Q_EMIT q->instanceStarted();
     }
 
