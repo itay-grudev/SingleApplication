@@ -81,6 +81,7 @@ public:
     QString primaryUser();
     void readInitMessageHeader(QLocalSocket *socket);
     void readInitMessageBody(QLocalSocket *socket);
+    void randomSleep();
 
     SingleApplication *q_ptr;
     QSharedMemory *memory;

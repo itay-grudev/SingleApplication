@@ -21,14 +21,8 @@
 // THE SOFTWARE.
 
 #include <QtCore/QElapsedTimer>
-#include <QtCore/QThread>
 #include <QtCore/QByteArray>
 #include <QtCore/QSharedMemory>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-#include <QtCore/QRandomGenerator>
-#else
-#include <QtCore/QDateTime>
-#endif
 
 #include "singleapplication.h"
 #include "singleapplication_p.h"
@@ -119,12 +113,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         qDebug() << "SingleApplication: Unable to unlock memory for random wait.";
         qDebug() << d->memory->errorString();
       }
-#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
-      QThread::sleep( QRandomGenerator::global()->bounded( 8u, 18u ));
-#else
-      qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
-      QThread::sleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ));
-#endif
+      d->randomSleep();
       if( ! d->memory->lock() ){
         qCritical() << "SingleApplication: Unable to lock memory after random wait.";
         abortSafely();

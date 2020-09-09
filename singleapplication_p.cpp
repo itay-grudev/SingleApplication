@@ -33,11 +33,19 @@
 #include <cstddef>
 
 #include <QtCore/QDir>
+#include <QtCore/QThread>
 #include <QtCore/QByteArray>
 #include <QtCore/QDataStream>
+#include <QtCore/QElapsedTimer>
 #include <QtCore/QCryptographicHash>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QtCore/QRandomGenerator>
+#else
+#include <QtCore/QDateTime>
+#endif
 
 #include "singleapplication.h"
 #include "singleapplication_p.h"
@@ -433,4 +441,14 @@ void SingleApplicationPrivate::slotClientConnectionClosed( QLocalSocket *closedS
 {
     if( closedSocket->bytesAvailable() > 0 )
         Q_EMIT slotDataAvailable( closedSocket, instanceId  );
+}
+
+void SingleApplicationPrivate::randomSleep()
+{
+#if QT_VERSION >= QT_VERSION_CHECK( 5, 10, 0 )
+    QThread::msleep( QRandomGenerator::global()->bounded( 8u, 18u ));
+#else
+    qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
+    QThread::msleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ));
+#endif
 }
