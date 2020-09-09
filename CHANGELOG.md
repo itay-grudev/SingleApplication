@@ -7,8 +7,8 @@ __3.1.5__
 
 * Improved library stability in edge cases and very rapid process initialisation
 * Fixed Bug where the shared memory block may have been modified without a lock
-* Fixed Bug causing instanceStarted() to not get emmited when a second instance
-  has been started before the primary has initiated it's QLocalServer.
+* Fixed Bug causing `instanceStarted()` to not get emitted when a second instance
+  has been started before the primary has initiated it's `QLocalServer`.
 
 __3.1.4__
 ---------
