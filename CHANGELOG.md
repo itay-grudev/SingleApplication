@@ -3,6 +3,12 @@ Changelog
 
 If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
 
+__3.1.5__
+
+* Improved library stability in edge cases and very rapid process initialisation
+* Fixed Bug where the shared memory block may have been modified without a lock
+* Fixed Bug causing instanceStarted() to not get emmited when a second instance
+  has been started before the primary has initiated it's QLocalServer.
 
 __3.1.4__
 ---------
@@ -46,18 +52,18 @@ __3.1.0a__
 __3.0.19__
 ----------
 
-* Fixed code warning for depricated functions in Qt 5.10 related to `QTime` and `qrand()`. 
+* Fixed code warning for depricated functions in Qt 5.10 related to `QTime` and `qrand()`.
 
    _Hennadii Chernyshchyk_  
    _Anton Filimonov_  
    _Jonas Kvinge_
-   
+
 __3.0.18__
 ----------
 
 * Fallback to standard QApplication class on iOS and Android systems where
   the library is not supported.
-  
+
 * Added Build CI tests to verify the library builds successfully on Linux, Windows and MacOS  across multiple Qt versions.
 
   _Anton Filimonov_
