@@ -208,59 +208,68 @@ void SingleApplicationPrivate::startSecondary()
   instanceNumber = inst->secondary;
 }
 
-void SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType connectionType )
+bool SingleApplicationPrivate::connectToPrimary( int timeout, ConnectionType connectionType )
 {
+    QElapsedTimer time;
+    time.start();
+
     // Connect to the Local Server of the Primary Instance if not already
     // connected.
     if( socket == nullptr ){
         socket = new QLocalSocket();
     }
 
-    // If already connected - we are done;
-    if( socket->state() == QLocalSocket::ConnectedState )
-        return;
+    if( socket->state() == QLocalSocket::ConnectedState ) return true;
 
-    // If not connect
-    if( socket->state() == QLocalSocket::UnconnectedState ||
-        socket->state() == QLocalSocket::ClosingState ){
-        socket->connectToServer( blockServerName );
-    }
+    if( socket->state() != QLocalSocket::ConnectedState ){
 
-    // Wait for being connected
-    if( socket->state() == QLocalSocket::ConnectingState ){
-        socket->waitForConnected( msecs );
+        while( true ){
+          randomSleep();
+
+          if( socket->state() != QLocalSocket::ConnectingState )
+            socket->connectToServer( blockServerName );
+
+          if( socket->state() == QLocalSocket::ConnectingState ){
+              socket->waitForConnected( timeout - time.elapsed() );
+          }
+
+          // If connected break out of the loop
+          if( socket->state() == QLocalSocket::ConnectedState ) break;
+
+          // If elapsed time since start is longer than the method timeout return
+          if( time.elapsed() >= timeout ) return false;
+        }
     }
 
     // Initialisation message according to the SingleApplication protocol
-    if( socket->state() == QLocalSocket::ConnectedState ){
-        // Notify the parent that a new instance had been started;
-        QByteArray initMsg;
-        QDataStream writeStream(&initMsg, QIODevice::WriteOnly);
+    QByteArray initMsg;
+    QDataStream writeStream(&initMsg, QIODevice::WriteOnly);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-        writeStream.setVersion(QDataStream::Qt_5_6);
+    writeStream.setVersion(QDataStream::Qt_5_6);
 #endif
 
-        writeStream << blockServerName.toLatin1();
-        writeStream << static_cast<quint8>(connectionType);
-        writeStream << instanceNumber;
-        quint16 checksum = qChecksum(initMsg.constData(), static_cast<quint32>(initMsg.length()));
-        writeStream << checksum;
+    writeStream << blockServerName.toLatin1();
+    writeStream << static_cast<quint8>(connectionType);
+    writeStream << instanceNumber;
+    quint16 checksum = qChecksum(initMsg.constData(), static_cast<quint32>(initMsg.length()));
+    writeStream << checksum;
 
-        // The header indicates the message length that follows
-        QByteArray header;
-        QDataStream headerStream(&header, QIODevice::WriteOnly);
+    // The header indicates the message length that follows
+    QByteArray header;
+    QDataStream headerStream(&header, QIODevice::WriteOnly);
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 6, 0))
-        headerStream.setVersion(QDataStream::Qt_5_6);
+    headerStream.setVersion(QDataStream::Qt_5_6);
 #endif
-        headerStream << static_cast <quint64>( initMsg.length() );
+    headerStream << static_cast <quint64>( initMsg.length() );
 
-        socket->write( header );
-        socket->write( initMsg );
-        socket->flush();
-        socket->waitForBytesWritten( msecs );
-    }
+    socket->write( header );
+    socket->write( initMsg );
+    socket->flush();
+    if( socket->waitForBytesWritten( timeout - time.elapsed() )) return true;
+
+    return false;
 }
 
 quint16 SingleApplicationPrivate::blockChecksum()

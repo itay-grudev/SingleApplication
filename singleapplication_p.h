@@ -75,7 +75,7 @@ public:
     void initializeMemoryBlock();
     void startPrimary();
     void startSecondary();
-    void connectToPrimary(int msecs, ConnectionType connectionType );
+    bool connectToPrimary(int msecs, ConnectionType connectionType );
     quint16 blockChecksum();
     qint64 primaryPid();
     QString primaryUser();

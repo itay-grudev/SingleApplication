@@ -85,7 +85,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
             abortSafely();
           }
         } else {
-          qCritical() << "SingleApplication: Unable create block.";
+          qCritical() << "SingleApplication: Unable to create block.";
           abortSafely();
         }
     }
@@ -238,7 +238,8 @@ bool SingleApplication::sendMessage( const QByteArray &message, int timeout )
     if( isPrimary() ) return false;
 
     // Make sure the socket is connected
-    d->connectToPrimary( timeout,  SingleApplicationPrivate::Reconnect );
+    if( ! d->connectToPrimary( timeout,  SingleApplicationPrivate::Reconnect ) )
+      return false;
 
     d->socket->write( message );
     bool dataWritten = d->socket->waitForBytesWritten( timeout );
@@ -254,7 +255,7 @@ void SingleApplication::abortSafely()
 {
     Q_D( SingleApplication );
 
-    qCritical() << d->memory->errorString();
+    qCritical() << "SingleApplication: " << d->memory->error() << d->memory->errorString();
     delete d;
     ::exit( EXIT_FAILURE );
 }
