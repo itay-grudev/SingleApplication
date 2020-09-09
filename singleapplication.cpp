@@ -55,6 +55,10 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     // block and QLocalServer
     d->genBlockServerName();
 
+    // To mitigate QSharedMemory issues with large amount of processes
+    // attempting to attach at the same time
+    d->randomSleep();
+
 #ifdef Q_OS_UNIX
     // By explicitly attaching it and then deleting it we make sure that the
     // memory is deleted even after the process has crashed on Unix.
