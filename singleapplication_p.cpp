@@ -57,6 +57,7 @@
 #endif
 
 #ifdef Q_OS_WIN
+    #define NOMINMAX
     #include <windows.h>
     #include <lmcons.h>
 #endif
