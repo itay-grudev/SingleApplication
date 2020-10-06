@@ -267,10 +267,9 @@ bool SingleApplicationPrivate::connectToPrimary( int timeout, ConnectionType con
 
     socket->write( header );
     socket->write( initMsg );
+    bool result = socket->waitForBytesWritten( timeout - time.elapsed() );
     socket->flush();
-    if( socket->waitForBytesWritten( timeout - time.elapsed() )) return true;
-
-    return false;
+    return result;
 }
 
 quint16 SingleApplicationPrivate::blockChecksum()
