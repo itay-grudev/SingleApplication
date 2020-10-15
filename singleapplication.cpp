@@ -224,7 +224,6 @@ QString SingleApplication::primaryUser()
  */
 QString SingleApplication::currentUser()
 {
-    Q_D( SingleApplication );
     return SingleApplicationPrivate::getUsername();
 }
 
