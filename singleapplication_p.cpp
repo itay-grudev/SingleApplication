@@ -170,8 +170,6 @@ void SingleApplicationPrivate::initializeMemoryBlock() const
 
 void SingleApplicationPrivate::startPrimary()
 {
-    Q_Q(SingleApplication);
-
     // Reset the number of connections
     auto *inst = static_cast <InstancesInfo*>( memory->data() );
 
