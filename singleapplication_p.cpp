@@ -255,7 +255,11 @@ bool SingleApplicationPrivate::connectToPrimary( int timeout, ConnectionType con
     writeStream << blockServerName.toLatin1();
     writeStream << static_cast<quint8>(connectionType);
     writeStream << instanceNumber;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    quint16 checksum = qChecksum(QByteArray(initMsg, static_cast<quint32>(initMsg.length())));
+#else
     quint16 checksum = qChecksum(initMsg.constData(), static_cast<quint32>(initMsg.length()));
+#endif
     writeStream << checksum;
 
     // The header indicates the message length that follows
@@ -276,10 +280,12 @@ bool SingleApplicationPrivate::connectToPrimary( int timeout, ConnectionType con
 
 quint16 SingleApplicationPrivate::blockChecksum()
 {
-    return qChecksum(
-       static_cast <const char *>( memory->data() ),
-       offsetof( InstancesInfo, checksum )
-   );
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    quint16 checksum = qChecksum(QByteArray(static_cast<const char*>(memory->constData()), offsetof(InstancesInfo, checksum)));
+#else
+    quint16 checksum = qChecksum(static_cast<const char*>(memory->constData()), offsetof(InstancesInfo, checksum));
+#endif
+    return checksum;
 }
 
 qint64 SingleApplicationPrivate::primaryPid()
@@ -415,7 +421,11 @@ void SingleApplicationPrivate::readInitMessageBody( QLocalSocket *sock )
     quint16 msgChecksum = 0;
     readStream >> msgChecksum;
 
-    const quint16 actualChecksum = qChecksum( msgBytes.constData(), static_cast<quint32>( msgBytes.length() - sizeof( quint16 ) ) );
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const quint16 actualChecksum = qChecksum(QByteArray(msgBytes, static_cast<quint32>(msgBytes.length() - sizeof(quint16))));
+#else
+    const quint16 actualChecksum = qChecksum(msgBytes.constData(), static_cast<quint32>(msgBytes.length() - sizeof(quint16)));
+#endif
 
     bool isValid = readStream.status() == QDataStream::Ok &&
                    QLatin1String(latin1Name) == blockServerName &&
