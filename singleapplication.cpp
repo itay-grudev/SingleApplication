@@ -57,7 +57,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 
     // To mitigate QSharedMemory issues with large amount of processes
     // attempting to attach at the same time
-    d->randomSleep();
+    SingleApplicationPrivate::randomSleep();
 
 #ifdef Q_OS_UNIX
     // By explicitly attaching it and then deleting it we make sure that the
@@ -117,7 +117,7 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         qDebug() << "SingleApplication: Unable to unlock memory for random wait.";
         qDebug() << d->memory->errorString();
       }
-      d->randomSleep();
+      SingleApplicationPrivate::randomSleep();
       if( ! d->memory->lock() ){
         qCritical() << "SingleApplication: Unable to lock memory after random wait.";
         abortSafely();
@@ -224,8 +224,7 @@ QString SingleApplication::primaryUser()
  */
 QString SingleApplication::currentUser()
 {
-    Q_D( SingleApplication );
-    return d->getUsername();
+    return SingleApplicationPrivate::getUsername();
 }
 
 /**

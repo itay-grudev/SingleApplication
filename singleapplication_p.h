@@ -70,18 +70,18 @@ public:
     SingleApplicationPrivate( SingleApplication *q_ptr );
     ~SingleApplicationPrivate() override;
 
-    QString getUsername();
+    static QString getUsername();
     void genBlockServerName();
-    void initializeMemoryBlock();
+    void initializeMemoryBlock() const;
     void startPrimary();
     void startSecondary();
-    bool connectToPrimary(int msecs, ConnectionType connectionType );
-    quint16 blockChecksum();
-    qint64 primaryPid();
-    QString primaryUser();
+    bool connectToPrimary( int msecs, ConnectionType connectionType );
+    quint16 blockChecksum() const;
+    qint64 primaryPid() const;
+    QString primaryUser() const;
     void readInitMessageHeader(QLocalSocket *socket);
     void readInitMessageBody(QLocalSocket *socket);
-    void randomSleep();
+    static void randomSleep();
 
     SingleApplication *q_ptr;
     QSharedMemory *memory;
