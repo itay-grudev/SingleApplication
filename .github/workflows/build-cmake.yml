@@ -7,10 +7,21 @@ jobs:
 
     strategy:
       matrix:
-        qt_version: [5.12.6, 5.13.2, 5.14.0, 5.15.0]
+        qt_version: [5.12.6, 5.13.2, 5.14.0, 5.15.0, 6.0.0]
         platform: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - qt_version: 6.0.0
+            additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
+          - platform: ubuntu-latest
+            CXXFLAGS: -Wall -Wextra -pedantic -Werror
+          - platform: macos-latest
+            CXXFLAGS: -Wall -Wextra -pedantic -Werror
+          - platform: windows-latest
+            CXXFLAGS: /W4 /WX
 
     runs-on: ${{ matrix.platform }}
+    env:
+      CXXFLAGS: ${{ matrix.CXXFLAGS }}
 
     steps:
     - uses: actions/checkout@v2
@@ -21,7 +32,7 @@ jobs:
         version: ${{ matrix.qt_version }}
 
     - name: cmake
-      run: cmake .
+      run: cmake . ${{ matrix.additional_arguments }}
 
     - name: cmake build
       run: cmake --build .
@@ -29,17 +40,17 @@ jobs:
     - name: Build example - basic (cmake)
       working-directory: examples/basic/
       run: |
-        cmake .
+        cmake . ${{ matrix.additional_arguments }}
         cmake --build .
 
     - name: Build example - calculator (cmake)
       working-directory: examples/calculator/
       run: |
-        cmake .
+        cmake . ${{ matrix.additional_arguments }}
         cmake --build .
 
     - name: Build example - sending_arguments (cmake)
       working-directory: examples/sending_arguments/
       run: |
-        cmake .
+        cmake . ${{ matrix.additional_arguments }}
         cmake --build .
