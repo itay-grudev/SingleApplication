@@ -4,6 +4,7 @@ Changelog
 If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
 
 __3.2.0__
+---------
 
 * Added support for Qt 6  - _Jonas Kvinge_
 * Fixed warning in `Qt 5.9` with `min`/`max` functions on Windows - _Nick Korotysh_
@@ -12,6 +13,7 @@ __3.2.0__
 * Fixed conversion from `int` to `quint32` and Clang Tidy warnings - _Hennadii Chernyshchyk_
 
 __3.1.5__
+---------
 
 * Improved library stability in edge cases and very rapid process initialisation
 * Fixed Bug where the shared memory block may have been modified without a lock
