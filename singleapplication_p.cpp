@@ -136,6 +136,9 @@ void SingleApplicationPrivate::genBlockServerName()
     appData.addData( SingleApplication::app_t::organizationName().toUtf8() );
     appData.addData( SingleApplication::app_t::organizationDomain().toUtf8() );
 
+    if ( ! appDataList.isEmpty() )
+        appData.addData( appDataList.join( "" ).toUtf8() );
+
     if( ! (options & SingleApplication::Mode::ExcludeAppVersion) ){
         appData.addData( SingleApplication::app_t::applicationVersion().toUtf8() );
     }
@@ -186,9 +189,9 @@ void SingleApplicationPrivate::startPrimary()
     // Restrict access to the socket according to the
     // SingleApplication::Mode::User flag on User level or no restrictions
     if( options & SingleApplication::Mode::User ){
-      server->setSocketOptions( QLocalServer::UserAccessOption );
+        server->setSocketOptions( QLocalServer::UserAccessOption );
     } else {
-      server->setSocketOptions( QLocalServer::WorldAccessOption );
+        server->setSocketOptions( QLocalServer::WorldAccessOption );
     }
 
     server->listen( blockServerName );
@@ -225,7 +228,7 @@ bool SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType conne
     if( socket->state() != QLocalSocket::ConnectedState ){
 
         while( true ){
-          randomSleep();
+            randomSleep();
 
           if( socket->state() != QLocalSocket::ConnectingState )
             socket->connectToServer( blockServerName );
@@ -469,4 +472,14 @@ void SingleApplicationPrivate::randomSleep()
     qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
     QThread::msleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ));
 #endif
+}
+
+void SingleApplicationPrivate::addAppData(const QString &data)
+{
+    appDataList.push_back(data);
+}
+
+QStringList SingleApplicationPrivate::appData() const
+{
+    return appDataList;
 }

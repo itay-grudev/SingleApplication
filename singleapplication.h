@@ -85,7 +85,7 @@ public:
      * Usually 4*timeout would be the worst case (fail) scenario.
      * @see See the corresponding QAPPLICATION_CLASS constructor for reference
      */
-    explicit SingleApplication( int &argc, char *argv[], bool allowSecondary = false, Options options = Mode::User, int timeout = 1000 );
+    explicit SingleApplication( int &argc, char *argv[], bool allowSecondary = false, Options options = Mode::User, int timeout = 1000, QString userData = QString() );
     ~SingleApplication() override;
 
     /**
@@ -132,6 +132,12 @@ public:
      * instance.
      */
     bool sendMessage( const QByteArray &message, int timeout = 100 );
+
+    /**
+     * @brief Get the set user data.
+     * @returns {QStringList}
+     */
+    QStringList userData();
 
 Q_SIGNALS:
     void instanceStarted();

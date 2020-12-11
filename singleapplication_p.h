@@ -82,6 +82,8 @@ public:
     void readInitMessageHeader(QLocalSocket *socket);
     void readInitMessageBody(QLocalSocket *socket);
     static void randomSleep();
+    void addAppData(const QString &data);
+    QStringList appData() const;
 
     SingleApplication *q_ptr;
     QSharedMemory *memory;
@@ -91,6 +93,7 @@ public:
     QString blockServerName;
     SingleApplication::Options options;
     QMap<QLocalSocket*, ConnectionInfo> connectionMap;
+    QStringList appDataList;
 
 public Q_SLOTS:
     void slotConnectionEstablished();
