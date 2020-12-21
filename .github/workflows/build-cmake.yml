@@ -8,11 +8,11 @@ jobs:
     strategy:
       matrix:
         qt_version: [5.12.6, 5.13.2, 5.14.0, 5.15.0, 6.0.0]
-        platform: [ubuntu-latest, windows-latest, macos-latest]
+        platform: [ubuntu-20.04, windows-latest, macos-latest]
         include:
           - qt_version: 6.0.0
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
-          - platform: ubuntu-latest
+          - platform: ubuntu-20.04
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
           - platform: macos-latest
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
