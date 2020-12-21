@@ -24,10 +24,10 @@ jobs:
       CXXFLAGS: ${{ matrix.CXXFLAGS }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.3.4
 
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2.9.0
+      uses: jurplel/install-qt-action@v2.11.1
       with:
         version: ${{ matrix.qt_version }}
 
