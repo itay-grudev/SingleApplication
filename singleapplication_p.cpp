@@ -471,7 +471,7 @@ void SingleApplicationPrivate::randomSleep()
     QThread::msleep( QRandomGenerator::global()->bounded( 8u, 18u ));
 #else
     qsrand( QDateTime::currentMSecsSinceEpoch() % std::numeric_limits<uint>::max() );
-    QThread::msleep( 8 + static_cast <unsigned long>( static_cast <float>( qrand() ) / RAND_MAX * 10 ));
+    QThread::msleep( qrand() % 11 + 8);
 #endif
 }
 
