@@ -272,11 +272,31 @@ bool SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType conne
 #endif
     headerStream << static_cast <quint64>( initMsg.length() );
 
-    socket->write( header );
-    socket->write( initMsg );
-    bool result = socket->waitForBytesWritten( static_cast<int>(msecs - time.elapsed()) );
+    if( !writeConfirmedMessage( static_cast<int>(msecs - time.elapsed()), header ) )
+        return false;
+
+    if( !writeConfirmedMessage( static_cast<int>(msecs - time.elapsed()), initMsg ) )
+        return false;
+
+    return true;
+}
+
+void SingleApplicationPrivate::writeAck( QLocalSocket *sock ) {
+    sock->putChar('\n');
+}
+
+bool SingleApplicationPrivate::writeConfirmedMessage( int msecs, const QByteArray &msg )
+{
+    socket->write( msg );
     socket->flush();
-    return result;
+
+    bool result = socket->waitForReadyRead( msecs ); // await ack byte
+    if (result) {
+        socket->read( 1 );
+        return true;
+    }
+
+    return false;
 }
 
 quint16 SingleApplicationPrivate::blockChecksum() const
@@ -379,9 +399,7 @@ void SingleApplicationPrivate::readInitMessageHeader( QLocalSocket *sock )
     info.stage = StageBody;
     info.msgLen = msgLen;
 
-    if ( sock->bytesAvailable() >= (qint64) msgLen ){
-        readInitMessageBody( sock );
-    }
+    writeAck( sock );
 }
 
 void SingleApplicationPrivate::readInitMessageBody( QLocalSocket *sock )
@@ -448,15 +466,15 @@ void SingleApplicationPrivate::readInitMessageBody( QLocalSocket *sock )
         Q_EMIT q->instanceStarted();
     }
 
-    if (sock->bytesAvailable() > 0){
-        this->slotDataAvailable( sock, instanceId );
-    }
+    writeAck( sock );
 }
 
 void SingleApplicationPrivate::slotDataAvailable( QLocalSocket *dataSocket, quint32 instanceId )
 {
     Q_Q(SingleApplication);
     Q_EMIT q->receivedMessage( instanceId, dataSocket->readAll() );
+
+    writeAck( dataSocket );
 }
 
 void SingleApplicationPrivate::slotClientConnectionClosed( QLocalSocket *closedSocket, quint32 instanceId )

@@ -81,6 +81,8 @@ public:
     QString primaryUser() const;
     void readInitMessageHeader(QLocalSocket *socket);
     void readInitMessageBody(QLocalSocket *socket);
+    bool writeConfirmedMessage(int msecs, const QByteArray &msg);
+    void writeAck(QLocalSocket *sock);
     static void randomSleep();
     void addAppData(const QString &data);
     QStringList appData() const;
