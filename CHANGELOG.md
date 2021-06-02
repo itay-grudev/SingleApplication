@@ -7,7 +7,7 @@ If by accident I have forgotten to credit someone in the CHANGELOG, email me and
 __3.3.0__
 ---------
 
-* Fixed message fragmentation issue causing crashes and incorrectly and inconsistently received messages. - _Nils Jeisecke_
+* Fixed message fragmentation issue causing crashes and incorrectly / inconsistently received messages. - _Nils Jeisecke_
 
 __3.2.0__
 ---------
