@@ -153,7 +153,7 @@ void SingleApplicationPrivate::genBlockServerName()
             appData.addData( SingleApplication::app_t::applicationFilePath().toUtf8() );
         } else {
             // Running as AppImage: Use absolute path to AppImage file
-            appData.addData( appImagePath.toUtf8() );
+            appData.addData( appImagePath );
         }
 #endif
     }
