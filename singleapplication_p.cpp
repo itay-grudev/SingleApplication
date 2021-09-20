@@ -144,7 +144,7 @@ void SingleApplicationPrivate::genBlockServerName()
     }
 
     if( ! (options & SingleApplication::Mode::ExcludeAppPath) ){
-#ifdef Q_OS_WIN
+#if defined(Q_OS_WIN)
         appData.addData( SingleApplication::app_t::applicationFilePath().toLower().toUtf8() );
 #elseif defined(Q_OS_LINUX)
         // If the application is running as an AppImage then the APPIMAGE env var should be used
