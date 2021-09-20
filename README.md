@@ -182,7 +182,8 @@ bool SingleApplication::sendMessage( QByteArray message, int timeout = 100 )
 ```
 
 Sends `message` to the Primary Instance. Uses `timeout` as a the maximum timeout
-in milliseconds for blocking functions
+in milliseconds for blocking functions. Returns `true` if the message has been sent
+successfully.
 
 ---
 
