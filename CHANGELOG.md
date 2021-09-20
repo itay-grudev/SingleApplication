@@ -4,6 +4,11 @@ Changelog
 If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
 
 
+__3.3.1__
+---------
+
+* Added support for _AppImage_ dynamic executable paths. - _Michael Klein_
+
 __3.3.0__
 ---------
 
