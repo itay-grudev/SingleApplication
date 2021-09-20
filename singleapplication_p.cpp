@@ -147,7 +147,7 @@ void SingleApplicationPrivate::genBlockServerName()
 #ifdef Q_OS_WIN
         appData.addData( SingleApplication::app_t::applicationFilePath().toLower().toUtf8() );
 #else
-        QString appImagePath = qEnvironmentVariable( "APPIMAGE" );
+        const QByteArray appImagePath = qgetenv( "APPIMAGE" );
         if ( appImagePath.isEmpty() ) {
             // Not running as AppImage: use path to executable file
             appData.addData( SingleApplication::app_t::applicationFilePath().toUtf8() );
