@@ -29,18 +29,18 @@ jobs:
       CXXFLAGS: ${{ matrix.CXXFLAGS }}
 
     steps:
-      - uses: actions/checkout@v2.3.4
+      - name: Clone repo
+        uses: actions/checkout@v2.3.4
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.11.1
         with:
           version: ${{ matrix.qt_version }}
 
-      - name: cmake
-        run: cmake . ${{ matrix.additional_arguments }}
-
-      - name: cmake build
-        run: cmake --build .
+      - name: Build library
+        run: |
+          cmake . ${{ matrix.additional_arguments }}
+          cmake --build .
 
       - name: Build example - basic (cmake)
         working-directory: examples/basic/
