@@ -36,25 +36,46 @@ jobs:
         with:
           version: ${{ matrix.qt_version }}
 
-      - name: Build library
+      - name: Build library with CMake
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
 
-      - name: Build example - basic (cmake)
+      - name: Build basic example with CMake
         working-directory: examples/basic/
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
 
-      - name: Build example - calculator (cmake)
+      - name: Build calculator example CMake
         working-directory: examples/calculator/
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
 
-      - name: Build example - sending_arguments (cmake)
+      - name: Build sending_arguments example with CMake
         working-directory: examples/sending_arguments/
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
+
+      - name: Setup MSVC environment for QMake
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build basic example with QMake
+        working-directory: examples/basic/
+        run: |
+          qmake
+          make
+
+      - name: Build calculator example QMake
+        working-directory: examples/calculator/
+        run: |
+          qmake
+          make
+
+      - name: Build sending_arguments example with QMake
+        working-directory: examples/sending_arguments/
+        run: |
+          qmake
+          make
