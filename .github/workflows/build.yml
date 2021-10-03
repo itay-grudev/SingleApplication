@@ -17,14 +17,16 @@ jobs:
           - qt_version: 6.0.0
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
           - platform: ubuntu-20.04
+            make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j2
           - platform: macos-latest
+            make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j3
           - platform: windows-latest
-            CXXFLAGS: /W4 /WX
-            MAKEFLAGS: /m
+            make: nmake
+            CXXFLAGS: /W4 /WX /MP
 
     runs-on: ${{ matrix.platform }}
     env:
@@ -70,16 +72,16 @@ jobs:
         working-directory: examples/basic/
         run: |
           qmake
-          make
+          ${{ matrix.make }}
 
       - name: Build calculator example QMake
         working-directory: examples/calculator/
         run: |
           qmake
-          make
+          ${{ matrix.make }}
 
       - name: Build sending_arguments example with QMake
         working-directory: examples/sending_arguments/
         run: |
           qmake
-          make
+          ${{ matrix.make }}
