@@ -18,14 +18,18 @@ jobs:
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
           - platform: ubuntu-20.04
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
+            MAKEFLAGS: -j2
           - platform: macos-latest
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
+            MAKEFLAGS: -j3
           - platform: windows-latest
             CXXFLAGS: /W4 /WX
+            MAKEFLAGS: /m
 
     runs-on: ${{ matrix.platform }}
     env:
       CXXFLAGS: ${{ matrix.CXXFLAGS }}
+      MAKEFLAGS: ${{ matrix.MAKEFLAGS }}
 
     steps:
       - name: Clone repo
