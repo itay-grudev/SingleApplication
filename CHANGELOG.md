@@ -3,6 +3,10 @@ Changelog
 
 If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
 
+__3.3.2__
+---------
+
+* Fixed crash caused by sending a `writeAck` on a removed connection. - _Nicolas Werner_
 
 __3.3.1__
 ---------
