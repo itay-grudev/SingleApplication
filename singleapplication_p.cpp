@@ -503,12 +503,14 @@ void SingleApplicationPrivate::slotDataAvailable( QLocalSocket *dataSocket, quin
     if ( !isFrameComplete( dataSocket ) )
         return;
 
-    Q_EMIT q->receivedMessage( instanceId, dataSocket->readAll() );
+    const QByteArray message = dataSocket->readAll();
 
     writeAck( dataSocket );
 
     ConnectionInfo &info = connectionMap[dataSocket];
     info.stage = StageConnectedHeader;
+
+    Q_EMIT q->receivedMessage( instanceId, message);
 }
 
 void SingleApplicationPrivate::slotClientConnectionClosed( QLocalSocket *closedSocket, quint32 instanceId )
