@@ -35,7 +35,7 @@ To include the library files I would recommend that you add it as a git
 submodule to your project. Here is how:
 
 ```bash
-git submodule add git@github.com:itay-grudev/SingleApplication.git singleapplication
+git submodule add https://github.com/itay-grudev/SingleApplication.git singleapplication
 ```
 
 **Qmake:**
