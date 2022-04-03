@@ -6,7 +6,7 @@ If by accident I have forgotten to credit someone in the CHANGELOG, email me and
 __3.3.4__
 ---------
 
-* Added stricter Qt compile settings. - _Christoph Cullmann_
+* Fix compilation under Qt 6.2+ and stricter Qt compile settings. - _Christoph Cullmann_
 
 __3.3.3__
 ---------
