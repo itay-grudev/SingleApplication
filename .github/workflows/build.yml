@@ -14,10 +14,12 @@ jobs:
   build:
     strategy:
       matrix:
-        qt_version: [5.12.6, 5.13.2, 5.14.0, 5.15.0, 6.0.0]
+        qt_version: [5.12.6, 5.13.2, 5.14.0, 5.15.0, 6.0.0, 6.2.0]
         platform: [ubuntu-20.04, windows-latest, macos-latest]
         include:
           - qt_version: 6.0.0
+            additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
+          - qt_version: 6.2.0
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
           - platform: ubuntu-20.04
             make: make
