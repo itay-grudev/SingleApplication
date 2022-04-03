@@ -141,7 +141,7 @@ void SingleApplicationPrivate::genBlockServerName()
     appData.addData( SingleApplication::app_t::organizationDomain().toUtf8() );
 
     if ( ! appDataList.isEmpty() )
-        appData.addData( appDataList.join( "" ).toUtf8() );
+        appData.addData( appDataList.join(QString()).toUtf8() );
 
     if( ! (options & SingleApplication::Mode::ExcludeAppVersion) ){
         appData.addData( SingleApplication::app_t::applicationVersion().toUtf8() );
@@ -171,7 +171,7 @@ void SingleApplicationPrivate::genBlockServerName()
 
     // Replace the backslash in RFC 2045 Base64 [a-zA-Z0-9+/=] to comply with
     // server naming requirements.
-    blockServerName = appData.result().toBase64().replace("/", "_");
+    blockServerName = QString::fromUtf8(appData.result().toBase64().replace("/", "_"));
 }
 
 void SingleApplicationPrivate::initializeMemoryBlock() const
@@ -270,7 +270,7 @@ bool SingleApplicationPrivate::connectToPrimary( int msecs, ConnectionType conne
     writeStream << static_cast<quint8>(connectionType);
     writeStream << instanceNumber;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    quint16 checksum = qChecksum(QByteArray(initMsg, static_cast<quint32>(initMsg.length())));
+    quint16 checksum = qChecksum(QByteArray(initMsg.constData(), static_cast<quint32>(initMsg.length())));
 #else
     quint16 checksum = qChecksum(initMsg.constData(), static_cast<quint32>(initMsg.length()));
 #endif
@@ -472,7 +472,7 @@ void SingleApplicationPrivate::readInitMessageBody( QLocalSocket *sock )
     readStream >> msgChecksum;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    const quint16 actualChecksum = qChecksum(QByteArray(msgBytes, static_cast<quint32>(msgBytes.length() - sizeof(quint16))));
+    const quint16 actualChecksum = qChecksum(QByteArray(msgBytes.constData(), static_cast<quint32>(msgBytes.length() - sizeof(quint16))));
 #else
     const quint16 actualChecksum = qChecksum(msgBytes.constData(), static_cast<quint32>(msgBytes.length() - sizeof(quint16)));
 #endif
