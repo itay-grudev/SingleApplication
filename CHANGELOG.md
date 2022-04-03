@@ -3,7 +3,13 @@ Changelog
 
 If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
 
+__3.3.4__
+---------
+
+* Fix compilation under Qt 6.2+ and stricter Qt compile settings. - _Christoph Cullmann_
+
 __3.3.3__
+---------
 
 * Support for Qt 6.3+ - Fixed deprecated `QCryptographicHash::addData()` that will only support `QByteArrayView` going further. - _Moody Liu_
 
