@@ -125,13 +125,26 @@ public:
     QString currentUser() const;
 
     /**
+     * @brief Mode of operation of sendMessage.
+     * @enum
+     */
+    enum SendMode {
+        /**
+         * Should the sendMessage call block until the primary instance is terminated?
+         */
+        BlockingSend = 1 << 0,
+    };
+    Q_DECLARE_FLAGS(SendOptions, SendMode)
+
+    /**
      * @brief Sends a message to the primary instance. Returns true on success.
      * @param {int} timeout - Timeout for connecting
+     * @param {bool} block - Block until the primary application exits.
      * @returns {bool}
      * @note sendMessage() will return false if invoked from the primary
      * instance.
      */
-    bool sendMessage( const QByteArray &message, int timeout = 100 );
+    bool sendMessage( const QByteArray &message, int timeout = 100, SendOptions options = {} );
 
     /**
      * @brief Get the set user data.
