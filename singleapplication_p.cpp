@@ -303,7 +303,7 @@ bool SingleApplicationPrivate::writeConfirmedMessage (int msecs, const QByteArra
     // Frame 2: The message
     const bool result = writeConfirmedFrame( static_cast<int>(msecs - time.elapsed()), msg );
 
-    // block if needed
+    // Block if needed
     if (socket && (options & SingleApplication::BlockingSend))
         socket->waitForDisconnected(-1);
 
