@@ -129,7 +129,7 @@ public:
      * @enum
      */
     enum SendMode {
-        NonBlocking,            /** Do not wait for the primary instance termination and return immediately */
+        NonBlocking,  /** Do not wait for the primary instance termination and return immediately */
         BlockUntilPrimaryExit,  /** Wait until the primary instance is terminated */
     };
 
