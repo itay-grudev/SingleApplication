@@ -7,6 +7,7 @@ __3.3.4__
 ---------
 
 * Fix compilation under Qt 6.2+ and stricter Qt compile settings. - _Christoph Cullmann_
+* Provide API for blocking sendMessage. - _Christoph Cullmann_
 
 __3.3.3__
 ---------
