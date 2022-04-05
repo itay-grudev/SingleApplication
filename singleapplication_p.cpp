@@ -283,7 +283,7 @@ void SingleApplicationPrivate::writeAck( QLocalSocket *sock ) {
     sock->putChar('\n');
 }
 
-bool SingleApplicationPrivate::writeConfirmedMessage (int msecs, const QByteArray &msg, SingleApplication::SendOptions options)
+bool SingleApplicationPrivate::writeConfirmedMessage (int msecs, const QByteArray &msg, SingleApplication::SendMode sendMode)
 {
     QElapsedTimer time;
     time.start();
@@ -304,7 +304,7 @@ bool SingleApplicationPrivate::writeConfirmedMessage (int msecs, const QByteArra
     const bool result = writeConfirmedFrame( static_cast<int>(msecs - time.elapsed()), msg );
 
     // Block if needed
-    if (socket && (options & SingleApplication::BlockingSend))
+    if (socket && (sendMode == SingleApplication::BlockUntilPrimaryExit))
         socket->waitForDisconnected(-1);
 
     return result;
