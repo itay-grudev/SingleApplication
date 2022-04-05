@@ -129,12 +129,9 @@ public:
      * @enum
      */
     enum SendMode {
-        /**
-         * Should the sendMessage call block until the primary instance is terminated?
-         */
-        BlockingSend = 1 << 0,
+        NonBlocking,  /** Do not wait for the primary instance termination and return immediately */
+        Blocking,  /** Wait until the primary instance is terminated */
     };
-    Q_DECLARE_FLAGS(SendOptions, SendMode)
 
     /**
      * @brief Sends a message to the primary instance. Returns true on success.
