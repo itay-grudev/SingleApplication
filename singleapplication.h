@@ -125,13 +125,23 @@ public:
     QString currentUser() const;
 
     /**
+     * @brief Mode of operation of sendMessage.
+     * @enum
+     */
+    enum SendMode {
+        NonBlocking,  /** Do not wait for the primary instance termination and return immediately */
+        BlockUntilPrimaryExit,  /** Wait until the primary instance is terminated */
+    };
+
+    /**
      * @brief Sends a message to the primary instance. Returns true on success.
      * @param {int} timeout - Timeout for connecting
+     * @param {SendMode} sendMode - Mode of operation.
      * @returns {bool}
      * @note sendMessage() will return false if invoked from the primary
      * instance.
      */
-    bool sendMessage( const QByteArray &message, int timeout = 100 );
+    bool sendMessage( const QByteArray &message, int timeout = 100, SendMode sendMode = NonBlocking );
 
     /**
      * @brief Get the set user data.
