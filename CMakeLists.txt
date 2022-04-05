@@ -29,6 +29,7 @@ else()
 endif()
 
 find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS ${QT_COMPONENTS} REQUIRED)
+find_package(Doxygen)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${QT_LIBRARIES})
 
@@ -48,3 +49,14 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
     QT_NO_KEYWORDS
     QT_NO_FOREACH
 )
+
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
+
+    doxygen_add_docs(${PROJECT_NAME}Documentation
+        singleapplication.h
+        CHANGELOG.md
+        Windows.md
+        README.md
+    )
+endif()
