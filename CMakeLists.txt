@@ -51,11 +51,24 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 
 if(DOXYGEN_FOUND)
+    # Doxygen theme
+    include(FetchContent)
+    FetchContent_Declare(DoxygenAwesome
+        GIT_REPOSITORY https://github.com/jothepro/doxygen-awesome-css
+        GIT_TAG 4cd62308d825fe0396d2f66ffbab45d0e247724c # 2.0.3
+    )
+    FetchContent_MakeAvailable(DoxygenAwesome)
+    FetchContent_GetProperties(DoxygenAwesome SOURCE_DIR DoxygenAwesome_SOURCE_DIR)
+
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
     set(DOXYGEN_GENERATE_TREEVIEW YES)
-    set(DOXYGEN_HTML_HEADER doxygen/header.html)
-    set(DOXYGEN_HTML_EXTRA_FILES doxygen/doxygen-awesome-fragment-copy-button.js doxygen/doxygen-awesome-paragraph-link.js)
-    set(DOXYGEN_HTML_EXTRA_STYLESHEET doxygen/doxygen-awesome.css)
+    set(DOXYGEN_HTML_HEADER ${DoxygenAwesome_SOURCE_DIR}/doxygen-custom/header.html)
+    set(DOXYGEN_HTML_EXTRA_STYLESHEET ${DoxygenAwesome_SOURCE_DIR}/doxygen-awesome.css)
+    set(DOXYGEN_HTML_EXTRA_FILES
+        ${DoxygenAwesome_SOURCE_DIR}/doxygen-awesome-fragment-copy-button.js
+        ${DoxygenAwesome_SOURCE_DIR}/doxygen-awesome-paragraph-link.js
+        ${DoxygenAwesome_SOURCE_DIR}/doxygen-awesome-darkmode-toggle.js
+    )
 
     doxygen_add_docs(${PROJECT_NAME}Documentation
         singleapplication.h
