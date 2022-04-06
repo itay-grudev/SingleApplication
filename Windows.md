@@ -1,4 +1,4 @@
-# Windows Specific Implementations
+# Windows Specifics
 
 ## Setting the foreground window
 

@@ -1,11 +1,13 @@
 # Changelog
 
-If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
+## 3.4.0
+
+* Provide API for blocking sendMessage. - _Christoph Cullmann_
+
 
 ## 3.3.4
 
 * Fix compilation under Qt 6.2+ and stricter Qt compile settings. - _Christoph Cullmann_
-* Provide API for blocking sendMessage. - _Christoph Cullmann_
 
 ## 3.3.3
 
