@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12.0)
 
-project(SingleApplication LANGUAGES CXX)
+project(SingleApplication LANGUAGES CXX DESCRIPTION "Replacement for QtSingleApplication")
 
 set(CMAKE_AUTOMOC ON)
 
@@ -51,10 +51,6 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
 )
 
 if(DOXYGEN_FOUND)
-    set(DOXYGEN_PROJECT_NAME SingleApplication)
-    set(DOXYGEN_PROJECT_BRIEF "Replacement for QtSingleApplication")
-    set(DOXYGEN_HTML_INDEX_NUM_ENTRIES 100)
-    set(DOXYGEN_SEARCHENGINE YES)
     set(DOXYGEN_USE_MDFILE_AS_MAINPAGE README.md)
     set(DOXYGEN_GENERATE_TREEVIEW YES)
     set(DOXYGEN_HTML_HEADER doxygen/header.html)
