@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - "**.md"
 
+jobs:
   build:
     name: Build
     strategy:
