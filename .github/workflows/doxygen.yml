@@ -25,10 +25,6 @@ jobs:
           cmake --build build --target SingleApplicationDocumentation
 
       - name: Deploy to GitHub pages
-        on:
-          branches:
-            - master
-
         uses: crazy-max/ghaction-github-pages@v3
         with:
           target_branch: gh-pages
