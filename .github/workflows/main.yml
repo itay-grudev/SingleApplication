@@ -10,24 +10,6 @@ on:
     paths-ignore:
       - "**.md"
 
-jobs:
-  doxygen:
-    name: Doxygen
-    runs-on: ubuntu-20.04
-    steps:
-      - name: Clone repo
-        uses: actions/checkout@v2.3.4
-
-      - name: Install apt packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install doxygen qtbase5-dev
-
-      - name: Generate documentation
-        run: |
-          cmake -B build -D DOXYGEN_WARN_AS_ERROR=YES
-          cmake --build build --target SingleApplicationDocumentation
-
   build:
     name: Build
     strategy:
