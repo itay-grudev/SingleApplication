@@ -8,7 +8,9 @@ Keeps the Primary Instance of your Application and kills each subsequent
 instances. It can (if enabled) spawn secondary (non-related to the primary)
 instances and can send data to the primary instance from secondary instances.
 
-## [Documentation](https://itay-grudev.github.io/SingleApplication/)
+## Documentation
+
+You can find the full usage reference [here](https://itay-grudev.github.io/SingleApplication/).
 
 ## Usage
 
