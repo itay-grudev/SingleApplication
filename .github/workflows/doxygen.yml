@@ -1,0 +1,38 @@
+name: "Documentation"
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'master'
+
+jobs:
+  doxygen:
+    name: Doxygen
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: Install doxygen and pre-requsites packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install doxygen qtbase5-dev
+
+      - name: Generate documentation
+        run: |
+          cmake -B build -D DOXYGEN_WARN_AS_ERROR=YES
+          cmake --build build --target SingleApplicationDocumentation
+
+      - name: Deploy to GitHub pages
+        on:
+          branches:
+            - master
+
+        uses: crazy-max/ghaction-github-pages@v3
+        with:
+          target_branch: gh-pages
+          build_dir: build/html
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

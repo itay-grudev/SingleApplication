@@ -1,15 +1,13 @@
-Windows Specific Implementations
-================================
+# Windows Specifics
 
-Setting the foreground window
------------------------------
+## Setting the foreground window
 
 In the `instanceStarted()` example in the `README` we demonstrated how an
 application can bring it's primary instance window whenever a second copy
 of the application is started.
 
 On Windows the ability to bring the application windows to the foreground is
-restricted, see [`AllowSetForegroundWindow()`][AllowSetForegroundWindow] for more
+restricted, see [AllowSetForegroundWindow()][https://msdn.microsoft.com/en-us/library/windows/desktop/ms632668.aspx] for more
 details.
 
 The background process (the primary instance) can bring its windows to the
@@ -42,5 +40,3 @@ void App::instanceStarted() {
     QApplication::setActiveWindow( [window/widget to set to the foreground] );
 }
 ```
-
-[AllowSetForegroundWindow]: https://msdn.microsoft.com/en-us/library/windows/desktop/ms632668.aspx

@@ -12,6 +12,7 @@ on:
 
 jobs:
   build:
+    name: Build
     strategy:
       matrix:
         qt_version: [5.12.6, 5.15.0, 6.0.0, 6.2.0]

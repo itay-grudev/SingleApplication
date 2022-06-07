@@ -1,35 +1,31 @@
-Changelog
-=========
+# Changelog
 
-If by accident I have forgotten to credit someone in the CHANGELOG, email me and I will fix it.
+## 3.4.0
 
-__3.3.4__
----------
+* Provide API for blocking sendMessage. - _Christoph Cullmann_
+
+
+## 3.3.4
 
 * Fix compilation under Qt 6.2+ and stricter Qt compile settings. - _Christoph Cullmann_
 
-__3.3.3__
----------
+## 3.3.3
 
 * Support for Qt 6.3+ - Fixed deprecated `QCryptographicHash::addData()` that will only support `QByteArrayView` going further. - _Moody Liu_
 
-__3.3.2__
----------
+## 3.3.2
 
 * Fixed crash caused by sending a `writeAck` on a removed connection. - _Nicolas Werner_
 
-__3.3.1__
----------
+## 3.3.1
 
 * Added support for _AppImage_ dynamic executable paths. - _Michael Klein_
 
-__3.3.0__
----------
+## 3.3.0
 
 * Fixed message fragmentation issue causing crashes and incorrectly / inconsistently received messages. - _Nils Jeisecke_
 
-__3.2.0__
----------
+## 3.2.0
 
 * Added support for Qt 6  - _Jonas Kvinge_
 * Fixed warning in `Qt 5.9` with `min`/`max` functions on Windows - _Nick Korotysh_
@@ -37,55 +33,47 @@ __3.2.0__
 * Fix build issue with MinGW GCC pedantic mode - _Iakov Kirilenko_
 * Fixed conversion from `int` to `quint32` and Clang Tidy warnings - _Hennadii Chernyshchyk_
 
-__3.1.5__
----------
+## 3.1.5
 
 * Improved library stability in edge cases and very rapid process initialisation
 * Fixed Bug where the shared memory block may have been modified without a lock
 * Fixed Bug causing `instanceStarted()` to not get emitted when a second instance
   has been started before the primary has initiated it's `QLocalServer`.
 
-__3.1.4__
----------
+## 3.1.4
 * Officially supporting and build-testing against Qt 5.15
 * Fixed an MSVC C4996 warning that suggests using `strncpy_s`.
 
     _Hennadii Chernyshchyk_
 
-__3.1.3.1__
----------
+## 3.1.3.1
 * CMake build system improvements
 * Fixed Clang Tidy warnings
 
     _Hennadii Chernyshchyk_
 
-__3.1.3__
----------
+## 3.1.3
 * Improved `CMakeLists.txt`
 
     _Hennadii Chernyshchyk_
 
-__3.1.2__
----------
+## 3.1.2
 
 * Fix a crash when exiting an application on Android and iOS
 
     _Emeric Grange_
 
-__3.1.1a__
-----------
+## 3.1.1a
 
 * Added currentUser() method that returns the user the current instance is running as.
 
     _Leander Schulten_
 
-__3.1.0a__
-----------
+## 3.1.0a
 
 * Added primaryUser() method that returns the user the primary instance is running as.
 
-__3.0.19__
-----------
+## 3.0.19
 
 * Fixed code warning for depricated functions in Qt 5.10 related to `QTime` and `qrand()`.
 
@@ -93,8 +81,7 @@ __3.0.19__
    _Anton Filimonov_  
    _Jonas Kvinge_
 
-__3.0.18__
-----------
+## 3.0.18
 
 * Fallback to standard QApplication class on iOS and Android systems where
   the library is not supported.
@@ -103,8 +90,7 @@ __3.0.18__
 
   _Anton Filimonov_
 
-__3.0.17__
-----------
+## 3.0.17
 
 * Fixed compilation warning/error caused by `geteuid()` on unix based systems.
 
@@ -114,40 +100,34 @@ __3.0.17__
 
    _Hennadii Chernyshchyk_
 
-__3.0.16__
-----------
+## 3.0.16
 
 * Use geteuid and getpwuid to get username on Unix, fallback to environment variable.
 
    _Jonas Kvinge_
 
-__3.0.15__
-----------
+## 3.0.15
 
 * Bug Fix: sendMessage() might return false even though data was actually written.
 
    _Jonas Kvinge_
 
-__3.0.14__
-----------
+## 3.0.14
 
 * Fixed uninitialised variables in the `SingleApplicationPrivate` constructor.
 
-__3.0.13a__
-----------
+## 3.0.13a
 
 * Process socket events asynchronously
 * Fix undefined variable error on Windows
 
    _Francis Giraldeau_
 
-__3.0.12a__
-----------
+## 3.0.12a
 
 * Removed signal handling.
 
-__3.0.11a__
-----------
+## 3.0.11a
 
 * Fixed bug where the message sent by the second process was not received
   correctly when the message is sent immediately following a connection.
@@ -159,8 +139,7 @@ __3.0.11a__
 * Explicit `qWarning` and `qCritical` when the library is unable to initialise
   correctly.
 
-__3.0.10__
-----------
+## 3.0.10
 
 * Removed C style casts and eliminated all clang warnings. Fixed `instanceId`
   reading from only one byte in the message deserialization. Cleaned up
@@ -171,8 +150,7 @@ __3.0.10__
 
     _Jedidiah Buck McCready_
 
-__3.0.9__
----------
+## 3.0.9
 
 *   Added SingleApplicationPrivate::primaryPid() as a solution to allow
     bringing the primary window of an application to the foreground on
@@ -180,23 +158,20 @@ __3.0.9__
 
     _Eelco van Dam from Peacs BV_
 
-__3.0.8__
----------
+## 3.0.8
 
 *   Bug fix - changed QApplication::instance() to QCoreApplication::instance()
 
     _Evgeniy Bazhenov_
 
-__3.0.7a__
-----------
+## 3.0.7a
 
 *   Fixed compilation error with Mingw32 in MXE thanks to Vitaly Tonkacheyev.
 *   Removed QMutex used for thread safe behaviour. The implementation now uses
     QCoreApplication::instance() to get an instance to SingleApplication for
     memory deallocation.
 
-__3.0.6a__
-----------
+## 3.0.6a
 
 *   Reverted GetUserName API usage on Windows. Fixed bug with missing library.
 *   Fixed bug in the Calculator example, preventing it's window to be raised
@@ -204,22 +179,19 @@ __3.0.6a__
 
     Special thanks to Charles Gunawan.
 
-__3.0.5a__
-----------
+## 3.0.5a
 
 *   Fixed a memory leak in the SingleApplicationPrivate destructor.
 
     _Sergei Moiseev_
 
-__3.0.4a__
-----------
+## 3.0.4a
 
 *   Fixed shadow and uninitialised variable warnings.
 
     _Paul Walmsley_
 
-__3.0.3a__
-----------
+## 3.0.3a
 
 *   Removed Microsoft Windows specific code for getting username due to
     multiple problems and compiler differences on Windows platforms. On
@@ -229,16 +201,14 @@ __3.0.3a__
 *   Explicitly getting absolute path of the user's home directory as on Unix
     a relative path (`~`) may be returned.
 
-__3.0.2a__
-----------
+## 3.0.2a
 
 *   Fixed bug on Windows when username containing wide characters causes the
     library to crash.
 
     _Le Liu_
 
-__3.0.1a__
-----------
+## 3.0.1a
 
 *   Allows the application path and version to be excluded from the server name
     hash. The following flags were added for this purpose:
@@ -250,8 +220,7 @@ __3.0.1a__
 
     _Le Liu_
 
-__v3.0a__
----------
+## v3.0a
 
 *   Deprecated secondary instances count.
 *   Added a sendMessage() method to send a message to the primary instance.
@@ -280,37 +249,32 @@ __v3.0a__
     secondary instance started. When called from the primary instance will
     return `0`.
 
-__v2.4__
---------
+## v2.4
 
 *   Stability improvements
 *   Support for secondary instances.
 *   The library now recovers safely after the primary process has crashed
 and the shared memory had not been deleted.
 
-__v2.3__
---------
+## v2.3
 
 *   Improved pimpl design and inheritance safety.
 
     _Vladislav Pyatnichenko_
 
-__v2.2__
---------
+## v2.2
 
 *   The `QAPPLICATION_CLASS` macro can now be defined in the file including the
 Single Application header or with a `DEFINES+=` statement in the project file.
 
-__v2.1__
---------
+## v2.1
 
 *   A race condition can no longer occur when starting two processes nearly
     simultaneously.
 
     Fix issue [#3](https://github.com/itay-grudev/SingleApplication/issues/3)
 
-__v2.0__
---------
+## v2.0
 
 *   SingleApplication is now being passed a reference to `argc` instead of a
     copy.
