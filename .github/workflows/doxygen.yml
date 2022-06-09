@@ -23,12 +23,12 @@ jobs:
         run: |
           cmake -B build -D DOXYGEN_WARN_AS_ERROR=YES
           cmake --build build --target SingleApplicationDocumentation
+          find build/html/ -name *.html -type f -exec sed -i 's+https://github.com/jothepro/doxygen-awesome-css+https://github.com/itay-grudev/SingleApplication+g' {} \;
 
       - name: Deploy to GitHub pages
         on:
           branches:
             - master
-
         uses: crazy-max/ghaction-github-pages@v3
         with:
           target_branch: gh-pages
