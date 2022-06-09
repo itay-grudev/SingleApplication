@@ -30,7 +30,7 @@ endif()
 
 find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS ${QT_COMPONENTS} REQUIRED)
 
-option(SINGLEAPPLICATION_DOCUMENTATION "Generate Doxygen documentation" ON)
+option(SINGLEAPPLICATION_DOCUMENTATION "Generate Doxygen documentation" OFF)
 if(SINGLEAPPLICATION_DOCUMENTATION)
     find_package(Doxygen)
 endif()
