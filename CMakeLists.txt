@@ -29,7 +29,11 @@ else()
 endif()
 
 find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS ${QT_COMPONENTS} REQUIRED)
-find_package(Doxygen)
+
+option(SINGLEAPPLICATION_DOCUMENTATION "Generate Doxygen documentation" OFF)
+if(SINGLEAPPLICATION_DOCUMENTATION)
+    find_package(Doxygen)
+endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${QT_LIBRARIES})
 
