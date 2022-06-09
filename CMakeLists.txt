@@ -76,11 +76,4 @@ if(DOXYGEN_FOUND)
         Windows.md
         README.md
     )
-
-    add_custom_command(
-        TARGET ${PROJECT_NAME}Documentation POST_BUILD
-        COMMAND find html/ -name *.html -type f -exec sed -i 's+https://github.com/jothepro/doxygen-awesome-css+https://github.com/itay-grudev/SingleApplication+g' {} \\\;
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Replacing project URL"
-    )
 endif()
