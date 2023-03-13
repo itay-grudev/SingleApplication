@@ -4,4 +4,7 @@ DEFINES += QAPPLICATION_CLASS=QApplication
 
 QT += widgets
 SOURCES += main.cpp
-LIBS += User32.lib
+
+win32{
+  LIBS += User32.lib
+}

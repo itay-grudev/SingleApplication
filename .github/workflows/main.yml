@@ -59,7 +59,7 @@ jobs:
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
 
-      - name: Build calculator example CMake
+      - name: Build calculator example with CMake
         working-directory: examples/calculator/
         run: |
           cmake . ${{ matrix.additional_arguments }}
@@ -67,6 +67,12 @@ jobs:
 
       - name: Build sending_arguments example with CMake
         working-directory: examples/sending_arguments/
+        run: |
+          cmake . ${{ matrix.additional_arguments }}
+          cmake --build .
+
+      - name: Build windows_raise_widget example with CMake
+        working-directory: examples/windows_raise_widget/
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
@@ -80,7 +86,7 @@ jobs:
           qmake
           ${{ matrix.make }}
 
-      - name: Build calculator example QMake
+      - name: Build calculator example with QMake
         working-directory: examples/calculator/
         run: |
           qmake
@@ -88,6 +94,12 @@ jobs:
 
       - name: Build sending_arguments example with QMake
         working-directory: examples/sending_arguments/
+        run: |
+          qmake
+          ${{ matrix.make }}
+
+      - name: Build windows_raise_widget example with QMake
+        working-directory: examples/windows_raise_widget/
         run: |
           qmake
           ${{ matrix.make }}

@@ -7,8 +7,7 @@ application can bring it's primary instance window whenever a second copy
 of the application is started.
 
 On Windows the ability to bring the application windows to the foreground is
-restricted, see [AllowSetForegroundWindow()][https://msdn.microsoft.com/en-us/library/windows/desktop/ms632668.aspx] for more
-details.
+restricted, see [AllowSetForegroundWindow()](https://msdn.microsoft.com/en-us/library/windows/desktop/ms632668.aspx) for more details.
 
 The background process (the primary instance) can bring its windows to the
 foreground if it is allowed by the current foreground process (the secondary
@@ -19,35 +18,4 @@ If the widget is minimized to Windows task bar, `QWidget::raise()` or
 `QWidget::show()` can not bring it to the front, you have to use Windows API
 `ShowWindow()` .
 
-Here is an example, you can find this project in the example directory:
-
-```cpp
-SingleApplication app(argc, argv, true);
-if ( app.isSecondary() ) {
-    // This API requires LIBS += User32.lib to be added to the project
-    AllowSetForegroundWindow( DWORD( app.primaryPid() ) );
-
-    objApp.sendMessage("SHOW_WINDOW");
-
-    return 0;
-}
-
-QWidget* widget = new QWidget;
-
-QObject::connect(&app, &SingleApplication::receivedMessage,
-                 widget, [widget] () { RaiseWidget(widget); } );
-```
-
-```cpp
-void RaiseWidget(QWidget* widget) {
-
-    HWND hwnd = (HWND)widget->winId();
-
-    // check if widget is minimized
-    if (::IsIconic(hwnd)) {
-        ::ShowWindow(hwnd, SW_RESTORE);
-    }
-
-    ::SetForegroundWindow(hwnd);
-}
-```
+You can find demo code in the [examples](examples/windows_raise_widget/main.cpp) directory.
