@@ -18,4 +18,4 @@ If the widget is minimized to Windows task bar, `QWidget::raise()` or
 `QWidget::show()` can not bring it to the front, you have to use Windows API
 `ShowWindow()` .
 
-You can find demo code in the [examples](examples/windows_raise_widget/main.cpp) directory.
+You can find [demo code](examples/windows_raise_widget/main.cpp) in the examples directory.
