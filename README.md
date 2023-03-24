@@ -168,6 +168,11 @@ instances running.
 
 ## License
 
-This library and it's supporting documentation are released under
-`The MIT License (MIT)` with the exception of the Qt calculator examples which
-is distributed under the BSD license.
+This library and it's supporting documentation, with the exception of the Qt 
+calculator examples which is distributed under the BSD license, are released
+under the terms of `The MIT License (MIT)` with an extra condition, that:
+
+```txt
+Permission is not granted to use this software or any of the associated files
+as sample data for the purposes of building machine learning models.
+```
