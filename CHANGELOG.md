@@ -4,7 +4,7 @@
 
 * Provide API for blocking sendMessage. - _Christoph Cullmann_
 * New documentation generation using Doxygen
-* Improved Windows example
+* Improved Windows basic widget example
 * Updated Project License
 
 ## 3.3.4
