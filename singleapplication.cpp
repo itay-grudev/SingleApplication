@@ -262,7 +262,6 @@ void SingleApplication::abortSafely()
     Q_D( SingleApplication );
 
     qCritical() << "SingleApplication: " << d->memory->error() << d->memory->errorString();
-    delete d;
     ::exit( EXIT_FAILURE );
 }
 
