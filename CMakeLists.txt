@@ -38,7 +38,9 @@ endif()
 target_link_libraries(${PROJECT_NAME} PUBLIC ${QT_LIBRARIES})
 
 if(WIN32)
-    target_link_libraries(${PROJECT_NAME} PRIVATE advapi32)
+    find_library(advapi32_LIBRARY advapi32 REQUIRED)
+    mark_as_advanced(advapi32_LIBRARY)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${advapi32_LIBRARY})
 endif()
 
 target_compile_definitions(${PROJECT_NAME} PUBLIC QAPPLICATION_CLASS=${QAPPLICATION_CLASS})
