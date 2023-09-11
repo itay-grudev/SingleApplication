@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.4.1
+
+* Improved Windows link library dependency. - _Frederik Seiffert_
+
 ## 3.4.0
 
 * Provide API for blocking sendMessage. - _Christoph Cullmann_
