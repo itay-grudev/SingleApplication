@@ -2,7 +2,7 @@
 
 ## 3.4.1
 
-* Improved Windows link library dependency. - _Frederik Seiffert_
+* Improved Windows advapi32 link library dependency. - _Frederik Seiffert_
 
 ## 3.4.0
 
