@@ -54,6 +54,9 @@ jobs:
         with:
           version: ${{ matrix.qt_version }}
 
+      - name: Setup MSVC environment for QMake
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Build library with CMake
         run: |
           cmake . ${{ matrix.additional_arguments }}
@@ -82,9 +85,6 @@ jobs:
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
-
-      - name: Setup MSVC environment for QMake
-        uses: ilammy/msvc-dev-cmd@v1
 
       - name: Build basic example with QMake
         working-directory: examples/basic/
