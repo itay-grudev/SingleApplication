@@ -10,7 +10,7 @@ instances and can send data to the primary instance from secondary instances.
 
 ## [Documentation](https://itay-grudev.github.io/SingleApplication/)
 
-You can find the full usage reference and examples [here](https://itay-grudev.github.io/SingleApplication/classSingleApplication.html)
+You can find the full usage reference and examples [here](https://itay-grudev.github.io/SingleApplication/classSingleApplication.html).
 
 ## Usage
 
