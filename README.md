@@ -60,6 +60,50 @@ add_subdirectory(src/third-party/singleapplication)
 target_link_libraries(${PROJECT_NAME} SingleApplication::SingleApplication)
 ```
 
+Directly including this repository as a Git submodule, or even just a shallow copy of the
+source code into new projects might not be ideal when using CMake.
+Another option is using CMake's `FetchContent` module, available since version `3.11`.
+```cmake
+
+# Define the minumun CMake version, as an example 3.24
+cmake_minimum_required(VERSION 3.24)
+
+# Include the module
+include(FetchContent)
+
+# If using Qt6, override DEFAULT_MAJOR_VERSION
+set(QT_DEFAULT_MAJOR_VERSION 6 CACHE STRING "Qt version to use, defaults to 6")
+
+# Set QAPPLICATION_CLASS
+set(QAPPLICATION_CLASS QApplication CACHE STRING "Inheritance class for SingleApplication")
+
+
+# Declare how is the source going to be obtained
+FetchContent_Declare(
+  SingleApplication
+  GIT_REPOSITORY https://github.com/itay-grudev/SingleApplication
+  GIT_TAG        master
+  #GIT_TAG        e22a6bc235281152b0041ce39d4827b961b66ea6
+)
+
+# Fetch the repository and make it available to the build
+FetchContent_MakeAvailable(SingleApplication)
+
+# Then simply use find_package as usual
+find_package(SingleApplication)
+
+# Finally add it to the target_link_libraries() section
+target_link_libraries(ClientePOS PRIVATE
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Network
+    Qt${QT_VERSION_MAJOR}::Sql
+
+    SingleApplication::SingleApplication
+)
+
+```
+
+
 The library sets up a `QLocalServer` and a `QSharedMemory` block. The first
 instance of your Application is your Primary Instance. It would check if the
 shared memory block exists and if not it will start a `QLocalServer` and listen
