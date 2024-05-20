@@ -7,11 +7,12 @@ set(CMAKE_AUTOMOC ON)
 add_library(${PROJECT_NAME} STATIC
     singleapplication.cpp
     singleapplication_p.cpp
+    message_coder.cpp
 )
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if(NOT QT_DEFAULT_MAJOR_VERSION)
-    set(QT_DEFAULT_MAJOR_VERSION 5 CACHE STRING "Qt version to use (5 or 6), defaults to 5")
+    set(QT_DEFAULT_MAJOR_VERSION 6 CACHE STRING "Qt version to use (5 or 6), defaults to 5")
 endif()
 
 # Find dependencies

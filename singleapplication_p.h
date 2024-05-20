@@ -1,4 +1,4 @@
-// Copyright (c) Itay Grudev 2015 - 2023
+// Copyright (c) Itay Grudev 2023
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,7 +36,10 @@
 #include <QtCore/QSharedMemory>
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
+
 #include "singleapplication.h"
+#include "message_coder.h"
+#include "singleapplicationmessage.h"
 
 struct InstancesInfo {
     bool primary;
@@ -47,20 +50,13 @@ struct InstancesInfo {
 };
 
 struct ConnectionInfo {
-    qint64 msgLen = 0;
     quint32 instanceId = 0;
-    quint8 stage = 0;
+    MessageCoder *coder;
 };
 
 class SingleApplicationPrivate : public QObject {
 Q_OBJECT
 public:
-    enum ConnectionType : quint8 {
-        InvalidConnection = 0,
-        NewInstance = 1,
-        SecondaryInstance = 2,
-        Reconnect = 3
-    };
     enum ConnectionStage : quint8 {
         StageInitHeader = 0,
         StageInitBody = 1,
@@ -75,24 +71,22 @@ public:
     static QString getUsername();
     void genBlockServerName();
     void initializeMemoryBlock() const;
-    void startPrimary();
-    void startSecondary();
-    bool connectToPrimary( int msecs, ConnectionType connectionType );
+    bool connectToPrimary( uint timeout );
+    bool startPrimary( uint timeout );
+    void notifySecondaryStart( uint timeout );
+    bool sendApplicationMessage( SingleApplication::MessageType messageType, QByteArray content, uint timeout );
+//    bool sendApplicationMessage( SingleApplication::MessageType messageType, QByteArray content, uint timeout, SingleApplicationMessage &response );
     quint16 blockChecksum() const;
     qint64 primaryPid() const;
     QString primaryUser() const;
     bool isFrameComplete(QLocalSocket *sock);
     void readMessageHeader(QLocalSocket *socket, ConnectionStage nextStage);
     void readInitMessageBody(QLocalSocket *socket);
-    void writeAck(QLocalSocket *sock);
-    bool writeConfirmedFrame(int msecs, const QByteArray &msg);
-    bool writeConfirmedMessage(int msecs, const QByteArray &msg, SingleApplication::SendMode sendMode = SingleApplication::NonBlocking);
     static void randomSleep();
     void addAppData(const QString &data);
     QStringList appData() const;
 
     SingleApplication *q_ptr;
-    QSharedMemory *memory;
     QLocalSocket *socket;
     QLocalServer *server;
     quint32 instanceNumber;
@@ -103,8 +97,6 @@ public:
 
 public Q_SLOTS:
     void slotConnectionEstablished();
-    void slotDataAvailable( QLocalSocket*, quint32 );
-    void slotClientConnectionClosed( QLocalSocket*, quint32 );
 };
 
 #endif // SINGLEAPPLICATION_P_H

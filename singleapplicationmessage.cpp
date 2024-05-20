@@ -53,9 +53,9 @@ SingleApplicationMessage::SingleApplicationMessage( QByteArray message )
         dataStream >> messageChecksum;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-        const quint16 computedChecksum = qChecksum(QByteArray(message.constData(), static_cast<quint32>(message.length() - sizeof(quint16))));
+        const quint16 computedChecksum = qChecksum( QByteArray(message.constData(), static_cast<quint32>( message.length() - sizeof(quint16) )));
 #else
-        const quint16 computedChecksum = qChecksum(message.constData(), static_cast<quint32>(message.length() - sizeof(quint16)));
+        const quint16 computedChecksum = qChecksum( message.constData(), static_cast<quint32>( message.length() - sizeof(quint16) ));
 #endif
 
         if( messageChecksum != computedChecksum )
@@ -76,9 +76,9 @@ SingleApplicationMessage:: operator QByteArray()
     dataStream << (qsizetype)content.size();
     dataStream << content;
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    quint16 checksum = qChecksum( QByteArray( message.constData(), static_cast<quint32>( message.length())));
+    quint16 checksum = qChecksum( QByteArray( message.constData(), static_cast<quint32>( message.length() )));
 #else
-    quint16 checksum = qChecksum( message.constData(), static_cast<quint32>( messageMsg.length()));
+    quint16 checksum = qChecksum( message.constData(), static_cast<quint32>( messageMsg.length() ));
 #endif
     dataStream << checksum;
 
