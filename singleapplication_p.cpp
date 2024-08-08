@@ -113,7 +113,12 @@ QString SingleApplicationPrivate::getUsername()
 
 void SingleApplicationPrivate::genBlockServerName()
 {
+#ifdef Q_OS_MACOS
+    // Maximum key size on macOS is PSHMNAMLEN (31).
+    QCryptographicHash appData( QCryptographicHash::Md5 );
+#else
     QCryptographicHash appData( QCryptographicHash::Sha256 );
+#endif
 #if QT_VERSION < QT_VERSION_CHECK(6, 3, 0)
     appData.addData( "SingleApplication", 17 );
 #else

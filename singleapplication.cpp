@@ -60,10 +60,34 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     // block and QLocalServer
     d->genBlockServerName();
 
+//<<<<<<< v4.0
     while( time.elapsed() < timeout ){
         if( d->connectToPrimary( (timeout - time.elapsed()) * 2 / 3 )){
             if( ! allowSecondary ) // If we are operating in single instance mode - terminate the program
                 ::exit( EXIT_SUCCESS );
+/*=======
+    // To mitigate QSharedMemory issues with large amount of processes
+    // attempting to attach at the same time
+    SingleApplicationPrivate::randomSleep();
+
+#ifdef Q_OS_UNIX
+    // By explicitly attaching it and then deleting it we make sure that the
+    // memory is deleted even after the process has crashed on Unix.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) );
+#else
+    d->memory = new QSharedMemory( d->blockServerName );
+#endif
+    d->memory->attach();
+    delete d->memory;
+#endif
+    // Guarantee thread safe behaviour with a shared memory block.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) );
+#else
+    d->memory = new QSharedMemory( d->blockServerName );
+#endif
+>>>>>> master */
 
             d->notifySecondaryStart( timeout );
             return;
