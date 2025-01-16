@@ -10,8 +10,13 @@ add_library(${PROJECT_NAME} STATIC
 )
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
+# User configurable options
 if(NOT QT_DEFAULT_MAJOR_VERSION)
     set(QT_DEFAULT_MAJOR_VERSION 5 CACHE STRING "Qt version to use (5 or 6), defaults to 5")
+endif()
+
+if(NOT QAPPLICATION_CLASS)
+    set(QAPPLICATION_CLASS QCoreApplication CACHE STRING "Qt application base class or FreeStandingSingleApplication")
 endif()
 
 # Find dependencies
@@ -24,8 +29,6 @@ if(QAPPLICATION_CLASS STREQUAL QApplication)
 elseif(QAPPLICATION_CLASS STREQUAL QGuiApplication)
     list(APPEND QT_COMPONENTS Gui)
     list(APPEND QT_LIBRARIES Qt${QT_DEFAULT_MAJOR_VERSION}::Gui)
-else()
-    set(QAPPLICATION_CLASS QCoreApplication)
 endif()
 
 find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS ${QT_COMPONENTS} REQUIRED)
