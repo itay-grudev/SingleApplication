@@ -1,4 +1,4 @@
-// Copyright (c) Itay Grudev 2015 - 2023
+// Copyright (c) Itay Grudev 2023
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,6 +47,20 @@ class SingleApplication : public QAPPLICATION_CLASS
     using app_t = QAPPLICATION_CLASS;
 
 public:
+    // If you change this enum, make sure to update read validation code in message_decoder.cpp
+    enum MessageType : quint8 {
+        Acknowledge,
+        NewInstance,
+        InstanceMessage,
+    };
+    Q_ENUM( MessageType )
+
+    struct Message {
+        MessageType type;
+        quint16 instanceId;
+        QByteArray content;
+    };
+
     /**
      * @brief Mode of operation of `SingleApplication`.
      * Whether the block should be user-wide or system-wide and whether the
@@ -140,14 +154,6 @@ public:
     QString currentUser() const;
 
     /**
-     * @brief Mode of operation of sendMessage.
-     */
-    enum SendMode {
-        NonBlocking,  /** Do not wait for the primary instance termination and return immediately */
-        BlockUntilPrimaryExit,  /** Wait until the primary instance is terminated */
-    };
-
-    /**
      * @brief Sends a message to the primary instance
      * @param message data to send
      * @param timeout timeout for connecting
@@ -155,7 +161,7 @@ public:
      * @returns `true` on success
      * @note sendMessage() will return false if invoked from the primary instance
      */
-    bool sendMessage( const QByteArray &message, int timeout = 100, SendMode sendMode = NonBlocking );
+    bool sendMessage( const QByteArray &message, int timeout = 100 );
 
     /**
      * @brief Get the set user data.
@@ -178,7 +184,6 @@ Q_SIGNALS:
 private:
     SingleApplicationPrivate *d_ptr;
     Q_DECLARE_PRIVATE(SingleApplication)
-    void abortSafely();
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SingleApplication::Options)

@@ -1,4 +1,5 @@
 /.idea
+/examples/build/*
 /examples/*/*.o
 /examples/*/Makefile
 /examples/*/moc_*.cpp

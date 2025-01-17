@@ -1,4 +1,4 @@
-// Copyright (c) Itay Grudev 2015 - 2023
+// Copyright (c) Itay Grudev 2023
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,9 @@
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QByteArray>
 #include <QtCore/QSharedMemory>
+#include <QtCore/QDebug>
+
+#include <error.h>
 
 #include "singleapplication.h"
 #include "singleapplication_p.h"
@@ -42,12 +45,9 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 {
     Q_D( SingleApplication );
 
-#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
-    // On Android and iOS since the library is not supported fallback to
-    // standard QApplication behaviour by simply returning at this point.
-    qWarning() << "SingleApplication is not supported on Android and iOS systems.";
-    return;
-#endif
+    // Keep track of the initialization time of SingleApplication
+    QElapsedTimer time;
+    time.start();
 
     // Store the current mode of the program
     d->options = options;
@@ -60,6 +60,12 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     // block and QLocalServer
     d->genBlockServerName();
 
+//<<<<<<< v4.0
+    while( time.elapsed() < timeout ){
+        if( d->connectToPrimary( (timeout - time.elapsed()) * 2 / 3 )){
+            if( ! allowSecondary ) // If we are operating in single instance mode - terminate the program
+                ::exit( EXIT_SUCCESS );
+/*=======
     // To mitigate QSharedMemory issues with large amount of processes
     // attempting to attach at the same time
     SingleApplicationPrivate::randomSleep();
@@ -81,94 +87,32 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 #else
     d->memory = new QSharedMemory( d->blockServerName );
 #endif
+>>>>>> master */
 
-    // Create a shared memory block
-    if( d->memory->create( sizeof( InstancesInfo ) )){
-        // Initialize the shared memory block
-        if( ! d->memory->lock() ){
-          qCritical() << "SingleApplication: Unable to lock memory block after create.";
-          abortSafely();
-        }
-        d->initializeMemoryBlock();
-    } else {
-        if( d->memory->error() == QSharedMemory::AlreadyExists ){
-          // Attempt to attach to the memory segment
-          if( ! d->memory->attach() ){
-              qCritical() << "SingleApplication: Unable to attach to shared memory block.";
-              abortSafely();
-          }
-          if( ! d->memory->lock() ){
-            qCritical() << "SingleApplication: Unable to lock memory block after attach.";
-            abortSafely();
-          }
+            d->notifySecondaryStart( timeout );
+            return;
         } else {
-          qCritical() << "SingleApplication: Unable to create block.";
-          abortSafely();
+            // Report unexpected errors
+            switch( d->socket->error() ){
+            case QLocalSocket::SocketAccessError:
+            case QLocalSocket::SocketResourceError:
+            case QLocalSocket::DatagramTooLargeError:
+            case QLocalSocket::UnsupportedSocketOperationError:
+            case QLocalSocket::OperationError:
+            case QLocalSocket::UnknownSocketError:
+                qCritical() << "SingleApplication:" << d->socket->errorString();
+                qDebug() << "SingleApplication:" << "Falling back to primary instance";
+                break;
+            default:
+                break;
+            }
+            // If No server is listening then this is a promoted to a primary instance.
+            if( d->startPrimary( timeout ))
+                return;
         }
     }
 
-    auto *inst = static_cast<InstancesInfo*>( d->memory->data() );
-    QElapsedTimer time;
-    time.start();
-
-    // Make sure the shared memory block is initialised and in consistent state
-    while( true ){
-      // If the shared memory block's checksum is valid continue
-      if( d->blockChecksum() == inst->checksum ) break;
-
-      // If more than 5s have elapsed, assume the primary instance crashed and
-      // assume it's position
-      if( time.elapsed() > 5000 ){
-          qWarning() << "SingleApplication: Shared memory block has been in an inconsistent state from more than 5s. Assuming primary instance failure.";
-          d->initializeMemoryBlock();
-      }
-
-      // Otherwise wait for a random period and try again. The random sleep here
-      // limits the probability of a collision between two racing apps and
-      // allows the app to initialise faster
-      if( ! d->memory->unlock() ){
-        qDebug() << "SingleApplication: Unable to unlock memory for random wait.";
-        qDebug() << d->memory->errorString();
-      }
-      SingleApplicationPrivate::randomSleep();
-      if( ! d->memory->lock() ){
-        qCritical() << "SingleApplication: Unable to lock memory after random wait.";
-        abortSafely();
-      }
-    }
-
-    if( inst->primary == false ){
-        d->startPrimary();
-        if( ! d->memory->unlock() ){
-          qDebug() << "SingleApplication: Unable to unlock memory after primary start.";
-          qDebug() << d->memory->errorString();
-        }
-        return;
-    }
-
-    // Check if another instance can be started
-    if( allowSecondary ){
-        d->startSecondary();
-        if( d->options & Mode::SecondaryNotification ){
-            d->connectToPrimary( timeout, SingleApplicationPrivate::SecondaryInstance );
-        }
-        if( ! d->memory->unlock() ){
-          qDebug() << "SingleApplication: Unable to unlock memory after secondary start.";
-          qDebug() << d->memory->errorString();
-        }
-        return;
-    }
-
-    if( ! d->memory->unlock() ){
-      qDebug() << "SingleApplication: Unable to unlock memory at end of execution.";
-      qDebug() << d->memory->errorString();
-    }
-
-    d->connectToPrimary( timeout, SingleApplicationPrivate::NewInstance );
-
-    delete d;
-
-    ::exit( EXIT_SUCCESS );
+    qFatal( "SingleApplication: Did not manage to initialize within the allocated time1out." );
 }
 
 SingleApplication::~SingleApplication()
@@ -245,33 +189,20 @@ QString SingleApplication::currentUser() const
  * @param message The message to send.
  * @param timeout the maximum timeout in milliseconds for blocking functions.
  * @param sendMode mode of operation
- * @return true if the message was sent successfuly, false otherwise.
+ * @return true if the message was received successfuly, false otherwise.
  */
-bool SingleApplication::sendMessage( const QByteArray &message, int timeout, SendMode sendMode )
+bool SingleApplication::sendMessage( const QByteArray &messageBody, int timeout )
 {
     Q_D( SingleApplication );
 
     // Nobody to connect to
     if( isPrimary() ) return false;
 
-    // Make sure the socket is connected
-    if( ! d->connectToPrimary( timeout,  SingleApplicationPrivate::Reconnect ) )
-      return false;
+//    SingleApplicationMessage message( SingleApplicationMessage::NewInstance, 0, messageBody );
+//    return d->sendApplicationMessage( message , timeout );
 
-    return d->writeConfirmedMessage( timeout, message, sendMode );
-}
 
-/**
- * Cleans up the shared memory block and exits with a failure.
- * This function halts program execution.
- */
-void SingleApplication::abortSafely()
-{
-    Q_D( SingleApplication );
-
-    qCritical() << "SingleApplication: " << d->memory->error() << d->memory->errorString();
-    delete d;
-    ::exit( EXIT_FAILURE );
+    return d->sendApplicationMessage( SingleApplication::MessageType::InstanceMessage, messageBody, timeout );
 }
 
 QStringList SingleApplication::userData() const

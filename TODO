@@ -1,0 +1,16 @@
+Implement all stubbed functions.
+Add an instance counter that pings running secondary instances to ensure they are alive.
+Run the entire server response logic in a thread, so the SingleApplication primary server is responsive independently of how busy the main thread of the app is.
+Tests?
+
+Rethink the decision to:
+```cpp
+    QLocalServer::removeServer( blockServerName );
+```
+as that may destroy everything if the primary instance doesn't respond within the allocated timeout.
+
+REMOVE:
+  SingleApplicationPrivate::randomSleep();
+  quint16 SingleApplicationPrivate::blockChecksum()
+
+  Remove Mode::SecondaryNotification flag. A notification is always sent.
