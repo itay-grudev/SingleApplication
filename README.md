@@ -119,6 +119,67 @@ The library uses `stdlib` to terminate the program with the `exit()` function.
 Also don't forget to specify which `QCoreApplication` class your app is using if it
 is not `QCoreApplication` as in examples above.
 
+## Freestanding mode
+
+Traditionally, the functionality of this library is implemented as part of the Qt
+application class. The base class is defined by the macro `QAPPLICATION_CLASS`.
+
+In freestanding mode, `SingleApplication` is not derived from a Qt application
+class. Instead, an instance of a Qt application class is created as normal,
+followed by a separate instance of the `SingleApplication` class.
+
+```cpp
+#include <QApplication>
+#include <SingleApplication.h>
+
+int main( int argc, char* argv[] )
+{
+    // The normal application class with a type of your choice
+    QApplication app( argc, argv );
+
+    // Separate single application object (argc and argv are discarded)
+    SingleApplication single( argc, argv /*, options ...*/ );
+
+    // Do your stuff
+
+    return app.exec();
+}
+```
+
+_Note:_ With the discarded arguments and the class name that sounds like a Qt
+application class without being one, this looks like a workaround – it is a
+workaround. For 4.x, the single instance functionality could be moved to
+something like a `SingleManager` class, which would then be used to implement
+`SingleApplication`. This can't be done in 3.x, because moving
+`SingleApplication::Mode` to `SingleManager::Mode` would be a breaking change.
+
+To enable the freestanding mode set `QAPPLICATION_CLASS` to
+`FreeStandingSingleApplication`. This is a fake base class with no additional
+functionality.
+
+The standalone mode allows us to use a precompiled version of this library,
+because we don't need the `QAPPLICATION_CLASS` macro to define our Qt application
+class at build time. Furthermore, we can use `std::optional<SingleApplication>`
+to decide at runtime whether we want single application functionality or not.
+
+Use the standard CMake workflow to create a precompiled static library version,
+including CMake config files.
+
+```bash
+cmake -DQAPPLICATION_CLASS=FreeStandingSingleApplication -DSINGLEAPPLICATION_INSTALL=ON SingleApplicationDir
+cmake --build .
+cmake --install
+```
+
+This can be used via:
+
+```cmake
+find_package(SingleApplication REQUIRED)
+target_link_libraries(YourTarget SingleApplication::SingleApplication)
+```
+
+_Note:_ The `QAPPLICATION_CLASS` macro is eliminated during CMake install.
+
 ## Instance started signal
 
 The `SingleApplication` class implements a `instanceStarted()` signal. You can
@@ -185,11 +246,13 @@ will replace the Primary one even if the Secondary flag has been set.*
 
 ## Examples
 
-There are three examples provided in this repository:
+There are five examples provided in this repository:
 
-* Basic example that prevents a secondary instance from starting [`examples/basic`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/basic)
-* An example of a graphical application raising it's parent window [`examples/calculator`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/calculator)
-* A console application sending the primary instance it's command line parameters [`examples/sending_arguments`](https://github.com/itay-grudev/SingleApplication/tree/master/examples/sending_arguments)
+* Basic example that prevents a secondary instance from starting [`examples/basic`](examples/basic)
+* An example of a graphical application raising it's parent window [`examples/calculator`](examples/calculator)
+* A console application sending the primary instance it's command line parameters [`examples/sending_arguments`](examples/sending_arguments)
+* A variant of `sending_arguments` where `SingleApplication`is used in freestanding mode [`examples/separate_object`](examples/separate_object)
+* A graphical application with Windows specific additions raising it's parent window [`examples/windows_raise_widget`](examples/windows_raise_widget)
 
 ## Versioning
 
@@ -212,7 +275,7 @@ instances running.
 
 ## License
 
-This library and it's supporting documentation, with the exception of the Qt 
+This library and it's supporting documentation, with the exception of the Qt
 calculator examples which is distributed under the BSD license, are released
 under the terms of `The MIT License (MIT)` with an extra condition, that:
 
