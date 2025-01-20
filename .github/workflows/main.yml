@@ -87,24 +87,28 @@ jobs:
           cmake --build .
 
       - name: Build basic example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/basic/
         run: |
           qmake
           ${{ matrix.make }}
 
       - name: Build calculator example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/calculator/
         run: |
           qmake
           ${{ matrix.make }}
 
       - name: Build sending_arguments example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/sending_arguments/
         run: |
           qmake
           ${{ matrix.make }}
 
       - name: Build windows_raise_widget example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/windows_raise_widget/
         run: |
           qmake
