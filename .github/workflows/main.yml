@@ -22,7 +22,7 @@ jobs:
         platform:
           - ubuntu-20.04
           - windows-latest
-          - macos-latest
+          - macos-13
         include:
           - qt_version: 6.2.4
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
@@ -32,7 +32,7 @@ jobs:
             make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j2
-          - platform: macos-latest
+          - platform: macos-13
             make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j3
@@ -80,6 +80,12 @@ jobs:
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
 
+      - name: Build separate_object example with CMake
+        working-directory: examples/separate_object/
+        run: |
+          cmake . ${{ matrix.additional_arguments }}
+          cmake --build .
+
       - name: Build windows_raise_widget example with CMake
         working-directory: examples/windows_raise_widget/
         run: |
@@ -87,24 +93,35 @@ jobs:
           cmake --build .
 
       - name: Build basic example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/basic/
         run: |
           qmake
           ${{ matrix.make }}
 
       - name: Build calculator example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/calculator/
         run: |
           qmake
           ${{ matrix.make }}
 
       - name: Build sending_arguments example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/sending_arguments/
         run: |
           qmake
           ${{ matrix.make }}
 
+      - name: Build separate_object example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
+        working-directory: examples/separate_object/
+        run: |
+          qmake
+          ${{ matrix.make }}
+
       - name: Build windows_raise_widget example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/windows_raise_widget/
         run: |
           qmake
