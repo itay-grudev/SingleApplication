@@ -80,6 +80,12 @@ jobs:
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
 
+      - name: Build separate_object example with CMake
+        working-directory: examples/separate_object/
+        run: |
+          cmake . ${{ matrix.additional_arguments }}
+          cmake --build .
+
       - name: Build windows_raise_widget example with CMake
         working-directory: examples/windows_raise_widget/
         run: |
@@ -103,6 +109,13 @@ jobs:
       - name: Build sending_arguments example with QMake
         if: ${{ !contains(matrix.platform, 'macos') }}
         working-directory: examples/sending_arguments/
+        run: |
+          qmake
+          ${{ matrix.make }}
+
+      - name: Build separate_object example with QMake
+        if: ${{ !contains(matrix.platform, 'macos') }}
+        working-directory: examples/separate_object/
         run: |
           qmake
           ${{ matrix.make }}

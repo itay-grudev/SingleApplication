@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.6.0
+
+* Freestanding mode where `SingleApplication` doesn't derive from `QCodeApplication` _Benjamin Buch_
+* CMake install with CMake config files for freestanding mode _Benjamin Buch_
+
 ## 3.5.1
 
 * Bug Fix: Maximum QNativeIpcKey key size on macOS. - _Jonas Kvinge_
