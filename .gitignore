@@ -13,4 +13,7 @@
 /**/Makefile
 /**/cmake_install.cmake
 /**/*_autogen/
+/examples/**/build/*
 libSingleApplication.a
+/.idea
+/.vscode
