@@ -1,4 +1,6 @@
-// Copyright (c) Itay Grudev 2015 - 2023
+// The MIT License (MIT)
+//
+// Copyright (c) Itay Grudev 2015 - 2020
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -6,9 +8,6 @@
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
-// Permission is not granted to use this software or any of the associated files
-// as sample data for the purposes of building machine learning models.
 //
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.

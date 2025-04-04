@@ -1,4 +1,3 @@
-/.idea
 /examples/*/*.o
 /examples/*/Makefile
 /examples/*/moc_*.cpp
