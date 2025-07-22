@@ -73,8 +73,9 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 #else
     d->memory = new QSharedMemory( d->blockServerName );
 #endif
-    d->memory->attach();
-    delete d->memory;
+    bool ok = d->memory->attach();
+    qCritical() << "d->memory->attach():" << ok;
+    if (ok) delete d->memory;
 #endif
     // Guarantee thread safe behaviour with a shared memory block.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
@@ -92,16 +93,24 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         }
         d->initializeMemoryBlock();
     } else {
+
+        qCritical() << "Shared memory creation failed:" << d->memory->errorString();
+
         if( d->memory->error() == QSharedMemory::AlreadyExists ){
           // Attempt to attach to the memory segment
           if( ! d->memory->attach() ){
               qCritical() << "SingleApplication: Unable to attach to shared memory block.";
               abortSafely();
+          } else {
+              qCritical() << "Successfully attached to existing shared memory block";
           }
           if( ! d->memory->lock() ){
             qCritical() << "SingleApplication: Unable to lock memory block after attach.";
             abortSafely();
+          } else {
+            qCritical() << "Memory block successfully locked";
           }
+
         } else {
           qCritical() << "SingleApplication: Unable to create block.";
           abortSafely();
@@ -109,6 +118,21 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     }
 
     auto *inst = static_cast<InstancesInfo*>( d->memory->data() );
+
+    if (!inst) {
+        qCritical() << "Shared memory data is NULL!";
+        abortSafely();
+    } else {
+
+        qCritical() << "Shared memory data doesn't NULL!";
+        qCritical() << "Primary: " << inst->primary << QString::asprintf("0x%X", inst->primary);
+        qCritical() << "Secondary: " << inst->secondary << QString::asprintf("0x%X", inst->secondary);
+        qCritical() << "Primary PID: " << inst->primaryPid << QString::asprintf("0x%llX", inst->primaryPid);
+        qCritical() << "Checksum: " << inst->checksum << QString::asprintf("0x%X", inst->checksum);
+        qCritical() << "Primary User: " << inst->primaryUser;
+    }
+
+
     QElapsedTimer time;
     time.start();
 
