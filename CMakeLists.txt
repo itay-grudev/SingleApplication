@@ -9,10 +9,7 @@ add_library(${PROJECT_NAME} STATIC
     singleapplication_p.cpp
 )
 
-# User configurable options
-if(NOT QT_DEFAULT_MAJOR_VERSION)
-    set(QT_DEFAULT_MAJOR_VERSION 5 CACHE STRING "Qt version to use (5 or 6), defaults to 5")
-endif()
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core Network)
 
 if(NOT QAPPLICATION_CLASS)
     set(QAPPLICATION_CLASS QCoreApplication CACHE STRING "Qt application base class or FreeStandingSingleApplication")
@@ -26,22 +23,22 @@ endif()
 
 # Find dependencies
 set(QT_COMPONENTS Core Network)
-set(QT_LIBRARIES Qt${QT_DEFAULT_MAJOR_VERSION}::Core Qt${QT_DEFAULT_MAJOR_VERSION}::Network)
+set(QT_LIBRARIES Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Network)
 
 if(QAPPLICATION_CLASS STREQUAL QApplication)
     list(APPEND QT_COMPONENTS Widgets)
-    list(APPEND QT_LIBRARIES Qt${QT_DEFAULT_MAJOR_VERSION}::Widgets)
+    list(APPEND QT_LIBRARIES Qt${QT_VERSION_MAJOR}::Widgets)
 elseif(QAPPLICATION_CLASS STREQUAL QGuiApplication)
     list(APPEND QT_COMPONENTS Gui)
-    list(APPEND QT_LIBRARIES Qt${QT_DEFAULT_MAJOR_VERSION}::Gui)
+    list(APPEND QT_LIBRARIES Qt${QT_VERSION_MAJOR}::Gui)
 endif()
-
-find_package(Qt${QT_DEFAULT_MAJOR_VERSION} COMPONENTS ${QT_COMPONENTS} REQUIRED)
 
 option(SINGLEAPPLICATION_DOCUMENTATION "Generate Doxygen documentation" OFF)
 if(SINGLEAPPLICATION_DOCUMENTATION)
     find_package(Doxygen)
 endif()
+
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_COMPONENTS} REQUIRED)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${QT_LIBRARIES})
 
