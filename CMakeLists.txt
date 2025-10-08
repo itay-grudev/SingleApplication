@@ -138,13 +138,13 @@ if(SINGLEAPPLICATION_INSTALL)
     install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/SingleApplicationConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/SingleApplicationConfigVersion.cmake"
-        DESTINATION "lib/cmake/SingleApplication")
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SingleApplication")
 
     install(TARGETS SingleApplication EXPORT SingleApplicationTargets)
     install(EXPORT SingleApplicationTargets
         FILE "SingleApplicationTargets.cmake"
         NAMESPACE "SingleApplication::"
-        DESTINATION "lib/cmake/SingleApplication")
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SingleApplication")
 else()
     add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 endif()
