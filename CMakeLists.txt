@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 3.12.0)
 
 project(SingleApplication VERSION 3.6.0 LANGUAGES CXX DESCRIPTION "Replacement for QtSingleApplication")
 
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 set(CMAKE_AUTOMOC ON)
 
-add_library(${PROJECT_NAME} STATIC
+add_library(${PROJECT_NAME}
     singleapplication.cpp
     singleapplication_p.cpp
 )
@@ -98,6 +99,8 @@ if(DOXYGEN_FOUND)
 endif()
 
 if(SINGLEAPPLICATION_INSTALL)
+    include(GNUInstallDirs)
+
     # Create a header veriant where QAPPLICATION_CLASS is replaced with FreeStandingSingleApplication
     file(READ "${CMAKE_CURRENT_SOURCE_DIR}/singleapplication.h" SINGLEAPPLICATION_H_CONTENT)
 
