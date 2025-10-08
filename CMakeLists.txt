@@ -9,6 +9,7 @@ add_library(${PROJECT_NAME}
     singleapplication.cpp
     singleapplication_p.cpp
 )
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
 
 # User configurable options
 if(NOT QT_DEFAULT_MAJOR_VERSION)
