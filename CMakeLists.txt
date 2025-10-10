@@ -4,12 +4,16 @@ project(SingleApplication VERSION 3.6.0 LANGUAGES CXX DESCRIPTION "Replacement f
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_library(${PROJECT_NAME}
     singleapplication.cpp
     singleapplication_p.cpp
 )
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
+
+include(GenerateExportHeader)
+generate_export_header(${PROJECT_NAME})
 
 # User configurable options
 if(NOT QT_DEFAULT_MAJOR_VERSION)
@@ -126,7 +130,9 @@ if(SINGLEAPPLICATION_INSTALL)
     file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/singleapplication.h" "${SINGLEAPPLICATION_H_CONTENT}")
 
     # CMake install
-    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/singleapplication.h" "SingleApplication" "FreeStandingSingleApplication"
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/singleapplication.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/singleapplication_export.h"
+	    "SingleApplication" "FreeStandingSingleApplication"
         DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}")
 
     include(CMakePackageConfigHelpers)
@@ -141,7 +147,8 @@ if(SINGLEAPPLICATION_INSTALL)
         "${CMAKE_CURRENT_BINARY_DIR}/SingleApplicationConfigVersion.cmake"
         DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/SingleApplication")
 
-    install(TARGETS SingleApplication EXPORT SingleApplicationTargets)
+    install(TARGETS SingleApplication
+        EXPORT SingleApplicationTargets)
     install(EXPORT SingleApplicationTargets
         FILE "SingleApplicationTargets.cmake"
         NAMESPACE "SingleApplication::"
