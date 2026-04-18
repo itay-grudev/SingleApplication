@@ -26,6 +26,18 @@
 #include <QtCore/QByteArray>
 #include <QtCore/QSharedMemory>
 
+#ifdef Q_OS_UNIX
+    #include <sys/types.h>
+    #include <signal.h>
+#endif
+
+#ifdef Q_OS_WIN
+    #ifndef NOMINMAX
+        #define NOMINMAX 1
+    #endif
+    #include <windows.h>
+#endif
+
 #include "singleapplication.h"
 #include "singleapplication_p.h"
 
@@ -136,6 +148,38 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
         qCritical() << "SingleApplication: Unable to lock memory after random wait.";
         abortSafely();
       }
+    }
+
+    // If a primary instance is marked but its process is no longer alive,
+    // reset the shared memory block so we can reclaim the primary role.
+    // This handles the case where the previous instance was forcefully killed
+    // (e.g. SIGKILL from an IDE) and had no chance to clean up.
+    if( inst->primary == true ){
+        qint64 pid = inst->primaryPid;
+        bool primaryAlive = false;
+
+        if( pid > 0 ){
+#ifdef Q_OS_UNIX
+            // kill with signal 0 checks process existence without sending a signal
+            primaryAlive = ( ::kill( static_cast<pid_t>(pid), 0 ) == 0 );
+#endif
+#ifdef Q_OS_WIN
+            HANDLE process = OpenProcess( PROCESS_QUERY_LIMITED_INFORMATION, FALSE, static_cast<DWORD>(pid) );
+            if( process != NULL ){
+                DWORD exitCode;
+                if( GetExitCodeProcess( process, &exitCode ) ){
+                    primaryAlive = ( exitCode == STILL_ACTIVE );
+                }
+                CloseHandle( process );
+            }
+#endif
+        }
+
+        if( !primaryAlive ){
+            qWarning() << "SingleApplication: Primary instance (PID:" << pid
+                       << ") is no longer running. Resetting shared memory block.";
+            d->initializeMemoryBlock();
+        }
     }
 
     if( inst->primary == false ){
