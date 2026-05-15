@@ -20,9 +20,9 @@ jobs:
           - 6.2.4
           - 6.5.0
         platform:
-          - ubuntu-20.04
+          - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-latest
         include:
           - qt_version: 6.2.4
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
