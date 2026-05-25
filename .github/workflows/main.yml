@@ -28,11 +28,11 @@ jobs:
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
           - qt_version: 6.5.0
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
-          - platform: ubuntu-20.04
+          - platform: ubuntu-latest
             make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j2
-          - platform: macos-13
+          - platform: macos-15-intel
             make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j3
