@@ -22,7 +22,7 @@ jobs:
         platform:
           - ubuntu-latest
           - windows-latest
-          - macos-latest
+          - macos-15
         include:
           - qt_version: 6.2.4
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
