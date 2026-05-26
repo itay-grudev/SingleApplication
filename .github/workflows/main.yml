@@ -2,8 +2,7 @@ name: "CI: Build Test"
 
 on:
   push:
-    branches-ignore:
-      - "releases/**"
+    branches: [ $default-branch ]
     paths-ignore:
       - "**.md"
   pull_request:
