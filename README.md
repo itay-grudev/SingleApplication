@@ -5,7 +5,7 @@
 This is a replacement of the QtSingleApplication for `Qt5` and `Qt6`.
 
 Keeps the Primary Instance of your Application and kills each subsequent
-instances. It can (if enabled) spawn secondary (non-related to the primary)
+instance. It can (if enabled) spawn secondary (non-related to the primary)
 instances and can send data to the primary instance from secondary instances.
 
 # [Documentation](https://itay-grudev.github.io/SingleApplication/)
@@ -105,19 +105,19 @@ target_link_libraries(ClientePOS PRIVATE
 
 
 The library sets up a `QLocalServer` and a `QSharedMemory` block. The first
-instance of your Application is your Primary Instance. It would check if the
-shared memory block exists and if not it will start a `QLocalServer` and listen
-for connections. Each subsequent instance of your application would check if the
-shared memory block exists and if it does, it will connect to the QLocalServer
-to notify the primary instance that a new instance had been started, after which
+instance of your Application is your Primary Instance. It checks if the
+shared memory block exists and if not, it will start a `QLocalServer` and listen
+for connections. Each subsequent instance of your application checks if the
+shared memory block exists and if it does, it connects to the `QLocalServer`
+to notify the primary instance that a new instance has been started, after which
 it would terminate with status code `0`. In the Primary Instance
-`SingleApplication` would emit the `instanceStarted()` signal upon detecting
-that a new instance had been started.
+`SingleApplication` emits the `instanceStarted()` signal upon detecting
+that a new instance has been started.
 
 The library uses `stdlib` to terminate the program with the `exit()` function.
 
-Also don't forget to specify which `QCoreApplication` class your app is using if it
-is not `QCoreApplication` as in examples above.
+Additionaly, don't forget to specify which `QCoreApplication` class your app is
+using if it is not `QCoreApplication` as in examples above.
 
 ## Freestanding mode
 
@@ -197,7 +197,7 @@ QObject::connect(
 ```
 
 Using `SingleApplication::instance()` is a neat way to get the
-`SingleApplication` instance for binding to it's signals anywhere in your
+`SingleApplication` instance for binding to its signals anywhere in your
 program.
 
 _Note:_ On Windows the ability to bring the application windows to the
@@ -230,7 +230,7 @@ int main(int argc, char *argv[])
 
 _Note:_ A secondary instance won't cause the emission of the
 `instanceStarted()` signal by default. See `SingleApplication::Mode` for more
-details.*
+details.
 
 You can check whether your instance is a primary or secondary with the following
 methods:
@@ -242,17 +242,17 @@ app.isSecondary();
 ```
 
 _Note:_ If your Primary Instance is terminated a newly launched instance
-will replace the Primary one even if the Secondary flag has been set.*
+will replace the Primary one even if the Secondary flag has been set.
 
 ## Examples
 
 There are five examples provided in this repository:
 
 * Basic example that prevents a secondary instance from starting [`examples/basic`](examples/basic)
-* An example of a graphical application raising it's parent window [`examples/calculator`](examples/calculator)
-* A console application sending the primary instance it's command line parameters [`examples/sending_arguments`](examples/sending_arguments)
-* A variant of `sending_arguments` where `SingleApplication`is used in freestanding mode [`examples/separate_object`](examples/separate_object)
-* A graphical application with Windows specific additions raising it's parent window [`examples/windows_raise_widget`](examples/windows_raise_widget)
+* An example of a graphical application raising its parent window [`examples/calculator`](examples/calculator)
+* A console application sending the primary instance its command line parameters [`examples/sending_arguments`](examples/sending_arguments)
+* A variant of `sending_arguments` where `SingleApplication` is used in freestanding mode [`examples/separate_object`](examples/separate_object)
+* A graphical application with Windows specific additions raising its parent window [`examples/windows_raise_widget`](examples/windows_raise_widget)
 
 ## Versioning
 
@@ -275,7 +275,7 @@ instances running.
 
 ## License
 
-This library and it's supporting documentation, with the exception of the Qt
+This library and its supporting documentation, with the exception of the Qt
 calculator examples which is distributed under the BSD license, are released
 under the terms of `The MIT License (MIT)` with an extra condition, that:
 

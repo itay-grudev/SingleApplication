@@ -2,15 +2,29 @@ name: "CI: Build Test"
 
 on:
   push:
-    branches-ignore:
-      - "releases/**"
+    branches: [ $default-branch ]
     paths-ignore:
       - "**.md"
   pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
     paths-ignore:
       - "**.md"
 
 jobs:
+  results:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: Build (matrix)
+    needs: build
+    steps:
+      - name: Check build matrix status
+        if: ${{ needs.build.result != 'success' }}
+        run: exit 1
+
   build:
     name: Build
     strategy:
@@ -20,19 +34,19 @@ jobs:
           - 6.2.4
           - 6.5.0
         platform:
-          - ubuntu-20.04
+          - ubuntu-latest
           - windows-latest
-          - macos-13
+          - macos-15-intel
         include:
           - qt_version: 6.2.4
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
           - qt_version: 6.5.0
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
-          - platform: ubuntu-20.04
+          - platform: ubuntu-latest
             make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j2
-          - platform: macos-13
+          - platform: macos-15-intel
             make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j3
