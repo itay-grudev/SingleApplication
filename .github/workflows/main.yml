@@ -16,6 +16,16 @@ on:
       - "**.md"
 
 jobs:
+  results:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: Build (matrix)
+    needs: build
+    steps:
+      - name: Check build matrix status
+        if: ${{ needs.build.result != 'success' }}
+        run: exit 1
+
   build:
     name: Build
     strategy:
