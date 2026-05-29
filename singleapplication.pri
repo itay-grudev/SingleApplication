@@ -3,9 +3,11 @@ CONFIG += c++11
 
 HEADERS += $$PWD/SingleApplication \
     $$PWD/singleapplication.h \
-    $$PWD/singleapplication_p.h
+    $$PWD/singleapplication_p.h \
+    $$PWD/singleapplicationmessage.h
 SOURCES += $$PWD/singleapplication.cpp \
-    $$PWD/singleapplication_p.cpp
+    $$PWD/singleapplication_p.cpp \
+    $$PWD/singleapplicationmessage.cpp
 
 INCLUDEPATH += $$PWD
 
