@@ -138,6 +138,13 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
       }
     }
 
+    // Check to ensure the primary process really does exist by sending a message and if it does not
+    // then assume primary status
+    if ( inst->primary != false && !d->connectToPrimary( timeout, SingleApplicationPrivate::SecondaryInstance )) {
+          qDebug() << "SingleApplication: Cannot communicate with primary so assuming primary status.";
+          inst->primary = false;
+    }
+
     if( inst->primary == false ){
         d->startPrimary();
         if( ! d->memory->unlock() ){
