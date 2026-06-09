@@ -1,4 +1,4 @@
-name: "CI: Build Test"
+name: "CI: Test"
 
 on:
   push:
@@ -18,15 +18,15 @@ jobs:
   results:
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    name: Build (matrix)
+    name: Test (matrix)
     needs: build
     steps:
       - name: Check build matrix status
         if: ${{ needs.build.result != 'success' }}
         run: exit 1
 
-  build:
-    name: Build
+  test:
+    name: Test
     strategy:
       matrix:
         qt_version:
@@ -105,6 +105,214 @@ jobs:
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
+
+      - name: Integration test with CMake examples (Linux/macOS)
+        if: ${{ !contains(matrix.platform, 'windows') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          basic_exe="${GITHUB_WORKSPACE}/examples/basic/basic"
+          sending_exe="${GITHUB_WORKSPACE}/examples/sending_arguments/sending_arguments"
+
+          if [ ! -x "${basic_exe}" ]; then
+            echo "Missing basic executable: ${basic_exe}"
+            exit 1
+          fi
+
+          if [ ! -x "${sending_exe}" ]; then
+            echo "Missing sending_arguments executable: ${sending_exe}"
+            exit 1
+          fi
+
+          basic_primary_log="${RUNNER_TEMP}/basic_primary.log"
+          basic_secondary_log="${RUNNER_TEMP}/basic_secondary.log"
+          sending_primary_log="${RUNNER_TEMP}/sending_primary.log"
+          sending_secondary_log="${RUNNER_TEMP}/sending_secondary.log"
+
+          basic_primary_pid=""
+          sending_primary_pid=""
+
+          cleanup() {
+            if [ -n "${basic_primary_pid}" ] && kill -0 "${basic_primary_pid}" 2>/dev/null; then
+              kill "${basic_primary_pid}" || true
+              wait "${basic_primary_pid}" || true
+            fi
+            if [ -n "${sending_primary_pid}" ] && kill -0 "${sending_primary_pid}" 2>/dev/null; then
+              kill "${sending_primary_pid}" || true
+              wait "${sending_primary_pid}" || true
+            fi
+          }
+          trap cleanup EXIT
+
+          "${basic_exe}" >"${basic_primary_log}" 2>&1 &
+          basic_primary_pid=$!
+          sleep 1
+
+          set +e
+          "${basic_exe}" >"${basic_secondary_log}" 2>&1
+          basic_secondary_exit=$?
+          set -e
+
+          if [ "${basic_secondary_exit}" -ne 0 ]; then
+            echo "Secondary basic instance exit code was ${basic_secondary_exit}, expected 0"
+            cat "${basic_secondary_log}" || true
+            exit 1
+          fi
+
+          if grep -q "Started a new instance" "${basic_secondary_log}"; then
+            echo "Secondary basic instance should not proceed to normal startup"
+            cat "${basic_secondary_log}" || true
+            exit 1
+          fi
+
+          if ! grep -q "Started a new instance" "${basic_primary_log}"; then
+            echo "Primary basic instance did not report startup"
+            cat "${basic_primary_log}" || true
+            exit 1
+          fi
+
+          kill "${basic_primary_pid}" || true
+          wait "${basic_primary_pid}" || true
+          basic_primary_pid=""
+
+          token="ci-token-$(date +%s)-$RANDOM"
+          "${sending_exe}" >"${sending_primary_log}" 2>&1 &
+          sending_primary_pid=$!
+          sleep 1
+
+          set +e
+          "${sending_exe}" "${token}" >"${sending_secondary_log}" 2>&1
+          sending_secondary_exit=$?
+          set -e
+
+          if [ "${sending_secondary_exit}" -ne 0 ]; then
+            echo "Secondary sending_arguments exit code was ${sending_secondary_exit}, expected 0"
+            cat "${sending_secondary_log}" || true
+            exit 1
+          fi
+
+          if ! grep -q "App already running." "${sending_secondary_log}"; then
+            echo "Secondary sending_arguments instance did not report forwarding mode"
+            cat "${sending_secondary_log}" || true
+            exit 1
+          fi
+
+          token_found=0
+          for i in {1..20}; do
+            if grep -E -q "Message Text:.*${token}" "${sending_primary_log}"; then
+              token_found=1
+              break
+            fi
+            sleep 0.25
+          done
+
+          if [ "${token_found}" -ne 1 ]; then
+            echo "Primary sending_arguments instance did not receive forwarded token"
+            cat "${sending_primary_log}" || true
+            cat "${sending_secondary_log}" || true
+            exit 1
+          fi
+
+          kill "${sending_primary_pid}" || true
+          wait "${sending_primary_pid}" || true
+          sending_primary_pid=""
+
+      - name: Integration test with CMake examples (Windows)
+        if: ${{ contains(matrix.platform, 'windows') }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          function Find-Executable {
+            param(
+              [string]$SearchRoot,
+              [string]$Name
+            )
+
+            return Get-ChildItem -Path $SearchRoot -Recurse -File -Filter "$Name.exe" |
+              Where-Object { $_.FullName -notmatch "\\CMakeFiles\\" } |
+              Select-Object -First 1
+          }
+
+          $basicExe = Find-Executable -SearchRoot "$env:GITHUB_WORKSPACE/examples/basic" -Name "basic"
+          $sendingExe = Find-Executable -SearchRoot "$env:GITHUB_WORKSPACE/examples/sending_arguments" -Name "sending_arguments"
+
+          if (-not $basicExe) {
+            throw "Missing basic executable under examples/basic"
+          }
+
+          if (-not $sendingExe) {
+            throw "Missing sending_arguments executable under examples/sending_arguments"
+          }
+
+          $basicPrimaryLog = Join-Path $env:RUNNER_TEMP "basic_primary.log"
+          $basicSecondaryLog = Join-Path $env:RUNNER_TEMP "basic_secondary.log"
+          $sendingPrimaryLog = Join-Path $env:RUNNER_TEMP "sending_primary.log"
+          $sendingSecondaryLog = Join-Path $env:RUNNER_TEMP "sending_secondary.log"
+
+          $basicPrimary = $null
+          $sendingPrimary = $null
+
+          try {
+            $basicPrimary = Start-Process -FilePath $basicExe.FullName -NoNewWindow -RedirectStandardOutput $basicPrimaryLog -RedirectStandardError $basicPrimaryLog -PassThru
+            Start-Sleep -Seconds 1
+
+            & $basicExe.FullName *> $basicSecondaryLog
+            $basicExit = $LASTEXITCODE
+            if ($basicExit -ne 0) {
+              throw "Secondary basic instance exit code was $basicExit, expected 0"
+            }
+
+            if (Select-String -Path $basicSecondaryLog -Pattern "Started a new instance" -Quiet) {
+              throw "Secondary basic instance should not proceed to normal startup"
+            }
+
+            if (-not (Select-String -Path $basicPrimaryLog -Pattern "Started a new instance" -Quiet)) {
+              throw "Primary basic instance did not report startup"
+            }
+
+            Stop-Process -Id $basicPrimary.Id -Force
+            $basicPrimary = $null
+
+            $token = "ci-token-$PID-$(Get-Date -Format yyyyMMddHHmmssfff)"
+            $sendingPrimary = Start-Process -FilePath $sendingExe.FullName -NoNewWindow -RedirectStandardOutput $sendingPrimaryLog -RedirectStandardError $sendingPrimaryLog -PassThru
+            Start-Sleep -Seconds 1
+
+            & $sendingExe.FullName $token *> $sendingSecondaryLog
+            $sendingExit = $LASTEXITCODE
+            if ($sendingExit -ne 0) {
+              throw "Secondary sending_arguments instance exit code was $sendingExit, expected 0"
+            }
+
+            if (-not (Select-String -Path $sendingSecondaryLog -Pattern "App already running." -Quiet)) {
+              throw "Secondary sending_arguments instance did not report forwarding mode"
+            }
+
+            $tokenFound = $false
+            for ($i = 0; $i -lt 20; $i++) {
+              if ((Test-Path $sendingPrimaryLog) -and (Select-String -Path $sendingPrimaryLog -Pattern ([regex]::Escape($token)) -Quiet)) {
+                $tokenFound = $true
+                break
+              }
+              Start-Sleep -Milliseconds 250
+            }
+
+            if (-not $tokenFound) {
+              throw "Primary sending_arguments instance did not receive forwarded token"
+            }
+
+            Stop-Process -Id $sendingPrimary.Id -Force
+            $sendingPrimary = $null
+          }
+          finally {
+            if ($basicPrimary -and -not $basicPrimary.HasExited) {
+              Stop-Process -Id $basicPrimary.Id -Force
+            }
+            if ($sendingPrimary -and -not $sendingPrimary.HasExited) {
+              Stop-Process -Id $sendingPrimary.Id -Force
+            }
+          }
 
       - name: Build basic example with QMake
         if: ${{ !contains(matrix.platform, 'macos') }}
