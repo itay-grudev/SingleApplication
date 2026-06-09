@@ -111,8 +111,8 @@ jobs:
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
 
-      - name: Integration test with Node.js harness
-        run: node .github/scripts/run-integration-tests.js
+      - name: Integration test
+        run: node .github/scripts/integration-tests.js
 
       - name: Build basic example with QMake
         if: ${{ !contains(matrix.platform, 'macos') }}

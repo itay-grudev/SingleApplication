@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
         std::cout << "Primary instance user: " << app.primaryUser().toLatin1().constData() << std::endl;
         return 0;
     } else {
+        std::cout << "Started a new instance" << std::endl;
         QObject::connect(
             &app,
             &SingleApplication::receivedMessage,

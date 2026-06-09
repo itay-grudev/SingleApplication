@@ -198,7 +198,13 @@ async function main() {
     log('Verifying sending_arguments forwards a message to the primary instance');
     sendingPrimary = spawnManaged(sendingExe, []);
 
-    await sleep(500);
+    await waitForOutput(
+      sendingPrimary,
+      (out) => out.includes('Started a new instance'),
+      7000,
+      'sending_arguments primary instance startup'
+    );
+
     assert(
       !sendingPrimary.isFinished(),
       `sending_arguments primary exited unexpectedly with code ${sendingPrimary.getExitCode()}. Output:\n${sendingPrimary.getOutput()}`
