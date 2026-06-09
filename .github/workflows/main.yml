@@ -19,10 +19,10 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     name: Test (matrix)
-    needs: build
+    needs: test
     steps:
       - name: Check build matrix status
-        if: ${{ needs.build.result != 'success' }}
+        if: ${{ needs.test.result != 'success' }}
         run: exit 1
 
   test:
