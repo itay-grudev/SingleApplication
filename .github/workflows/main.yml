@@ -112,6 +112,8 @@ jobs:
         run: |
           set -euo pipefail
 
+          echo "==> Starting Linux/macOS integration checks"
+
           basic_exe="${GITHUB_WORKSPACE}/examples/basic/basic"
           sending_exe="${GITHUB_WORKSPACE}/examples/sending_arguments/sending_arguments"
 
@@ -135,20 +137,24 @@ jobs:
 
           cleanup() {
             if [ -n "${basic_primary_pid}" ] && kill -0 "${basic_primary_pid}" 2>/dev/null; then
+              echo "==> Cleaning up basic primary process"
               kill "${basic_primary_pid}" || true
               wait "${basic_primary_pid}" || true
             fi
             if [ -n "${sending_primary_pid}" ] && kill -0 "${sending_primary_pid}" 2>/dev/null; then
+              echo "==> Cleaning up sending_arguments primary process"
               kill "${sending_primary_pid}" || true
               wait "${sending_primary_pid}" || true
             fi
           }
           trap cleanup EXIT
 
+          echo "==> Verifying basic example rejects a second instance"
           "${basic_exe}" >"${basic_primary_log}" 2>&1 &
           basic_primary_pid=$!
           sleep 1
 
+          echo "==> Launching basic secondary instance"
           set +e
           "${basic_exe}" >"${basic_secondary_log}" 2>&1
           basic_secondary_exit=$?
@@ -172,15 +178,18 @@ jobs:
             exit 1
           fi
 
+          echo "==> Verifying sending_arguments forwards a message to the primary instance"
           kill "${basic_primary_pid}" || true
           wait "${basic_primary_pid}" || true
           basic_primary_pid=""
 
           token="ci-token-$(date +%s)-$RANDOM"
+          echo "==> Starting sending_arguments primary instance"
           "${sending_exe}" >"${sending_primary_log}" 2>&1 &
           sending_primary_pid=$!
           sleep 1
 
+          echo "==> Launching sending_arguments secondary instance with token: ${token}"
           set +e
           "${sending_exe}" "${token}" >"${sending_secondary_log}" 2>&1
           sending_secondary_exit=$?
@@ -198,6 +207,7 @@ jobs:
             exit 1
           fi
 
+          echo "==> Confirming token arrived in the primary log"
           token_found=0
           for i in {1..20}; do
             if grep -E -q "Message Text:.*${token}" "${sending_primary_log}"; then
@@ -214,6 +224,7 @@ jobs:
             exit 1
           fi
 
+          echo "==> Linux/macOS integration checks completed successfully"
           kill "${sending_primary_pid}" || true
           wait "${sending_primary_pid}" || true
           sending_primary_pid=""
@@ -223,6 +234,8 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+
+          Write-Host "==> Starting Windows integration checks"
 
           function Find-Executable {
             param(
@@ -255,9 +268,11 @@ jobs:
           $sendingPrimary = $null
 
           try {
+            Write-Host "==> Verifying basic example rejects a second instance"
             $basicPrimary = Start-Process -FilePath $basicExe.FullName -NoNewWindow -RedirectStandardOutput $basicPrimaryLog -RedirectStandardError $basicPrimaryLog -PassThru
             Start-Sleep -Seconds 1
 
+            Write-Host "==> Launching basic secondary instance"
             & $basicExe.FullName *> $basicSecondaryLog
             $basicExit = $LASTEXITCODE
             if ($basicExit -ne 0) {
@@ -276,9 +291,11 @@ jobs:
             $basicPrimary = $null
 
             $token = "ci-token-$PID-$(Get-Date -Format yyyyMMddHHmmssfff)"
+            Write-Host "==> Verifying sending_arguments forwards a message to the primary instance"
             $sendingPrimary = Start-Process -FilePath $sendingExe.FullName -NoNewWindow -RedirectStandardOutput $sendingPrimaryLog -RedirectStandardError $sendingPrimaryLog -PassThru
             Start-Sleep -Seconds 1
 
+            Write-Host "==> Launching sending_arguments secondary instance with token: $token"
             & $sendingExe.FullName $token *> $sendingSecondaryLog
             $sendingExit = $LASTEXITCODE
             if ($sendingExit -ne 0) {
@@ -302,14 +319,17 @@ jobs:
               throw "Primary sending_arguments instance did not receive forwarded token"
             }
 
+            Write-Host "==> Windows integration checks completed successfully"
             Stop-Process -Id $sendingPrimary.Id -Force
             $sendingPrimary = $null
           }
           finally {
             if ($basicPrimary -and -not $basicPrimary.HasExited) {
+              Write-Host "==> Cleaning up basic primary process"
               Stop-Process -Id $basicPrimary.Id -Force
             }
             if ($sendingPrimary -and -not $sendingPrimary.HasExited) {
+              Write-Host "==> Cleaning up sending_arguments primary process"
               Stop-Process -Id $sendingPrimary.Id -Force
             }
           }
