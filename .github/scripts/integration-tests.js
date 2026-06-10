@@ -225,7 +225,7 @@ async function main() {
 
     await waitForOutput(
       sendingPrimary,
-      (out) => out.includes(token),
+      (out) => { log(out); return out.includes(token) },
       7000,
       'forwarded message on sending_arguments primary'
     );
