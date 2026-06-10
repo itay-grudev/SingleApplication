@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>
 #include <singleapplication.h>
 #include "messagereceiver.h"
 
@@ -34,11 +35,12 @@ int main(int argc, char *argv[])
     // If this is a secondary instance
     if( app.isSecondary() ) {
         app.sendMessage( app.arguments().join(' ').toUtf8() );
-        qDebug() << "App already running.";
-        qDebug() << "Primary instance PID: " << app.primaryPid();
-        qDebug() << "Primary instance user: " << app.primaryUser();
+        std::cout << "App already running." << std::endl;
+        std::cout << "Primary instance PID: " << app.primaryPid() << std::endl;
+        std::cout << "Primary instance user: " << app.primaryUser().toLatin1().constData() << std::endl;
         return 0;
     } else {
+        std::cout << "Started a new instance" << std::endl;
         QObject::connect(
             &app,
             &SingleApplication::receivedMessage,
