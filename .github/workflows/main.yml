@@ -1,4 +1,4 @@
-name: "CI: Build Test"
+name: "CI: Test"
 
 on:
   push:
@@ -18,15 +18,15 @@ jobs:
   results:
     if: ${{ always() }}
     runs-on: ubuntu-latest
-    name: Build (matrix)
-    needs: build
+    name: Test (matrix)
+    needs: test
     steps:
       - name: Check build matrix status
-        if: ${{ needs.build.result != 'success' }}
+        if: ${{ needs.test.result != 'success' }}
         run: exit 1
 
-  build:
-    name: Build
+  test:
+    name: Test
     strategy:
       matrix:
         qt_version:
@@ -71,6 +71,11 @@ jobs:
       - name: Setup MSVC environment for QMake
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Build library with CMake
         run: |
           cmake . ${{ matrix.additional_arguments }}
@@ -105,6 +110,9 @@ jobs:
         run: |
           cmake . ${{ matrix.additional_arguments }}
           cmake --build .
+
+      - name: Integration test
+        run: node .github/scripts/integration-tests.js
 
       - name: Build basic example with QMake
         if: ${{ !contains(matrix.platform, 'macos') }}
