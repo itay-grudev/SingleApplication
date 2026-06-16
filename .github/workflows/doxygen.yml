@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Clone repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v6
 
       - name: Install doxygen and pre-requsites packages
         run: |
@@ -26,7 +26,7 @@ jobs:
           find build/html/ -name *.html -type f -exec sed -i 's+https://github.com/jothepro/doxygen-awesome-css+https://github.com/itay-grudev/SingleApplication+g' {} \;
 
       - name: Deploy to GitHub pages
-        uses: crazy-max/ghaction-github-pages@v3
+        uses: crazy-max/ghaction-github-pages@v5
         with:
           target_branch: gh-pages
           build_dir: build/html
