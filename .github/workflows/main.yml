@@ -33,7 +33,6 @@ jobs:
       matrix:
         qt_version:
           - 5.15
-          - 6.11
           - 6.8
         platform:
           - ubuntu-latest
@@ -69,6 +68,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: ${{ matrix.qt_version }}
+          cache: true
 
       - name: Setup MSVC environment for QMake
         uses: ilammy/msvc-dev-cmd@v1
