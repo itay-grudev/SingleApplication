@@ -32,17 +32,17 @@ jobs:
     strategy:
       matrix:
         qt_version:
-          - 5.15.0
-          - 6.2.4
-          - 6.5.0
+          - 5.15.17
+          - 6.11.1
+          - 6.8.3
         platform:
           - ubuntu-latest
           - windows-2025-vs2026
           - macos-15-intel
         include:
-          - qt_version: 6.2.4
+          - qt_version: 6.11.1
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
-          - qt_version: 6.5.0
+          - qt_version: 6.8.3
             additional_arguments: -D QT_DEFAULT_MAJOR_VERSION=6
           - platform: ubuntu-latest
             make: make
