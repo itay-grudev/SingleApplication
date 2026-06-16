@@ -96,7 +96,9 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
     // By explicitly attaching it and then deleting it we make sure that the
     // memory is deleted even after the process has crashed on Unix.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-    d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) );
+    //d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) ); //old implementation
+    // Use legacy (System V) key type as POSIX realtime shm may not work on macOS
+    d->memory = new QSharedMemory( QSharedMemory::legacyNativeKey( d->blockServerName ) );
 #else
     d->memory = new QSharedMemory( d->blockServerName );
 #endif
@@ -105,7 +107,9 @@ SingleApplication::SingleApplication( int &argc, char *argv[], bool allowSeconda
 #endif
     // Guarantee thread safe behaviour with a shared memory block.
 #if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
-    d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) );
+    //d->memory = new QSharedMemory( QNativeIpcKey( d->blockServerName ) ); //old implementation
+    // Use legacy (System V) key type as POSIX realtime shm may not work on macOS
+    d->memory = new QSharedMemory( QSharedMemory::legacyNativeKey( d->blockServerName ) );
 #else
     d->memory = new QSharedMemory( d->blockServerName );
 #endif
