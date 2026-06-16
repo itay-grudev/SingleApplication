@@ -1,12 +1,5 @@
 # SingleApplication
 
-
-Create status badge
-Workflow status badge
-Branch
-
-Event
-
 [![CI: Test](https://github.com/itay-grudev/SingleApplication/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/itay-grudev/SingleApplication/actions/workflows/main.yml?query=branch%3Amaster)
 
 This is a replacement of the QtSingleApplication for `Qt5` and `Qt6`.
