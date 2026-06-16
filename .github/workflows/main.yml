@@ -37,7 +37,7 @@ jobs:
           - 6.5.0
         platform:
           - ubuntu-latest
-          - windows-latest
+          - windows-2022
           - macos-15-intel
         include:
           - qt_version: 6.2.4
