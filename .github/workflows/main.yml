@@ -52,7 +52,7 @@ jobs:
             make: make
             CXXFLAGS: -Wall -Wextra -pedantic -Werror
             MAKEFLAGS: -j3
-          - platform: windows-latest
+          - platform: windows-2022
             make: nmake
             CXXFLAGS: /W4 /WX /MP
 
