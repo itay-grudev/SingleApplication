@@ -2,7 +2,9 @@ name: "CI: Test"
 
 on:
   push:
-    branches: [ $default-branch ]
+    branches:
+      - master
+      - main
     paths-ignore:
       - "**.md"
   pull_request:
