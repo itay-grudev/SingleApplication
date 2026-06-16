@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         qt_version:
-          - 5.15.17
+          - 5.15.0
           - 6.11.1
           - 6.8.3
         platform:
