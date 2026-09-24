@@ -21,13 +21,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <iostream>
 #include <singleapplication.h>
 
 int main(int argc, char *argv[])
 {
     SingleApplication app( argc, argv );
 
-    qWarning() << "Started a new instance";
+    std::cout << "Started a new instance" << std::endl;
 
     return app.exec();
 }

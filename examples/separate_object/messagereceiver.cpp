@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <QDebug>
+#include <iostream>
 #include "messagereceiver.h"
 
 MessageReceiver::MessageReceiver(QObject *parent) : QObject(parent)
@@ -30,6 +30,6 @@ MessageReceiver::MessageReceiver(QObject *parent) : QObject(parent)
 
 void MessageReceiver::receivedMessage(int instanceId, QByteArray message)
 {
-    qDebug() << "Received message from instance: " << instanceId;
-    qDebug() << "Message Text: " << message;
+    std::cout << "Received message from instance: " << instanceId << std::endl;
+    std::cout << "Message Text: " << message.constData() << std::endl;
 }
