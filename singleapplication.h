@@ -24,6 +24,8 @@
 #ifndef SINGLE_APPLICATION_H
 #define SINGLE_APPLICATION_H
 
+#include "singleapplication_export.h"
+
 #include <QtCore/QtGlobal>
 #include <QtNetwork/QLocalSocket>
 
@@ -40,7 +42,7 @@ class SingleApplicationPrivate;
  * Application
  * @see QCoreApplication
  */
-class SingleApplication : public QAPPLICATION_CLASS
+class SINGLEAPPLICATION_EXPORT SingleApplication : public QAPPLICATION_CLASS
 {
     Q_OBJECT
 
@@ -181,6 +183,6 @@ private:
     void abortSafely();
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(SingleApplication::Options)
+SINGLEAPPLICATION_EXPORT Q_DECLARE_OPERATORS_FOR_FLAGS(SingleApplication::Options)
 
 #endif // SINGLE_APPLICATION_H
